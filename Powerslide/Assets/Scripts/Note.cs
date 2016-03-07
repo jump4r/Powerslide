@@ -4,9 +4,10 @@ using System.Collections;
 public class Note : NoteBase {
 
     // When the note is created, fill in the necissary information from NoteSpawner.cs
-    public void Construct(int notePathID)
+    public override void Construct(int notePathID)
     {
         this.notePathID = notePathID;
+        Debug.Log("Notepath is " + this.notePathID);
     }
 
 	void OnEnable () {

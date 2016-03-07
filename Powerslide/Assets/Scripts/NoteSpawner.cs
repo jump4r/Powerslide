@@ -1,19 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public enum NoteType
-{
-    Regular = 0,
-    Flick = 1
-}
-
 public class NoteSpawner : MonoBehaviour {
 
     private float xRotation; // This isn't hard coded I promise I'll edit when needed.
-    private Quaternion baseRotation;
-    private Vector3 basePosition;
+    private static Quaternion baseRotation;
+    private static Vector3 basePosition;
 
-    private float distanceFromHitboard = 20f; // distances = mpb * beatsFromHitbaord * speedMultiplier
+    private float distanceFromHitboard; // distances = mpb * beatsFromHitbaord * speedMultiplier
+    private float pSM = 2.0f; // Player Speed Mulitplier
 
     // Timing Variables
     public float BPM;
@@ -21,32 +16,41 @@ public class NoteSpawner : MonoBehaviour {
     private float velocity; // Note travel velocity, notes move at a rate of 1 (Unity) meter per 1 beat.
 
     // Falling note prefabs.
-    public GameObject Note;
-    public GameObject Flick;
+    public static GameObject Note;
+    public static GameObject Flick;
     public GameObject BoardObject;
 
     public NotePath Path;
 
 	// Use this for initialization
-	void Start () { 
+	void Start () {
         // TODO: Given a list of distance, a BPM, and Velocity Mulitplier, prepare to spawn notes.
         // Set up the rotation, Spawn the hitmarkers
+        distanceFromHitboard = 8f * pSM; // Distance from the 
         baseRotation = BoardObject.transform.rotation;
         xRotation = 55f * Mathf.PI / 180f;
         basePosition = new Vector3(0f, BoardObject.transform.position.y + distanceFromHitboard * Mathf.Sin(xRotation) + 0.1f, BoardObject.transform.position.z + distanceFromHitboard * Mathf.Cos(xRotation));
         Debug.Log("Spawning Notes at: " + basePosition);
-        InvokeRepeating("SpawnNote", 1f, 1f);                                                                          
+        // InvokeRepeating("SpawnNote", 1f, 1f);
+
+        // Set the notes
+        Note = Resources.Load("Prefabs/Note") as GameObject;
+        if (Note == null) { Debug.Log("Succesful note loaded");  }
+        Flick = Resources.Load("Prefabs/Flick") as GameObject;                                                                
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+	    
 	}
 
-    void SpawnNote()
+    public static void SpawnNote()
     {
         // Randomness test
-        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[Random.Range(0, 3)].transform.position.x, basePosition.y, basePosition.z);
-        Instantiate(Note, spawnPosition, baseRotation);
+        Debug.Log("Spawning A Note: ");
+        int randomNotePathID = (int)Random.Range(0, 4);
+        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomNotePathID].transform.position.x, basePosition.y, basePosition.z);
+        GameObject tmp = Instantiate(Note, spawnPosition, baseRotation) as GameObject;
+        tmp.GetComponent<NoteBase>().Construct(randomNotePathID); // ROFL APPARENTLY THIS WORKS. $$$$$$YENYENYENYENWONWONWONWON
     }
 }

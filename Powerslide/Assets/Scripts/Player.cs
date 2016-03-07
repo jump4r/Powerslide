@@ -34,8 +34,8 @@ public class Player : MonoBehaviour {
         // Detect a touch from the screen.
         if (Input.GetButtonDown("Touch"))
         {
-            GameObject note = GameObject.Find("Note");
-            note.GetComponent<Note>().ChangeMaterial();
+            //GameObject note = GameObject.Find("Note");
+            //note.GetComponent<Note>().ChangeMaterial();
 
             // Add one to the touches list.
             fingersTouching += 1;
@@ -110,7 +110,7 @@ public class Player : MonoBehaviour {
                     Debug.Log("Currently dragging along path: " + hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID);
                     if (hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID == endFlickPath.NotePathID && activeNoteFlick != null)
                     {
-                        activeNoteFlick.ChangeMaterial();
+                        activeNoteFlick.CalculateError();
                         activeNoteFlick = null;
                     }
                 }

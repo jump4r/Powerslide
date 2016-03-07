@@ -52,7 +52,7 @@ public class NotePath : MonoBehaviour {
         {
             // A note has been touched;
             Debug.Log("Hit a regular note, no need to do anything really");
-            ActiveNotes[0].ChangeMaterial();
+            ActiveNotes[0].CalculateError();
             ActiveNotes.Remove(ActiveNotes[0]);
             return false;
         }
