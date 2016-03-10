@@ -18,6 +18,7 @@ public class NoteSpawner : MonoBehaviour {
     // Falling note prefabs.
     public static GameObject Note;
     public static GameObject Flick;
+    public static GameObject Drag;
     public GameObject BoardObject;
 
     public NotePath Path;
@@ -36,7 +37,8 @@ public class NoteSpawner : MonoBehaviour {
         // Set the notes
         Note = Resources.Load("Prefabs/Note") as GameObject;
         if (Note == null) { Debug.Log("Succesful note loaded");  }
-        Flick = Resources.Load("Prefabs/Flick") as GameObject;                                                                
+        Flick = Resources.Load("Prefabs/Flick") as GameObject;
+        Drag = Resources.Load("Prefabs/Drag") as GameObject;                                                            
 	}
 	
 	// Update is called once per frame
@@ -44,6 +46,7 @@ public class NoteSpawner : MonoBehaviour {
 	    
 	}
 
+    // Spawns a regular note
     public static void SpawnNote()
     {
         // Randomness test
@@ -52,5 +55,20 @@ public class NoteSpawner : MonoBehaviour {
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomNotePathID].transform.position.x, basePosition.y, basePosition.z);
         GameObject tmp = Instantiate(Note, spawnPosition, baseRotation) as GameObject;
         tmp.GetComponent<NoteBase>().Construct(randomNotePathID); // ROFL APPARENTLY THIS WORKS. $$$$$$YENYENYENYENWONWONWONWON
+    }
+
+    // Spawns a drag note.
+    // Definition of a DRAGNOTE: [offset,numSections,startPath,endPath,length]
+    public static void SpawnDrag()
+    {
+        Debug.Log("Spawning A DRAG: ");
+        int randomStartNotePath = (int)Random.Range(0, 4);
+        int randomEndNotePath = (int)Random.Range(0, 4);
+        string def = Conductor.songPosition.ToString() + "," + 2.ToString() + "," + randomStartNotePath.ToString() + "," + randomEndNotePath.ToString() + "," + 3.ToString();
+        
+        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
+        Debug.Log("Drag Spawning Position: " + spawnPosition);
+        GameObject tmp = Instantiate(Drag, spawnPosition, baseRotation) as GameObject;
+        tmp.GetComponent<NoteDrag>().ParseDefinition(def);
     }
 }

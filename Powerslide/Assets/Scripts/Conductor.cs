@@ -31,7 +31,7 @@ public class Conductor : MonoBehaviour
 
     void Start()
     {
-        nextBeatTime = offset + spb;
+        nextBeatTime = offset + spb * 4f;
         spb = 60f / (float)bpm; // 60 seconds / beats per minute
         accent = signatureHi;
         double startTick = AudioSettings.dspTime;
@@ -52,9 +52,10 @@ public class Conductor : MonoBehaviour
         // Update the next beat time.
         if (songPosition > nextBeatTime /*&& !spawnOneNote */)
         {
-            nextBeatTime += spb;
+            nextBeatTime += spb * 4f;
             spawnOneNote = true;
-            NoteSpawner.SpawnNote();
+            //NoteSpawner.SpawnNote();
+            NoteSpawner.SpawnDrag();
         }
 
         // Debug.Log("Current Song Position: " + songPosition);

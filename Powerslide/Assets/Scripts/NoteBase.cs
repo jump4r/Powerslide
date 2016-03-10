@@ -61,7 +61,6 @@ public class NoteBase : MonoBehaviour {
     {
         // I'm sure that we'll have a base note class that we'll add later
         // transform.Translate(Vector3.down * Time.deltaTime * velocity);
-
         rTP = (Conductor.songPosition - StartTime) / (8f * Conductor.spb);
         // Debug.Log("Current ratio: " + (Conductor.songPosition - startSongPosition) + " / " + 8f * Conductor.spb);
         // Debug.Log("rTP set to: " + rTP);
