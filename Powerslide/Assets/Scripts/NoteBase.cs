@@ -5,7 +5,8 @@ public enum NoteType
 {
     Regular = 0,
     Flick = 1,
-    Drag = 2
+    Drag = 2,
+    NULL = 3
 }
 
 [RequireComponent(typeof(Rigidbody))]
@@ -51,7 +52,7 @@ public class NoteBase : MonoBehaviour {
         playerSpeedMult = 2f;
         startPosition = (this.gameObject.transform.position);
         endPosition = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation)), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation)));
-        Debug.Log("Distance from Start to finish of note: " + Vector3.Distance(startPosition, endPosition));
+        // Debug.Log("Distance from Start to finish of note: " + Vector3.Distance(startPosition, endPosition));
         StartTime = Conductor.songPosition;
         EndTime = StartTime + (8f * Conductor.spb); // 8 beats after the spawn time, that's the end time
 	}
@@ -90,9 +91,11 @@ public class NoteBase : MonoBehaviour {
     private void OnTriggerEnter(Collider col)
     {
         if (col.name != "Hitbar") return; // Wrong collision
+       
+
 
         // Prepare to activiate a note for the first time
-        if (noteValue == 0)
+        if (noteValue == 0 && type != NoteType.Drag)
         {
             NotePath.NotePaths[notePathID].AddActiveNote(this);
             Debug.Log("Note in lane " + notePathID + " activated.");
@@ -104,11 +107,12 @@ public class NoteBase : MonoBehaviour {
     private void OnTriggerExit(Collider col)
     {
         if (col.name != "Hitbar") return; // Wrong collision
+        if (this.gameObject.GetComponent<NoteDrag>() != null) return; // We are not removing the object for drag notes >:3
 
         //noteValue -= 50;
 
         // MISSED NOTE IF 0, Deactivate Note
-        if (noteValue == 0)
+        if (noteValue == 0 && type != NoteType.Drag)
         {
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
             Debug.Log("Note in lane " + notePathID + " deactivated.");

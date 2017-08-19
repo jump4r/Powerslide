@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+ 
 public class Note : NoteBase {
 
     // When the note is created, fill in the necissary information from NoteSpawner.cs

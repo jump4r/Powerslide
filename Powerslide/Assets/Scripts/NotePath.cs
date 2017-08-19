@@ -35,17 +35,23 @@ public class NotePath : MonoBehaviour {
 
     // See if there is an active note that we cna hit
     // Returns based on the need for a drag, or just the need for a hit
-    public bool CheckIfValidHit()
+    public NoteType CheckIfValidHit()
     {
         if (ActiveNotes.Count <= 0) // No active notes
         {
-            return false;
+            return NoteType.NULL;
+        }
+
+        if (ActiveNotes[0].type == NoteType.Drag)
+        {
+            Debug.Log("Hit A Drag Note! Do Something");
+            return NoteType.Drag;
         }
 
         if (ActiveNotes[0].type == NoteType.Flick)
         {
             Debug.Log("Hit a Flick note! Do something!");
-            return true; // TODO: Add NoteFlick functionality
+            return NoteType.Flick; // TODO: Add NoteFlick functionality
         }
 
         if (ActiveNotes[0].type == NoteType.Regular)
@@ -54,11 +60,11 @@ public class NotePath : MonoBehaviour {
             Debug.Log("Hit a regular note, no need to do anything really");
             ActiveNotes[0].CalculateError();
             ActiveNotes.Remove(ActiveNotes[0]);
-            return false;
+            return NoteType.Regular;
         }
 
         Debug.Log("Something went wrong"); 
-        return false; // Needed because I don't feel like checking for every case
+        return NoteType.Regular; // Needed because I don't feel like checking for every case
     }
 
 

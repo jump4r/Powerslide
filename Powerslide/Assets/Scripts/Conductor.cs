@@ -31,7 +31,7 @@ public class Conductor : MonoBehaviour
 
     void Start()
     {
-        nextBeatTime = offset + spb * 4f;
+        nextBeatTime = offset + spb * 4;
         spb = 60f / (float)bpm; // 60 seconds / beats per minute
         accent = signatureHi;
         double startTick = AudioSettings.dspTime;
@@ -52,10 +52,10 @@ public class Conductor : MonoBehaviour
         // Update the next beat time.
         if (songPosition > nextBeatTime /*&& !spawnOneNote */)
         {
-            nextBeatTime += spb * 4f;
+            nextBeatTime += spb * 2;
             spawnOneNote = true;
-            //NoteSpawner.SpawnNote();
-            NoteSpawner.SpawnDrag();
+            NoteSpawner.SpawnNote();
+            //NoteSpawner.SpawnDrag();
         }
 
         // Debug.Log("Current Song Position: " + songPosition);
@@ -63,7 +63,7 @@ public class Conductor : MonoBehaviour
 
     void OnAudioFilterRead(float[] data, int channels)
     {
-        if (!running)
+        /*if (!running)
             return;
 
         if (runTime < offset)
@@ -96,6 +96,6 @@ public class Conductor : MonoBehaviour
             phase += amp * 0.3F;
             amp *= 0.993F;
             n++;
-        }
+        }*/
     }
 }
