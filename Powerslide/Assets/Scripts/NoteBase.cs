@@ -47,6 +47,9 @@ public class NoteBase : MonoBehaviour {
     public NoteType type;
     public int noteValue = 0;
 
+    // For testing purposes
+    private AudioClip hitSound;
+
     // Use this for initialization
     void Start () {
         playerSpeedMult = 2f;
@@ -55,7 +58,14 @@ public class NoteBase : MonoBehaviour {
         // Debug.Log("Distance from Start to finish of note: " + Vector3.Distance(startPosition, endPosition));
         StartTime = Conductor.songPosition;
         EndTime = StartTime + (8f * Conductor.spb); // 8 beats after the spawn time, that's the end time
-	}
+
+        // Set materials for 50/100 scores
+        Score100 = Resources.Load("Materials/100Score", typeof(Material)) as Material;
+        Score50 = Resources.Load("Materials/50Score", typeof(Material)) as Material;
+
+        // Load a personal hitsound for each object as a test.
+        hitSound = Resources.Load("Sound FX/hitsound") as AudioClip;
+    }
 
     // Update is called once per frame
     void Update()
@@ -67,6 +77,18 @@ public class NoteBase : MonoBehaviour {
         // Debug.Log("rTP set to: " + rTP);
         // rTP = 1f - rTP;
         transform.position = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
+
+        /****************************
+         * TEST *
+         * Play a hitsound when the note hits the perfect position, then destory it.
+         ***************************/
+         /*
+         if (Conductor.songPosition > EndTime)
+        {
+            GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().PlayHitSound();
+            Debug.Log("Projected End Time: " + EndTime + ", Actual End Time: " + Conductor.songPosition);
+            Destroy(this.gameObject);
+        }*/
     }
 
     // Virtual Functions

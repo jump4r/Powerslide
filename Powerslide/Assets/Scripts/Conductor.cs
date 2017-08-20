@@ -4,12 +4,15 @@ using System.Collections;
 // The code example shows how to implement a metronome that procedurally generates the click sounds via the OnAudioFilterRead callback.
 // While the game is paused or the suspended, this time will not be updated and sounds playing will be paused. Therefore developers of music scheduling routines do not have to do any rescheduling after the app is unpaused 
 
+    // VARAIBLES
+    // BPM = Beats Per Minute
+    // Offset - The amount of time before the first beat hits.
 [RequireComponent(typeof(AudioSource))]
 public class Conductor : MonoBehaviour
 {
     // public static Conductor conductor;
-    public static readonly float bpm = 220f;
-    public static readonly float offset = 2.655f;
+    public static readonly float bpm = 100f;
+    public static readonly float offset = 2.390f; // was 2.655, changed for Dango Daikazoku
     public static float songPosition = 0f;
     public static float nextBeatTime = 0f; // time of the next beat.
     private static AudioSource source; // Source of the audio clip

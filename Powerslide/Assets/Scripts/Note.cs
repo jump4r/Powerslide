@@ -7,7 +7,7 @@ public class Note : NoteBase {
     public override void Construct(int notePathID)
     {
         this.notePathID = notePathID;
-        Debug.Log("Notepath is " + this.notePathID);
+        // Debug.Log("Notepath is " + this.notePathID);
     }
 
 	void OnEnable () {
@@ -19,11 +19,13 @@ public class Note : NoteBase {
     {
         if (noteValue > 50)
         {
+            Debug.Log("Changing Material to: GREEN");
             gameObject.GetComponent<Renderer>().material = Score100;
         }
 
        else if (noteValue > 0)
         {
+            Debug.Log("Changing Material to: RED");
             gameObject.GetComponent<Renderer>().material = Score50;
         }
     }

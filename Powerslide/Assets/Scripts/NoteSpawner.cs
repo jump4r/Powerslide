@@ -51,7 +51,7 @@ public class NoteSpawner : MonoBehaviour {
     public static void SpawnNote()
     {
         // Randomness test
-        Debug.Log("Spawning A Note: ");
+        // Debug.Log("Spawning A Note: ");
         int randomNotePathID = (int)Random.Range(0, 4);
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomNotePathID].transform.position.x, basePosition.y, basePosition.z);
         GameObject tmp = Instantiate(Note, spawnPosition, baseRotation) as GameObject;

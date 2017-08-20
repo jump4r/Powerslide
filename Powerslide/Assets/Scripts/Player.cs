@@ -31,7 +31,7 @@ public class Player : MonoBehaviour {
     public GameObject Slider;
 	// Use this for initialization
 	void Start () {
-        hitSound = Resources.Load("Sound FX/normal-hitwhistle.wav") as AudioClip;
+        hitSound = Resources.Load("Sound FX/hitsound.wav") as AudioClip;
 	}
 
     // Getters and Setters
@@ -55,14 +55,14 @@ public class Player : MonoBehaviour {
 
             RaycastHit[] hitObjects = Physics.RaycastAll(ray, 1000f, layermask);
             NotePath hitPath;
-            Debug.Log("Number of objects hit: " + hitObjects.Length);
+            // Debug.Log("Number of objects hit: " + hitObjects.Length);
             for (int i = 0; i < hitObjects.Length; i++)
             {
                 // If we hit a Notepath...
                 if (hitObjects[i].collider.tag == "NotePath")
                 {
                     hitPath = hitObjects[i].collider.gameObject.GetComponent<NotePath>();
-                    Debug.Log("Hit Object: " + hitPath.name);
+                    // Debug.Log("Hit Object: " + hitPath.name);
                     hitNoteType = hitPath.CheckIfValidHit();
                     if (hitNoteType == NoteType.Flick)
                     {
@@ -79,7 +79,7 @@ public class Player : MonoBehaviour {
                     }
 
                     // Play hitsound after hitting the Notepath
-                    GetComponent<AudioSource>().Play();
+                    PlayHitSound();
                     break;
                 }
 
@@ -166,4 +166,9 @@ public class Player : MonoBehaviour {
             } */
         }
 	}
+
+    public void PlayHitSound()
+    {
+        GetComponent<AudioSource>().Play();
+    }
 }

@@ -1,4 +1,4 @@
 sceneSetups:
-- path: E:/Downloads HD/HackRPIAvalancheVR-master/HackRPIAvalancheVR-master/AvalancheVR/Assets/Scenes/intro.unity
+- path: Assets/playground.unity
   isLoaded: 1
   isActive: 1
