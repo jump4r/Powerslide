@@ -42,7 +42,7 @@ public class NoteDrag : NoteBase {
       
     }
 
-    public void ParseDefinition(string def) 
+    public override void ParseDefinition(string def) 
     {
         // Fill definitions.
         string[] splitString = def.Split(',');
@@ -66,6 +66,7 @@ public class NoteDrag : NoteBase {
         // Debug.Log("Beginning Point: " + beginningPoint);
         // Debug.Log("Ending Point: " + endingPoint);
         // Debug.Log("Distance between the two points: " + Vector3.Distance(beginningPoint, endingPoint));
+        Debug.Log("Length: " + length);
     }
 
     private void Update()

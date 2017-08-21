@@ -29,4 +29,9 @@ public class Note : NoteBase {
             gameObject.GetComponent<Renderer>().material = Score50;
         }
     }
+
+    public override void ParseDefinition(string def)
+    {
+        base.ParseDefinition(def);
+    }
 }

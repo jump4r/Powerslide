@@ -73,4 +73,12 @@ public class NoteSpawner : MonoBehaviour {
         GameObject tmp = Instantiate(Drag, spawnPosition, baseRotation) as GameObject;
         tmp.GetComponent<NoteDrag>().ParseDefinition(def);
     }
+
+    // Spawnds a hold note
+    // Definition of a HOLDNOTE: [offset, startPath, length]
+    public static void SpawnHold()
+    {
+        int randomStartNotePath = (int)Random.Range(0, 4);
+    }
+
 }

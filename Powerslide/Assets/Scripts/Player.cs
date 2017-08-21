@@ -25,6 +25,10 @@ public class Player : MonoBehaviour {
     private NotePath endFlickPath;
     private NoteFlick activeNoteFlick;
 
+    // Hold Note
+    private bool holdNoteEnabled = false;
+    private NoteHold activeNoteHold;
+
     private Vector3 offset = Vector3.zero;
     private float distanceFromRayOrigin = 0;
 
@@ -78,6 +82,12 @@ public class Player : MonoBehaviour {
                         activeNoteDrag = (NoteDrag)hitPath.ActiveNotes[0];
                     }
 
+                    if (hitNoteType == NoteType.Hold)
+                    {
+                        holdNoteEnabled = true;
+                        activeNoteHold = (NoteHold)hitPath.ActiveNotes[0];
+                    }
+
                     // Play hitsound after hitting the Notepath
                     PlayHitSound();
                     break;
@@ -97,12 +107,15 @@ public class Player : MonoBehaviour {
             }
         }
 
+        // IMPORTANT, THIS WILL HAVE TO CHANGE IN ORDER TO ALLOW MULTIPLE FINGERS TO BE TOUCHING AT THE SAME TIME. 
         // Remove that finger from the amount of total fingers touching
         if (Input.GetButtonUp("Touch"))
         {
             fingersTouching -= 1;
             sliderEnabled = false;
-            flickDragEnabled = false;   
+            flickDragEnabled = false;
+            holdNoteEnabled = false;
+            
         }
 
         // If we are dragging an the slider
@@ -131,6 +144,7 @@ public class Player : MonoBehaviour {
             }
         }
 
+
         // --- OR ---
         // Probably not going to use the slider though, so I should start thinking of a workaround
         if (activeNoteDrag != null)
@@ -138,12 +152,31 @@ public class Player : MonoBehaviour {
             activeNoteDrag.OnPath(Slider.transform);
         }
 
+        // If the player is currently holding a note
+        if (holdNoteEnabled)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit[] hitObjects = Physics.RaycastAll(ray, 1000f, layermask);
+            for (int i = 0; i < hitObjects.Length; i++)
+            {
+                if (hitObjects[i].collider.tag == "NotePath")
+                {
+                    Debug.Log("Currently HOLDING along path: " + hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID);
+                    if (activeNoteHold != null && hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID != activeNoteHold.notePathID)
+                    {
+                        activeNoteFlick.CalculateError();
+                        activeNoteFlick = null;
+                    }
+                }
+            }
+
+        }
+
         // If the player is currently flicking
         if (flickDragEnabled)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit[] hitObjects = Physics.RaycastAll(ray, 1000f, layermask);
-            Debug.Log("We have hit: " + hitObjects.Length);
             for (int i = 0; i < hitObjects.Length; i++)
             {
                 if (hitObjects[i].collider.tag == "NotePath")

@@ -10,9 +10,14 @@ using System.Collections;
 [RequireComponent(typeof(AudioSource))]
 public class Conductor : MonoBehaviour
 {
+
+    /**** For testing
+     * Dango Daikazoku - bpm: 100, offset: 2.390
+     * Celestial Stinger - bpm: 259, offset: 572
+   :*/
     // public static Conductor conductor;
-    public static readonly float bpm = 100f;
-    public static readonly float offset = 2.390f; // was 2.655, changed for Dango Daikazoku
+    public static readonly float bpm = 259f;
+    public static readonly float offset = .572f; // was 2.655, changed for Dango Daikazoku
     public static float songPosition = 0f;
     public static float nextBeatTime = 0f; // time of the next beat.
     private static AudioSource source; // Source of the audio clip
@@ -57,8 +62,8 @@ public class Conductor : MonoBehaviour
         {
             nextBeatTime += spb * 2;
             spawnOneNote = true;
-            NoteSpawner.SpawnNote();
-            //NoteSpawner.SpawnDrag();
+            //NoteSpawner.SpawnNote();
+            NoteSpawner.SpawnDrag();
         }
 
         // Debug.Log("Current Song Position: " + songPosition);

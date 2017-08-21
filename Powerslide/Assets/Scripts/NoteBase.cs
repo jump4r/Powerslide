@@ -6,7 +6,8 @@ public enum NoteType
     Regular = 0,
     Flick = 1,
     Drag = 2,
-    NULL = 3
+    Hold = 3,
+    NULL = 4
 }
 
 [RequireComponent(typeof(Rigidbody))]
@@ -82,18 +83,19 @@ public class NoteBase : MonoBehaviour {
          * TEST *
          * Play a hitsound when the note hits the perfect position, then destory it.
          ***************************/
-         /*
+        /* 
          if (Conductor.songPosition > EndTime)
         {
             GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().PlayHitSound();
             Debug.Log("Projected End Time: " + EndTime + ", Actual End Time: " + Conductor.songPosition);
             Destroy(this.gameObject);
-        }*/
+        } */
     }
 
     // Virtual Functions
     public virtual void ChangeMaterial() { }
     public virtual void Construct(int NotePathID) { } // Construct the note
+    public virtual void ParseDefinition(string def) { } // Parse the definition of the note
 
     // Difference between Player hit and perfect timing.
     public void CalculateError()
