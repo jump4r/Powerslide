@@ -63,6 +63,12 @@ public class NotePath : MonoBehaviour {
             return NoteType.Regular;
         }
 
+        if (ActiveNotes[0].type == NoteType.Hold)
+        {
+            //Debug.Log("Hit a hold note, do something!");
+            return NoteType.Hold;
+        }
+
         Debug.Log("Something went wrong"); 
         return NoteType.Regular; // Needed because I don't feel like checking for every case
     }

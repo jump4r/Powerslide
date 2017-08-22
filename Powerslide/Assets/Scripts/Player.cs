@@ -76,16 +76,17 @@ public class Player : MonoBehaviour {
                         activeNoteFlick = (NoteFlick)hitPath.ActiveNotes[0];
                     }
 
-                    if (hitNoteType == NoteType.Drag)
+                    else if (hitNoteType == NoteType.Drag)
                     {
                         sliderDragEnabled = true;
                         activeNoteDrag = (NoteDrag)hitPath.ActiveNotes[0];
                     }
 
-                    if (hitNoteType == NoteType.Hold)
+                    else if (hitNoteType == NoteType.Hold)
                     {
                         holdNoteEnabled = true;
                         activeNoteHold = (NoteHold)hitPath.ActiveNotes[0];
+                        activeNoteHold.CalculateHoldStartError();
                     }
 
                     // Play hitsound after hitting the Notepath
@@ -116,6 +117,12 @@ public class Player : MonoBehaviour {
             flickDragEnabled = false;
             holdNoteEnabled = false;
             
+            // This could also mean that we released a hold note.
+           if (holdNoteEnabled)
+            {
+                activeNoteHold.CalculateError();
+                activeNoteHold = null;
+            }
         }
 
         // If we are dragging an the slider
@@ -155,6 +162,7 @@ public class Player : MonoBehaviour {
         // If the player is currently holding a note
         if (holdNoteEnabled)
         {
+            Debug.Log("Currently Holding note along NotePath: " + activeNoteHold.notePathID);
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit[] hitObjects = Physics.RaycastAll(ray, 1000f, layermask);
             for (int i = 0; i < hitObjects.Length; i++)
@@ -164,8 +172,9 @@ public class Player : MonoBehaviour {
                     Debug.Log("Currently HOLDING along path: " + hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID);
                     if (activeNoteHold != null && hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID != activeNoteHold.notePathID)
                     {
-                        activeNoteFlick.CalculateError();
-                        activeNoteFlick = null;
+                        activeNoteHold.CalculateError();
+                        activeNoteHold.Active = false;
+                        activeNoteHold = null;
                     }
                 }
             }

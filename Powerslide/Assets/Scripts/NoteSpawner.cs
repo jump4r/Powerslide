@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using UnityEngine; 
 using System.Collections;
 
 public class NoteSpawner : MonoBehaviour {
@@ -19,6 +19,7 @@ public class NoteSpawner : MonoBehaviour {
     public static GameObject Note;
     public static GameObject Flick;
     public static GameObject Drag;
+    public static GameObject Hold;
     public GameObject BoardObject;
 
     public NotePath Path;
@@ -39,7 +40,8 @@ public class NoteSpawner : MonoBehaviour {
         Note = Resources.Load("Prefabs/Note") as GameObject;
         // if (Note != null) { /* Debug.Log("Succesful note loaded");  */ }
         Flick = Resources.Load("Prefabs/Flick") as GameObject;
-        Drag = Resources.Load("Prefabs/Drag") as GameObject;                                                            
+        Drag = Resources.Load("Prefabs/Drag") as GameObject;
+        Hold = Resources.Load("Prefabs/Hold") as GameObject;
 	}
 	
 	// Update is called once per frame
@@ -79,6 +81,11 @@ public class NoteSpawner : MonoBehaviour {
     public static void SpawnHold()
     {
         int randomStartNotePath = (int)Random.Range(0, 4);
+        string def = Conductor.songPosition.ToString() + "," + randomStartNotePath.ToString() + "," + 2.ToString();
+
+        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
+        GameObject tmp = Instantiate(Hold, spawnPosition, baseRotation);
+        tmp.GetComponent<NoteHold>().ParseDefinition(def);
     }
 
 }

@@ -16,8 +16,8 @@ public class Conductor : MonoBehaviour
      * Celestial Stinger - bpm: 259, offset: 572
    :*/
     // public static Conductor conductor;
-    public static readonly float bpm = 259f;
-    public static readonly float offset = .572f; // was 2.655, changed for Dango Daikazoku
+    public static readonly float bpm = 100f;
+    public static readonly float offset = 2.390f; // was 2.655, changed for Dango Daikazoku
     public static float songPosition = 0f;
     public static float nextBeatTime = 0f; // time of the next beat.
     private static AudioSource source; // Source of the audio clip
@@ -60,10 +60,11 @@ public class Conductor : MonoBehaviour
         // Update the next beat time.
         if (songPosition > nextBeatTime /*&& !spawnOneNote */)
         {
-            nextBeatTime += spb * 2;
+            nextBeatTime += spb * 4;
             spawnOneNote = true;
             //NoteSpawner.SpawnNote();
-            NoteSpawner.SpawnDrag();
+            //NoteSpawner.SpawnDrag();
+            NoteSpawner.SpawnHold();
         }
 
         // Debug.Log("Current Song Position: " + songPosition);

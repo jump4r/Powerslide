@@ -103,6 +103,7 @@ Assets/Scripts/Note.cs
 Assets/Scripts/NoteBase.cs
 Assets/Scripts/NoteDrag.cs
 Assets/Scripts/NoteFlick.cs
+Assets/Scripts/NoteHold.cs
 Assets/Scripts/NoteManager.cs
 Assets/Scripts/NotePath.cs
 Assets/Scripts/NoteSpawner.cs

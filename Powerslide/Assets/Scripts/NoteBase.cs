@@ -38,9 +38,9 @@ public class NoteBase : MonoBehaviour {
     public Vector3 endPosition;
     public static readonly float xRotation = 55f * Mathf.PI / 180f;
     [HideInInspector]
-    public float EndTime;
+    public float EndTime; // When the note hits the hitbar
     [HideInInspector]
-    public float StartTime;
+    public float StartTime; // When the note spawns
 
     // Path note is traveling down
     public int notePathID = 4;
@@ -122,7 +122,7 @@ public class NoteBase : MonoBehaviour {
         if (noteValue == 0 && type != NoteType.Drag)
         {
             NotePath.NotePaths[notePathID].AddActiveNote(this);
-            Debug.Log("Note in lane " + notePathID + " activated.");
+            //Debug.Log("Note in lane " + notePathID + " activated.");
         }
         //noteValue += 50;
         //Debug.Log("Activiate: " + noteValue);
@@ -136,7 +136,7 @@ public class NoteBase : MonoBehaviour {
         //noteValue -= 50;
 
         // MISSED NOTE IF 0, Deactivate Note
-        if (noteValue == 0 && type != NoteType.Drag)
+        if (noteValue == 0 && type != NoteType.Drag && type != NoteType.Hold)
         {
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
             Debug.Log("Note in lane " + notePathID + " deactivated.");

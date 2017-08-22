@@ -116,7 +116,8 @@ public class NoteDrag : NoteBase {
         float xRelPos = GetXRelPos();
         //Debug.Log("Slider X Position: " + sliderPosition.position.x + ", Relative xPos of Drag Note: " + xRelPos);
         
-        if (Mathf.Abs(xRelPos - sliderPosition.position.x) < 1.14f / 2f)
+        // I believe 1.14  = Width of one NotePath * 2
+        if (Mathf.Abs(xRelPos - sliderPosition.position.x) < 1.14f / 2f) // WHAT IS THIS FLOAT LMAO
         {
             lineRenderer.material = Score100;
         }
