@@ -16,8 +16,10 @@ public enum NoteType
 
 public class NoteBase : MonoBehaviour {
 
+    public string Name;
     public string definition;
     public bool active = true;
+    public bool isReadyToHit = false;
 
     // Use this for initialization
     public Material Score100;
@@ -94,7 +96,7 @@ public class NoteBase : MonoBehaviour {
 
     // Virtual Functions
     public virtual void ChangeMaterial() { }
-    public virtual void Construct(int NotePathID) { } // Construct the note
+    public virtual void Construct(int NotePathID, string NoteName) { } // Construct the note
     public virtual void ParseDefinition(string def) { } // Parse the definition of the note
 
     // Difference between Player hit and perfect timing.
@@ -115,17 +117,19 @@ public class NoteBase : MonoBehaviour {
     private void OnTriggerEnter(Collider col)
     {
         if (col.name != "Hitbar") return; // Wrong collision
-       
+        if (isReadyToHit) return; // We have already entered the collision, and do not want to add more notes to the ActiveNotes list.
 
 
         // Prepare to activiate a note for the first time
         if (noteValue == 0 && type != NoteType.Drag)
         {
             NotePath.NotePaths[notePathID].AddActiveNote(this);
-            //Debug.Log("Note in lane " + notePathID + " activated.");
+            Debug.Log("Note in lane " + notePathID + " activated.");
+            Debug.Log("Amount of active notes in NotePath " + notePathID + ": " + NotePath.NotePaths[notePathID].ActiveNotes.Count);
         }
         //noteValue += 50;
         //Debug.Log("Activiate: " + noteValue);
+        isReadyToHit = true;
     }
 
     private void OnTriggerExit(Collider col)

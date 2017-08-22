@@ -86,6 +86,8 @@ public class Player : MonoBehaviour {
                     {
                         holdNoteEnabled = true;
                         activeNoteHold = (NoteHold)hitPath.ActiveNotes[0];
+                        if (hitPath.ActiveNotes[0] == null) { Debug.Log("Problem detecting the currently active note in NotePath: " + hitPath.NotePathID); }
+                        Debug.Log("Current active note is: " + activeNoteHold.name);
                         activeNoteHold.CalculateHoldStartError();
                     }
 
@@ -169,7 +171,7 @@ public class Player : MonoBehaviour {
             {
                 if (hitObjects[i].collider.tag == "NotePath")
                 {
-                    Debug.Log("Currently HOLDING along path: " + hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID);
+                    //Debug.Log("Currently HOLDING along path: " + hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID);
                     if (activeNoteHold != null && hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID != activeNoteHold.notePathID)
                     {
                         activeNoteHold.CalculateError();

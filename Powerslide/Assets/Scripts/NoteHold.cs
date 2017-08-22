@@ -52,9 +52,11 @@ public class NoteHold : NoteBase {
     }
 
     // May be unneccisary 
-    public override void Construct(int NotePathID)
+    public override void Construct(int NotePathID, string NoteName)
     {
         this.notePathID = NotePathID;
+        gameObject.name = NoteName;
+
     }
 
     // Calculate the difference between the projected and actual hold STARTS (error when the player begins a hold note)

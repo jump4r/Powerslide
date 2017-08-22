@@ -24,6 +24,9 @@ public class NoteSpawner : MonoBehaviour {
 
     public NotePath Path;
 
+    private static string noteID;
+    private static int noteIndex = 0;
+
 	// Use this for initialization
 	void Start () {
         // TODO: Given a list of distance, a BPM, and Velocity Mulitplier, prepare to spawn notes.
@@ -52,12 +55,19 @@ public class NoteSpawner : MonoBehaviour {
     // Spawns a regular note
     public static void SpawnNote()
     {
-        // Randomness test
-        // Debug.Log("Spawning A Note: ");
-        int randomNotePathID = (int)Random.Range(0, 4);
-        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomNotePathID].transform.position.x, basePosition.y, basePosition.z);
+        // Change the name of the note for easier debugging.
+        noteID = "Note " + noteIndex.ToString();
+        noteIndex++;
+
+        // Spawn the note along a random NotePath
+        int randomStartNotePath = (int)Random.Range(0, 4);
+        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
         GameObject tmp = Instantiate(Note, spawnPosition, baseRotation) as GameObject;
-        tmp.GetComponent<NoteBase>().Construct(randomNotePathID); // ROFL APPARENTLY THIS WORKS. $$$$$$YENYENYENYENWONWONWONWON
+      
+        tmp.GetComponent<NoteBase>().Construct(randomStartNotePath, noteID); // ROFL APPARENTLY THIS WORKS. $$$$$$YENYENYENYENWONWONWONWON
+
+       
+
     }
 
     // Spawns a drag note.
@@ -80,12 +90,18 @@ public class NoteSpawner : MonoBehaviour {
     // Definition of a HOLDNOTE: [offset, startPath, length]
     public static void SpawnHold()
     {
+        // Change the name of the note for easier debugging.
+        noteID = "Note " + noteIndex.ToString();
+        noteIndex++;
+
         int randomStartNotePath = (int)Random.Range(0, 4);
         string def = Conductor.songPosition.ToString() + "," + randomStartNotePath.ToString() + "," + 2.ToString();
 
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
+      
         GameObject tmp = Instantiate(Hold, spawnPosition, baseRotation);
         tmp.GetComponent<NoteHold>().ParseDefinition(def);
+        tmp.GetComponent<NoteBase>().Construct(randomStartNotePath, noteID);
     }
 
 }
