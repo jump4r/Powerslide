@@ -97,6 +97,7 @@ public class NoteBase : MonoBehaviour {
     // Virtual Functions
     public virtual void ChangeMaterial() { }
     public virtual void Construct(int NotePathID, string NoteName) { } // Construct the note
+    public virtual void Construct(int NotePathID, string NoteName, string direction) { } // Construction for a flick note.
     public virtual void ParseDefinition(string def) { } // Parse the definition of the note
 
     // Difference between Player hit and perfect timing.
@@ -125,10 +126,8 @@ public class NoteBase : MonoBehaviour {
         {
             NotePath.NotePaths[notePathID].AddActiveNote(this);
             Debug.Log("Note in lane " + notePathID + " activated.");
-            Debug.Log("Amount of active notes in NotePath " + notePathID + ": " + NotePath.NotePaths[notePathID].ActiveNotes.Count);
+            // Debug.Log("Amount of active notes in NotePath " + notePathID + ": " + NotePath.NotePaths[notePathID].ActiveNotes.Count);
         }
-        //noteValue += 50;
-        //Debug.Log("Activiate: " + noteValue);
         isReadyToHit = true;
     }
 
@@ -136,15 +135,16 @@ public class NoteBase : MonoBehaviour {
     {
         if (col.name != "Hitbar") return; // Wrong collision
         if (this.gameObject.GetComponent<NoteDrag>() != null) return; // We are not removing the object for drag notes >:3
-
-        //noteValue -= 50;
+        if (!isReadyToHit) return; // The object has already be deactiviated
 
         // MISSED NOTE IF 0, Deactivate Note
         if (noteValue == 0 && type != NoteType.Drag && type != NoteType.Hold)
         {
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
             Debug.Log("Note in lane " + notePathID + " deactivated.");
+            isReadyToHit = false;
         }
         //Debug.Log("Deactivate:" + noteValue);
+
     }
 }

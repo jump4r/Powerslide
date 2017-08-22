@@ -62,17 +62,17 @@ public class NoteHold : NoteBase {
     // Calculate the difference between the projected and actual hold STARTS (error when the player begins a hold note)
     public void CalculateHoldStartError()
     {
-        float delta = /*Mathf.Abs*/(Conductor.songPosition - EndTime);
+        float delta = Mathf.Abs(Conductor.songPosition - EndTime);
         //Debug.Log("Expected Hold Note STARTTIME: " + EndTime + ", Actual STARTTIME: " + Conductor.songPosition);
-        Debug.Log("Delta: " + delta + ", threshold for 50 score, greater than: " + Conductor.spb / 2f);
-        if (delta < Conductor.spb / 2f)
+        Debug.Log("Delta: " + delta + ", threshold for 50 score, greater than: " + Conductor.spb / 4f);
+        if (delta < Conductor.spb / 4f)
         {
-            noteValue = 50;
+            noteValue = 100;
         }
 
         else
         {
-            noteValue = 100;
+            noteValue = 50;
         }
         ChangeMaterial();
     }
@@ -82,7 +82,7 @@ public class NoteHold : NoteBase {
         float holdNoteEndTime = EndTime + Conductor.spb * length;
         float delta = Mathf.Abs(Conductor.songPosition - holdNoteEndTime);
         Debug.Log("Expected Hold Note Endtime: " + holdNoteEndTime + ", Actual Endtime: " + Conductor.songPosition);
-        if (delta < Conductor.spb / 2f)
+        if (delta < Conductor.spb / 4f)
         {
             noteValue = 100;
         }

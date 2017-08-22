@@ -41,7 +41,6 @@ public class NoteSpawner : MonoBehaviour {
 
         // Set the notes
         Note = Resources.Load("Prefabs/Note") as GameObject;
-        // if (Note != null) { /* Debug.Log("Succesful note loaded");  */ }
         Flick = Resources.Load("Prefabs/Flick") as GameObject;
         Drag = Resources.Load("Prefabs/Drag") as GameObject;
         Hold = Resources.Load("Prefabs/Hold") as GameObject;
@@ -65,8 +64,6 @@ public class NoteSpawner : MonoBehaviour {
         GameObject tmp = Instantiate(Note, spawnPosition, baseRotation) as GameObject;
       
         tmp.GetComponent<NoteBase>().Construct(randomStartNotePath, noteID); // ROFL APPARENTLY THIS WORKS. $$$$$$YENYENYENYENWONWONWONWON
-
-       
 
     }
 
@@ -102,6 +99,26 @@ public class NoteSpawner : MonoBehaviour {
         GameObject tmp = Instantiate(Hold, spawnPosition, baseRotation);
         tmp.GetComponent<NoteHold>().ParseDefinition(def);
         tmp.GetComponent<NoteBase>().Construct(randomStartNotePath, noteID);
+    }
+
+    // Spawns a flick note
+    // Definition of a FLICKNOTE: [offset,startPath,endPath,flickDirection]
+    public static void SpawnFlick()
+    {
+        // Change the name of the note for easier debugging.
+        noteID = "Note " + noteIndex.ToString();
+        noteIndex++;
+
+        // just testing, not random
+        int randomStartNotePath = 2;
+        int randomEndNotePath = 1;
+        string def = Conductor.songPosition.ToString() + "," + randomStartNotePath + "," + randomEndNotePath + "," + "l"; // startin with a left flick
+        Debug.Log(def);
+
+        Vector3 spawnPosition = new Vector3((NotePath.NotePaths[randomStartNotePath].transform.position.x + NotePath.NotePaths[randomEndNotePath].transform.position.x) / 2, basePosition.y, basePosition.z);
+        GameObject tmp = Instantiate(Flick, spawnPosition, baseRotation);
+        tmp.GetComponent<NoteFlick>().ParseDefinition(def);
+        tmp.GetComponent<NoteFlick>().Construct(randomStartNotePath, noteID, "l");
     }
 
 }

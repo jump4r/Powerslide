@@ -164,7 +164,7 @@ public class Player : MonoBehaviour {
         // If the player is currently holding a note
         if (holdNoteEnabled)
         {
-            Debug.Log("Currently Holding note along NotePath: " + activeNoteHold.notePathID);
+            //Debug.Log("Currently Holding note along NotePath: " + activeNoteHold.notePathID);
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit[] hitObjects = Physics.RaycastAll(ray, 1000f, layermask);
             for (int i = 0; i < hitObjects.Length; i++)
@@ -172,6 +172,7 @@ public class Player : MonoBehaviour {
                 if (hitObjects[i].collider.tag == "NotePath")
                 {
                     //Debug.Log("Currently HOLDING along path: " + hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID);
+                    // In the case where the player's finger slides off of the NotePath, we need to check to see if the HoldNote is finished.
                     if (activeNoteHold != null && hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID != activeNoteHold.notePathID)
                     {
                         activeNoteHold.CalculateError();
