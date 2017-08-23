@@ -13,8 +13,8 @@ public class NoteFlick : NoteBase {
     private Material leftFlick;
     private Material rightFlick;
 
-    private int startPath;
-    private int endPath;
+    public int startPath;
+    // public int endPath; // Already declared in NoteBase, even though it should probably be declared here.
 
 	// Use this for initialization
 	void OnEnable () {

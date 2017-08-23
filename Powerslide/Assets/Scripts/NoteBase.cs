@@ -46,7 +46,7 @@ public class NoteBase : MonoBehaviour {
 
     // Path note is traveling down
     public int notePathID = 4;
-    public int pathEnd; // Used in flick notes, although this should really not be here
+    public int endPath; // Used in flick notes, although this should really not be here
     public NoteType type;
     public int noteValue = 0;
 
@@ -122,7 +122,7 @@ public class NoteBase : MonoBehaviour {
 
 
         // Prepare to activiate a note for the first time
-        if (noteValue == 0 && type != NoteType.Drag)
+        if (/* noteValue == 0 && */ type != NoteType.Drag)
         {
             NotePath.NotePaths[notePathID].AddActiveNote(this);
             Debug.Log("Note in lane " + notePathID + " activated.");
@@ -138,13 +138,13 @@ public class NoteBase : MonoBehaviour {
         if (!isReadyToHit) return; // The object has already be deactiviated
 
         // MISSED NOTE IF 0, Deactivate Note
-        if (noteValue == 0 && type != NoteType.Drag && type != NoteType.Hold)
+        if (/* noteValue == 0 && */ type != NoteType.Drag && type != NoteType.Hold)
         {
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
             Debug.Log("Note in lane " + notePathID + " deactivated.");
             isReadyToHit = false;
         }
-        //Debug.Log("Deactivate:" + noteValue);
+        Debug.Log("Deactivate: " + name);
 
     }
 }

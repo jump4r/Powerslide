@@ -72,7 +72,7 @@ public class Player : MonoBehaviour {
                     {
                         flickDragEnabled = true;
                         Debug.Log("Time to drag!");
-                        endFlickPath = NotePath.NotePaths[hitPath.ActiveNotes[0].pathEnd];
+                        endFlickPath = NotePath.NotePaths[hitPath.ActiveNotes[0].endPath];
                         activeNoteFlick = (NoteFlick)hitPath.ActiveNotes[0];
                     }
 
@@ -193,9 +193,10 @@ public class Player : MonoBehaviour {
             {
                 if (hitObjects[i].collider.tag == "NotePath")
                 {
-                    Debug.Log("Currently dragging along path: " + hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID);
+                    Debug.Log("Currently flicking along path: " + hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID);
                     if (hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID == endFlickPath.NotePathID && activeNoteFlick != null)
                     {
+                        Debug.Log("Flick has been finished);");
                         activeNoteFlick.CalculateError();
                         activeNoteFlick = null;
                     }

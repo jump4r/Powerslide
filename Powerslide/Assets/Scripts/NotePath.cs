@@ -26,10 +26,12 @@ public class NotePath : MonoBehaviour {
 
     public void AddActiveNote(NoteBase n)
     {
+        Debug.Log("Adding " + n.name + " from the ActiveNotes list");
         ActiveNotes.Add(n);
     }
 
-    public void RemoveActiveNote(NoteBase n) { 
+    public void RemoveActiveNote(NoteBase n) {
+        Debug.Log("Removing " + n.name + " from the ActiveNotes list");
         ActiveNotes.Remove(n);
     }
 

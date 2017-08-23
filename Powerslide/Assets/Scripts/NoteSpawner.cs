@@ -113,7 +113,6 @@ public class NoteSpawner : MonoBehaviour {
         int randomStartNotePath = 2;
         int randomEndNotePath = 1;
         string def = Conductor.songPosition.ToString() + "," + randomStartNotePath + "," + randomEndNotePath + "," + "l"; // startin with a left flick
-        Debug.Log(def);
 
         Vector3 spawnPosition = new Vector3((NotePath.NotePaths[randomStartNotePath].transform.position.x + NotePath.NotePaths[randomEndNotePath].transform.position.x) / 2, basePosition.y, basePosition.z);
         GameObject tmp = Instantiate(Flick, spawnPosition, baseRotation);
