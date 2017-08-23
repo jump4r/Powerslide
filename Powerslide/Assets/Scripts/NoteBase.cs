@@ -143,6 +143,8 @@ public class NoteBase : MonoBehaviour {
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
             Debug.Log("Note in lane " + notePathID + " deactivated.");
             isReadyToHit = false;
+            // Just destory it I guess
+            Destroy(this.gameObject);
         }
         Debug.Log("Deactivate: " + name);
 

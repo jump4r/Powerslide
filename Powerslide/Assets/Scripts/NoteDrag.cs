@@ -63,10 +63,6 @@ public class NoteDrag : NoteBase {
         // Debug.Log("Drag Note Position: " + transform.position);
         beginningPoint = this.transform.position; // We might need a StartPosition here. OR MAYBE THIS IS REDUNDANT
         endingPoint = new Vector3(NotePath.NotePaths[endPath].transform.position.x, beginningPoint.y + (length * playerSpeedMult * Mathf.Sin(xRotation)), beginningPoint.z + (length * playerSpeedMult * Mathf.Cos(xRotation)));
-        // Debug.Log("Beginning Point: " + beginningPoint);
-        // Debug.Log("Ending Point: " + endingPoint);
-        // Debug.Log("Distance between the two points: " + Vector3.Distance(beginningPoint, endingPoint));
-        Debug.Log("Length: " + length);
     }
 
     private void Update()
@@ -85,9 +81,6 @@ public class NoteDrag : NoteBase {
             Active = true;
             NotePath.NotePaths[notePathID].AddActiveNote(this);
             GameObject.Find("Player").GetComponent<Player>().SetActiveDragNote(this);
-            // AudioSource.PlayClipAtPoint(beatTest, transform.position); // At the current moment, I'm not sure what this is doing, so I'm commenting it out
-            
-            // Debug.Log("We have activated a Drag Note in lane: " + notePathID);
         }
 
         // Potentially Activate real note
@@ -111,7 +104,7 @@ public class NoteDrag : NoteBase {
         return xRelPos;
     }
 
-    public void OnPath(Transform sliderPosition)
+    public void CheckIfOnPath(Transform sliderPosition)
     {
         float xRelPos = GetXRelPos();
         //Debug.Log("Slider X Position: " + sliderPosition.position.x + ", Relative xPos of Drag Note: " + xRelPos);

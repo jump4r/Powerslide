@@ -65,7 +65,7 @@ public class Conductor : MonoBehaviour
             // NoteSpawner.SpawnNote();
             // NoteSpawner.SpawnDrag();
             // NoteSpawner.SpawnHold();
-            NoteSpawner.SpawnFlick();
+             NoteSpawner.SpawnFlick();
         }
 
         // Debug.Log("Current Song Position: " + songPosition);
