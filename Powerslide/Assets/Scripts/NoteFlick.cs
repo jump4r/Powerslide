@@ -16,6 +16,8 @@ public class NoteFlick : NoteBase {
     public int startPath;
     // public int endPath; // Already declared in NoteBase, even though it should probably be declared here.
 
+    private NoteBase nextNote; 
+
 	// Use this for initialization
 	void OnEnable () {
         // TODO: Not really sure yet, but make this work with object pooling
@@ -43,8 +45,6 @@ public class NoteFlick : NoteBase {
         SetFlickMaterial(); // last var not neded
     }
 
-
-
     // Sets the material on the Flick Note.
     public void SetFlickMaterial()
     {
@@ -60,17 +60,9 @@ public class NoteFlick : NoteBase {
     }
 
     // Changes the material of the note depending on the 
-    public override void ChangeMaterial()
+    public override void ChangeMaterial(Material mat)
     {
-        if (noteValue > 50)
-        {
-            gameObject.GetComponent<Renderer>().material = Score100;
-        }
-
-        else if (noteValue > 0)
-        {
-            gameObject.GetComponent<Renderer>().material = Score50;
-        }
+        gameObject.GetComponent<Renderer>().material = mat;
     }
 
 

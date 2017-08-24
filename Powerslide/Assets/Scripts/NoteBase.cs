@@ -94,7 +94,7 @@ public class NoteBase : MonoBehaviour {
     }
 
     // Virtual Functions
-    public virtual void ChangeMaterial() { }
+    public virtual void ChangeMaterial(Material mat) { /* GetComponent<MeshRenderer>().material = mat; */ }
     public virtual void Construct(int NotePathID, string NoteName) { } // Construct the note
     public virtual void Construct(int NotePathID, string NoteName, string direction) { } // Construction for a flick note.
     public virtual void ParseDefinition(string def) { } // Parse the definition of the note
@@ -104,13 +104,11 @@ public class NoteBase : MonoBehaviour {
     {
         float delta = Mathf.Abs(Conductor.songPosition - EndTime); // Error calculation
         Debug.Log("Error Calculation results in: " + delta);
-        if (delta < Conductor.spb / 2f)
-            noteValue = 100;
+        if (delta < Conductor.spb / 4f)
+            ChangeMaterial(Score100);
 
         else
-            noteValue = 50;
-
-        ChangeMaterial();
+            ChangeMaterial(Score50);
     }
 
     // Trigger events for notes, add them to the collective note pile
@@ -124,8 +122,6 @@ public class NoteBase : MonoBehaviour {
         if (/* noteValue == 0 && */ type != NoteType.Drag)
         {
             NotePath.NotePaths[notePathID].AddActiveNote(this);
-            Debug.Log("Note in lane " + notePathID + " activated.");
-            // Debug.Log("Amount of active notes in NotePath " + notePathID + ": " + NotePath.NotePaths[notePathID].ActiveNotes.Count);
         }
         isReadyToHit = true;
     }
@@ -137,15 +133,13 @@ public class NoteBase : MonoBehaviour {
         if (!isReadyToHit) return; // The object has already be deactiviated
 
         // MISSED NOTE IF 0, Deactivate Note
-        if (/* noteValue == 0 && */ type != NoteType.Drag && type != NoteType.Hold && type != NoteType.Transition)
+        // We dont' want to destroy notes that have a "length" field.
+        if (type != NoteType.Drag && type != NoteType.Hold)
         {
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
-            Debug.Log("Note in lane " + notePathID + " deactivated.");
             isReadyToHit = false;
             // Just destory it I guess
             Destroy(this.gameObject);
         }
-        Debug.Log("Deactivate: " + name);
-
     }
 }

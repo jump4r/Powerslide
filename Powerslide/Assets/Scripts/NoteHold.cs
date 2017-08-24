@@ -21,15 +21,19 @@ public class NoteHold : NoteBase {
     // Line Renderer
     private LineRenderer lineRenderer;
 
-	// Use this for initialization
-	void OnEnable () {
+    // Is this particular hold note a transition?
+    private bool isTransitionNote;
+    private NoteBase nextNote;
+
+    // Use this for initialization
+    void OnEnable() {
         type = NoteType.Hold;
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = 2; // We will only need two vertices for this, the begining and the end.
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    // Update is called once per frame
+    void Update() {
 
         CheckToRemoveFromActiveNotesList();
         float rTP = (Conductor.songPosition - StartTime) / (8f * Conductor.spb);
@@ -37,7 +41,7 @@ public class NoteHold : NoteBase {
 
         // Set the vertex positions of the Hold Line.
         CalculatePositions(); // Recalculate the positions of the points
-       
+
         lineRenderer.SetPosition(0, holdStartPoint);
         lineRenderer.SetPosition(1, holdEndPoint);
 
@@ -49,6 +53,7 @@ public class NoteHold : NoteBase {
 
         notePathID = int.Parse(splitString[1]);
         length = int.Parse(splitString[2]);
+        isTransitionNote = bool.Parse(splitString[3]);
     }
 
     // May be unneccisary 
@@ -57,54 +62,55 @@ public class NoteHold : NoteBase {
         this.notePathID = NotePathID;
         gameObject.name = NoteName;
 
+        // If this note should be constructed as a Transition note, remove the mesh renderer
+        GetComponent<MeshRenderer>().enabled = false;
     }
 
+
     // Calculate the difference between the projected and actual hold STARTS (error when the player begins a hold note)
+    // This will only be done on a proper hold note and note a transitional note.
     public void CalculateHoldStartError()
     {
+        // Transition notes don't have a HoldStart
+        if (type == NoteType.Transition) return;
+
         float delta = Mathf.Abs(Conductor.songPosition - EndTime);
         //Debug.Log("Expected Hold Note STARTTIME: " + EndTime + ", Actual STARTTIME: " + Conductor.songPosition);
         Debug.Log("Delta: " + delta + ", threshold for 50 score, greater than: " + Conductor.spb / 4f);
         if (delta < Conductor.spb / 4f)
         {
-            noteValue = 100;
+            ChangeMaterial(Score100);
         }
 
         else
         {
-            noteValue = 50;
+            ChangeMaterial(Score50);
         }
-        ChangeMaterial();
     }
 
-    public new void CalculateError()
+    public void CalculateHoldEndError()
     {
         float holdNoteEndTime = EndTime + Conductor.spb * length;
         float delta = Mathf.Abs(Conductor.songPosition - holdNoteEndTime);
         Debug.Log("Expected Hold Note Endtime: " + holdNoteEndTime + ", Actual Endtime: " + Conductor.songPosition);
         if (delta < Conductor.spb / 4f)
         {
-            noteValue = 100;
+            Debug.Log("Relatively perfect");
         }
-        
         else
         {
-            noteValue = 50;
+            ChangeMaterial(Score50);
         }
-        ChangeMaterial();
     }
 
-    public override void ChangeMaterial()
+    public void IsBeingHeld()
     {
-        if (noteValue == 100)
-        {
-            lineRenderer.material = Score100;
-        }
+        ChangeMaterial(Score100);
+    }
 
-        else if (noteValue == 50)
-        {
-            lineRenderer.material = Score50;
-        }
+    public override void ChangeMaterial(Material mat)
+    {
+        lineRenderer.material = mat;
     }
 
     private void CalculatePositions()
@@ -117,7 +123,6 @@ public class NoteHold : NoteBase {
     {
         if (Conductor.songPosition >= EndTime + (Conductor.spb * length))
         {
-            Debug.Log("Note in Note Path " + notePathID + " is finished");
             NotePath.NotePaths[this.notePathID].RemoveActiveNote(this);
             Destroy(this.gameObject);
         }

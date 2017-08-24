@@ -16,7 +16,7 @@ public class Note : NoteBase {
 	}
 
     
-    public override void ChangeMaterial()
+    public override void ChangeMaterial(Material mat)
     {
         if (noteValue > 50)
         {

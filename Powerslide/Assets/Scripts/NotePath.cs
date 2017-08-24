@@ -37,6 +37,7 @@ public class NotePath : MonoBehaviour {
 
     // See if there is an active note that we cna hit
     // Returns based on the need for a drag, or just the need for a hit
+    // TODO: In the case of a Hold -> Flick, the flick note will activate, before the hold note deactivates.  This will also be true in high BPM triples, so I must account for this.
     public NoteType CheckIfValidHit()
     {
         if (ActiveNotes.Count <= 0) // No active notes

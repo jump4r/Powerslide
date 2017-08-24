@@ -62,11 +62,10 @@ public class Conductor : MonoBehaviour
         {
             nextBeatTime += spb * 4;
             spawnOneNote = true;
-            NoteSpawner.SpawnNote();
+            //NoteSpawner.SpawnNote();
             // NoteSpawner.SpawnDrag();
-            // NoteSpawner.SpawnHold();
-            // NoteSpawner.SpawnFlick();
-            // NoteSpawner.SpawnTransition();
+            NoteSpawner.SpawnHold();
+            NoteSpawner.SpawnFlick();
         }
 
         // Debug.Log("Current Song Position: " + songPosition);

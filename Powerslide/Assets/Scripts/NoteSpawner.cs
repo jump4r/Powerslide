@@ -86,37 +86,22 @@ public class NoteSpawner : MonoBehaviour {
     }
 
     // Spawnds a hold note
-    // Definition of a HOLDNOTE: [offset, startPath, length]
+    // Definition of a HOLDNOTE: [offset, startPath, length, isTransition]]
+    // isTransition - bool to decide weather the note is a transition note or not.
     public static void SpawnHold()
     {
         // Change the name of the note for easier debugging.
         noteID = "Note " + noteIndex.ToString();
         noteIndex++;
 
-        int randomStartNotePath = (int)Random.Range(0, 4);
-        string def = Conductor.songPosition.ToString() + "," + randomStartNotePath.ToString() + "," + 2.ToString();
+        int randomStartNotePath = 1; //(int)Random.Range(0, 4);
+        string def = Conductor.songPosition.ToString() + "," + randomStartNotePath.ToString() + "," + 2.ToString() + "," + "false";
 
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
       
         GameObject tmp = Instantiate(Hold, spawnPosition, baseRotation);
         tmp.GetComponent<NoteHold>().ParseDefinition(def);
         tmp.GetComponent<NoteBase>().Construct(randomStartNotePath, noteID);
-    }
-
-    public static void SpawnTransition()
-    {
-        // Change the name of the note for easier debugging.
-        noteID = "Note " + noteIndex.ToString();
-        noteIndex++;
-
-        int randomStartNotePath = (int)Random.Range(0, 4);
-        string def = Conductor.songPosition.ToString() + "," + randomStartNotePath.ToString() + "," + 2.ToString();
-
-        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
-
-        GameObject tmp = Instantiate(Transition, spawnPosition, baseRotation);
-        tmp.GetComponent<NoteHoldTransition>().ParseDefinition(def);
-        tmp.GetComponent<NoteHoldTransition>().Construct(randomStartNotePath, noteID);
     }
 
     // Spawns a flick note
