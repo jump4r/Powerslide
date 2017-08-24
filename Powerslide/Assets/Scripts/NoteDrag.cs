@@ -80,7 +80,7 @@ public class NoteDrag : NoteBase {
         {
             Active = true;
             NotePath.NotePaths[notePathID].AddActiveNote(this);
-            GameObject.Find("Player").GetComponent<Player>().SetActiveDragNote(this);
+            GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().SetActiveDragNote(this);
         }
 
         // Potentially Activate real note
@@ -88,7 +88,7 @@ public class NoteDrag : NoteBase {
         {
             Active = false;
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
-            GameObject.Find("Player").GetComponent<Player>().SetActiveDragNote(this);
+            // GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().SetActiveDragNote(this);
             // Debug.Log("We have deactivated a Drag Note in lane: " + notePathID);
         }
     }

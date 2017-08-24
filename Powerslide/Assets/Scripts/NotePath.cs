@@ -44,35 +44,19 @@ public class NotePath : MonoBehaviour {
             return NoteType.NULL;
         }
 
-        if (ActiveNotes[0].type == NoteType.Drag)
-        {
-            Debug.Log("Hit A Drag Note! Do Something");
-            return NoteType.Drag;
-        }
-
-        if (ActiveNotes[0].type == NoteType.Flick)
-        {
-            Debug.Log("Hit a Flick note! Do something!");
-            return NoteType.Flick; // TODO: Add NoteFlick functionality
-        }
-
-        if (ActiveNotes[0].type == NoteType.Regular)
+        else if (ActiveNotes[0].type == NoteType.Regular)
         {
             // A note has been touched;
-            Debug.Log("Hit a regular note, no need to do anything really");
+            Debug.Log("Hit a regular note, we do everything we need to here.");
             ActiveNotes[0].CalculateError();
             ActiveNotes.Remove(ActiveNotes[0]);
             return NoteType.Regular;
         }
 
-        if (ActiveNotes[0].type == NoteType.Hold)
+        else
         {
-            //Debug.Log("Hit a hold note, do something!");
-            return NoteType.Hold;
+            return ActiveNotes[0].type; // This is so much simpler
         }
-
-        Debug.Log("Something went wrong"); 
-        return NoteType.Regular; // Needed because I don't feel like checking for every case
     }
 
 

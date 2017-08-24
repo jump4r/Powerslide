@@ -29,6 +29,10 @@ public class Player : MonoBehaviour {
     private bool holdNoteEnabled = false;
     private NoteHold activeNoteHold;
 
+    // Transition Note
+    private bool transitionNoteEnabled = false;
+    private NoteHoldTransition activeNoteTransition;
+
     // I don't really know what these are for tbh
     private Vector3 offset = Vector3.zero;
     private float distanceFromRayOrigin = 0;
@@ -87,6 +91,13 @@ public class Player : MonoBehaviour {
                         activeNoteHold.CalculateHoldStartError();
                     }
 
+                    else if (hitNoteType == NoteType.Transition)
+                    {
+                        holdNoteEnabled = true;
+                        activeNoteTransition = (NoteHoldTransition)hitPath.ActiveNotes[0];
+                        activeNoteTransition.CalculateHoldStartError();
+                    }
+
                     // Play hitsound after hitting the Notepath
                     PlayHitSound();
                     break;
@@ -134,13 +145,13 @@ public class Player : MonoBehaviour {
         if (activeNoteDrag != null)
         {
             activeNoteDrag.CheckIfOnPath(Slider.transform);
-            Debug.Log("Are we using this either?");
         }
 
         // IF Currently is either encountering a HOLD note or a FLICK note, we need to account for where the finger is at the current time
         // For a hold note: We need to check to see if the finger is still on the right path
+        // Same for a transition note, however we may change this to check constantly.
         // For a flick note: We need to check to see if the flick is finshed.
-        if (holdNoteEnabled || flickNoteEnabled)
+        if (holdNoteEnabled || flickNoteEnabled || transitionNoteEnabled)
         {
             RaycastHit[] hitObjects = GetHitObjects();
             for (int i = 0; i < hitObjects.Length; i++)
@@ -154,6 +165,14 @@ public class Player : MonoBehaviour {
                         activeNoteHold.CalculateError();
                         activeNoteHold.Active = false;
                         activeNoteHold = null;
+                    }
+
+                    // In the case where the player's finger slides off of the NotePath, we need to check to see if the HoldNote is finished.
+                    if (activeNoteTransition != null && hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID != activeNoteTransition.notePathID)
+                    {
+                        activeNoteTransition.CalculateError();
+                        activeNoteTransition.Active = false;
+                        activeNoteTransition = null;
                     }
 
                     // In the case when the flick note is finished.

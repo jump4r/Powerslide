@@ -20,6 +20,7 @@ public class NoteSpawner : MonoBehaviour {
     public static GameObject Flick;
     public static GameObject Drag;
     public static GameObject Hold;
+    public static GameObject Transition;
     public GameObject BoardObject;
 
     public NotePath Path;
@@ -44,6 +45,7 @@ public class NoteSpawner : MonoBehaviour {
         Flick = Resources.Load("Prefabs/Flick") as GameObject;
         Drag = Resources.Load("Prefabs/Drag") as GameObject;
         Hold = Resources.Load("Prefabs/Hold") as GameObject;
+        Transition = Resources.Load("Prefabs/Transition") as GameObject;
 	}
 	
 	// Update is called once per frame
@@ -99,6 +101,22 @@ public class NoteSpawner : MonoBehaviour {
         GameObject tmp = Instantiate(Hold, spawnPosition, baseRotation);
         tmp.GetComponent<NoteHold>().ParseDefinition(def);
         tmp.GetComponent<NoteBase>().Construct(randomStartNotePath, noteID);
+    }
+
+    public static void SpawnTransition()
+    {
+        // Change the name of the note for easier debugging.
+        noteID = "Note " + noteIndex.ToString();
+        noteIndex++;
+
+        int randomStartNotePath = (int)Random.Range(0, 4);
+        string def = Conductor.songPosition.ToString() + "," + randomStartNotePath.ToString() + "," + 2.ToString();
+
+        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
+
+        GameObject tmp = Instantiate(Transition, spawnPosition, baseRotation);
+        tmp.GetComponent<NoteHoldTransition>().ParseDefinition(def);
+        tmp.GetComponent<NoteHoldTransition>().Construct(randomStartNotePath, noteID);
     }
 
     // Spawns a flick note

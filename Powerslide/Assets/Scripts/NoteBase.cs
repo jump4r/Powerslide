@@ -7,13 +7,12 @@ public enum NoteType
     Flick = 1,
     Drag = 2,
     Hold = 3,
-    NULL = 4
+    Transition = 4,
+    NULL = 5
 }
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(BoxCollider))]
-
-
 public class NoteBase : MonoBehaviour {
 
     public string Name;
@@ -138,7 +137,7 @@ public class NoteBase : MonoBehaviour {
         if (!isReadyToHit) return; // The object has already be deactiviated
 
         // MISSED NOTE IF 0, Deactivate Note
-        if (/* noteValue == 0 && */ type != NoteType.Drag && type != NoteType.Hold)
+        if (/* noteValue == 0 && */ type != NoteType.Drag && type != NoteType.Hold && type != NoteType.Transition)
         {
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
             Debug.Log("Note in lane " + notePathID + " deactivated.");
