@@ -63,7 +63,8 @@ public class NoteHold : NoteBase {
         gameObject.name = NoteName;
 
         // If this note should be constructed as a Transition note, remove the mesh renderer
-        GetComponent<MeshRenderer>().enabled = false;
+        if (isTransitionNote)
+            GetComponent<MeshRenderer>().enabled = false;
     }
 
 
@@ -76,8 +77,8 @@ public class NoteHold : NoteBase {
 
         float delta = Mathf.Abs(Conductor.songPosition - EndTime);
         //Debug.Log("Expected Hold Note STARTTIME: " + EndTime + ", Actual STARTTIME: " + Conductor.songPosition);
-        Debug.Log("Delta: " + delta + ", threshold for 50 score, greater than: " + Conductor.spb / 4f);
-        if (delta < Conductor.spb / 4f)
+        Debug.Log("Delta: " + delta + ", threshold for 50 score, greater than: " + Conductor.spb / 8f);
+        if (delta < Conductor.spb / 8f)
         {
             ChangeMaterial(Score100);
         }
@@ -123,7 +124,14 @@ public class NoteHold : NoteBase {
     {
         if (Conductor.songPosition >= EndTime + (Conductor.spb * length))
         {
+            // Update the objects in the 
             NotePath.NotePaths[this.notePathID].RemoveActiveNote(this);
+
+            //////////////////////////////////////////////////////////////////////
+            // Find a better way to fix the problem than this... we should not have to access the Player like this.
+            GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().SetHoldNoteEnabled(false);
+            //////////////////////////////////////////////////////////////////////
+
             Destroy(this.gameObject);
         }
     }

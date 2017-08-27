@@ -134,7 +134,7 @@ public class NoteBase : MonoBehaviour {
 
         // MISSED NOTE IF 0, Deactivate Note
         // We dont' want to destroy notes that have a "length" field.
-        if (type != NoteType.Drag && type != NoteType.Hold)
+        if (type != NoteType.Drag && type != NoteType.Hold && type != NoteType.Transition)
         {
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
             isReadyToHit = false;

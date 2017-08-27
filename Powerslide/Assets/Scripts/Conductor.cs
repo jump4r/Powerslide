@@ -23,6 +23,9 @@ public class Conductor : MonoBehaviour
     private static AudioSource source; // Source of the audio clip
     public static float spb;
 
+    // Testing purposes
+    private bool flip = true;
+
     public float gain = 0.5F;
     public int signatureHi = 4;
     public int signatureLo = 4;
@@ -60,12 +63,26 @@ public class Conductor : MonoBehaviour
         // Update the next beat time.
         if (songPosition > nextBeatTime /*&& !spawnOneNote */)
         {
-            nextBeatTime += spb * 4;
+            nextBeatTime += spb * 2;
             spawnOneNote = true;
-            //NoteSpawner.SpawnNote();
+            NoteSpawner.SpawnNote();
             // NoteSpawner.SpawnDrag();
-            NoteSpawner.SpawnHold();
-            NoteSpawner.SpawnFlick();
+            // NoteSpawner.SpawnHold(1, "true", 2);
+            // NoteSpawner.SpawnFlick(2, 1, "l");
+            /*
+            if (!flip)
+            {
+                NoteSpawner.SpawnHold(1, "true", 2);
+                NoteSpawner.SpawnFlick(2, 1, "l");
+                flip = !flip;
+            }
+
+            else
+            {
+                NoteSpawner.SpawnHold(2, "true", 2);
+                NoteSpawner.SpawnFlick(1, 2, "r");
+                flip = !flip;
+            }*/
         }
 
         // Debug.Log("Current Song Position: " + songPosition);

@@ -18,17 +18,7 @@ public class Note : NoteBase {
     
     public override void ChangeMaterial(Material mat)
     {
-        if (noteValue > 50)
-        {
-            Debug.Log("Changing Material to: GREEN");
-            gameObject.GetComponent<Renderer>().material = Score100;
-        }
-
-       else if (noteValue > 0)
-        {
-            Debug.Log("Changing Material to: RED");
-            gameObject.GetComponent<Renderer>().material = Score50;
-        }
+        gameObject.GetComponent<Renderer>().material = mat;
     }
 
     public override void ParseDefinition(string def)

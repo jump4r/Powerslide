@@ -54,6 +54,7 @@ public class NoteSpawner : MonoBehaviour {
 	}
 
     // Spawns a regular note
+    // Definition of a NOTE: [offset, noteType, startPath]
     public static void SpawnNote()
     {
         // Change the name of the note for easier debugging.
@@ -70,7 +71,7 @@ public class NoteSpawner : MonoBehaviour {
     }
 
     // Spawns a drag note.
-    // Definition of a DRAGNOTE: [offset,numSections,startPath,endPath,length]
+    // Definition of a DRAGNOTE: [offset, noteType, numSections, startPath,endPath,length]
     // Player Notes: Keep randomness note generation, but add more variables to make generation more predicatable for practice.
     public static void SpawnDrag()
     {
@@ -88,14 +89,14 @@ public class NoteSpawner : MonoBehaviour {
     // Spawnds a hold note
     // Definition of a HOLDNOTE: [offset, startPath, length, isTransition]]
     // isTransition - bool to decide weather the note is a transition note or not.
-    public static void SpawnHold()
+    public static void SpawnHold(int notePath, string isTransition, int length)
     {
         // Change the name of the note for easier debugging.
         noteID = "Note " + noteIndex.ToString();
         noteIndex++;
 
-        int randomStartNotePath = 1; //(int)Random.Range(0, 4);
-        string def = Conductor.songPosition.ToString() + "," + randomStartNotePath.ToString() + "," + 2.ToString() + "," + "false";
+        int randomStartNotePath = notePath; //(int)Random.Range(0, 4);
+        string def = Conductor.songPosition.ToString() + "," + randomStartNotePath.ToString() + "," + length + "," + isTransition;
 
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
       
@@ -106,21 +107,18 @@ public class NoteSpawner : MonoBehaviour {
 
     // Spawns a flick note
     // Definition of a FLICKNOTE: [offset,startPath,endPath,flickDirection]
-    public static void SpawnFlick()
+    public static void SpawnFlick(int startPath, int endPath, string direction)
     {
         // Change the name of the note for easier debugging.
         noteID = "Note " + noteIndex.ToString();
         noteIndex++;
 
-        // just testing, not random
-        int randomStartNotePath = 2;
-        int randomEndNotePath = 1;
-        string def = Conductor.songPosition.ToString() + "," + randomStartNotePath + "," + randomEndNotePath + "," + "l"; // startin with a left flick
+        string def = Conductor.songPosition.ToString() + "," + startPath + "," + endPath + "," + direction; // startin with a left flick
 
-        Vector3 spawnPosition = new Vector3((NotePath.NotePaths[randomStartNotePath].transform.position.x + NotePath.NotePaths[randomEndNotePath].transform.position.x) / 2, basePosition.y, basePosition.z);
+        Vector3 spawnPosition = new Vector3((NotePath.NotePaths[startPath].transform.position.x + NotePath.NotePaths[endPath].transform.position.x) / 2, basePosition.y, basePosition.z);
         GameObject tmp = Instantiate(Flick, spawnPosition, baseRotation);
         tmp.GetComponent<NoteFlick>().ParseDefinition(def);
-        tmp.GetComponent<NoteFlick>().Construct(randomStartNotePath, noteID, "l");
+        tmp.GetComponent<NoteFlick>().Construct(startPath, noteID, "l");
     }
 
 }

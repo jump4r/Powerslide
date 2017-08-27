@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor.SceneManagement; // Even though I added this...
+using UnityEngine.SceneManagement; // Even though I added this...
 
 public class LevelManager : MonoBehaviour {
     

@@ -40,11 +40,12 @@ public class Player : MonoBehaviour {
 
     // Getters and Setters
     public void SetActiveDragNote(NoteDrag drag) { activeNoteDrag = drag;  }
+    public void SetHoldNoteEnabled(bool enabled) { holdNoteEnabled = enabled; }
 	    
 	// Update is called once per frame
 	void Update () {
 
-        // Detect a touch from the screen.
+        // What to do what they player FIRST touches a note.
         if (Input.GetButtonDown("Touch"))
         {
 
@@ -66,11 +67,20 @@ public class Player : MonoBehaviour {
                     // Debug.Log("Hit Object: " + hitPath.name);
                     hitNoteType = hitPath.CheckIfValidHit();
 
+                    // This seems pointless tbh
                     if (hitNoteType == NoteType.Drag)
                     {
                         Debug.Log("Activate Drag Note");
                         dragNoteEnabled = true;
                         activeNoteDrag = (NoteDrag)hitPath.ActiveNotes[0];
+                    }
+
+                    // If we hit a hold note (not a transition hold note), we need to see how far the player was from a perfect hit.
+                    else if (hitNoteType == NoteType.Hold)
+                    {
+                        holdNoteEnabled = true;
+                        activeNoteHold = (NoteHold)hitPath.ActiveNotes[0];
+                        activeNoteHold.CalculateHoldStartError();
                     }
 
                     // Play hitsound after hitting the Notepath
@@ -115,7 +125,7 @@ public class Player : MonoBehaviour {
                         flickNoteEnabled = true;
                     }
 
-                    else if (hitNoteType == NoteType.Hold)
+                    else if (hitNoteType == NoteType.Hold || hitNoteType == NoteType.Transition)
                     {
                         if (!holdNoteEnabled)
                         {
@@ -185,6 +195,7 @@ public class Player : MonoBehaviour {
                         Debug.Log("Flick has been finished");
                         activeNoteFlick.CalculateError();
                         activeNoteFlick = null;
+                        flickNoteEnabled = false;
                     }
                 }
             }
