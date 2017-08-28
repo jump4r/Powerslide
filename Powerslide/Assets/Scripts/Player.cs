@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
 [RequireComponent(typeof(AudioSource))]
 
 public class Player : MonoBehaviour {
 
-    public Touch touch;
-    private int touchIndexCache; // For detecting which finger to follow when dragging
+    public Dictionary<int, Touch> fingersList; // Touch t, int fingerID
+    public List<int> fingerIDList;
+
     public LayerMask mask; // We only want to detect certain collisions
     public int layermask = 1 << 8; // Layermask is broken as fuck.
 
@@ -36,6 +40,8 @@ public class Player : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         hitSound = Resources.Load("Sound FX/hitsound.wav") as AudioClip;
+        fingersList = new Dictionary<int, Touch>();
+        fingerIDList = new List<int>();
 	}
 
     // Getters and Setters
@@ -48,10 +54,21 @@ public class Player : MonoBehaviour {
         // What to do what they player FIRST touches a note.
         if (Input.GetButtonDown("Touch"))
         {
+            ///////////////////////////////////////////////////////////////////
+            //For use in Android development 
 
-            // Add one to the touches list.
-            fingersTouching += 1;
+            Debug.Log("ANDROID DEBUG: ADDED " + Input.touches[0].phase.ToString() + ", total number of fingers: " + Input.touches.Length);
+            // Search for the touch to be added
+            for (int i = 0; i < Input.touches.Length; i++)
+            {
+                if (Input.touches[i].phase == TouchPhase.Began)
+                {
+                    fingersList.Add(Input.touches[i].fingerId, Input.touches[i]);
+                    fingerIDList.Add(Input.touches[i].fingerId);
+                }
+            }
 
+            //////////////////////////////////////////////////////////////////////
             // Player clicks...
             // Determine which Notepath was hit.
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -102,6 +119,7 @@ public class Player : MonoBehaviour {
             }
         }
 
+        // For android, loop through the current list of Touches, and calculate for each one.
         // If the player has a finger currently touching the screen.
         // Used so that the player doesn't have to lift a finger every hold/flick note
         if (Input.GetButton("Touch"))
@@ -142,8 +160,22 @@ public class Player : MonoBehaviour {
         // Remove that finger from the amount of total fingers touching
         if (Input.GetButtonUp("Touch"))
         {
+            ///////////////////////////////////////////////////////////////////
+            //For use in Android development 
+
+            Debug.Log("ANDROID DEBUG: REMOVED"  + Input.touches[0].phase.ToString() + ", total number of fingers: " + Input.touches.Length);
+            // Search for the touch to be added
+            for (int i = 0; i < Input.touches.Length; i++)
+            {
+                if (Input.touches[i].phase == TouchPhase.Ended)
+                {
+                    fingersList.Remove(fingerIDList[i]);
+                    fingerIDList.Remove(i);
+                }
+            }
+            //////////////////////////////////////////////////////////////////////
             // This could also mean that we released a hold note.
-           if (activeNoteHold != null)
+            if (activeNoteHold != null)
             {
                 activeNoteHold.CalculateHoldEndError();
                 activeNoteHold = null;
