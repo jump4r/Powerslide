@@ -55,14 +55,14 @@ public class NoteSpawner : MonoBehaviour {
 
     // Spawns a regular note
     // Definition of a NOTE: [offset, noteType, startPath]
-    public static void SpawnNote()
+    public static void SpawnNote(int spawnNotePath)
     {
         // Change the name of the note for easier debugging.
         noteID = "Note " + noteIndex.ToString();
         noteIndex++;
 
         // Spawn the note along a random NotePath
-        int randomStartNotePath = (int)Random.Range(0, 4);
+        int randomStartNotePath = spawnNotePath; // (int)Random.Range(0, 4);
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
         GameObject tmp = Instantiate(Note, spawnPosition, baseRotation) as GameObject;
       

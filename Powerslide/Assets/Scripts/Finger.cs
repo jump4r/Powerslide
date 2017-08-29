@@ -7,10 +7,16 @@ public class Finger : MonoBehaviour {
     public Touch touch;
     public int FingerID;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
+    public NoteBase ActiveNote; // The note this finger is currently tapping/holding
+    public NoteType ActiveNoteType;
+
+    public bool isMovingSlider = false;
+
+    public Finger(Touch touch, int FingerID)
+    {
+        this.touch = touch;
+        this.FingerID = FingerID; 
+    }
 	
 	// Update is called once per frame
 	void Update () {

@@ -65,7 +65,8 @@ public class Conductor : MonoBehaviour
         {
             nextBeatTime += spb * 2;
             spawnOneNote = true;
-            NoteSpawner.SpawnNote();
+            NoteSpawner.SpawnNote(2);
+            NoteSpawner.SpawnNote(1);
             // NoteSpawner.SpawnDrag();
             // NoteSpawner.SpawnHold(1, "true", 2);
             // NoteSpawner.SpawnFlick(2, 1, "l");

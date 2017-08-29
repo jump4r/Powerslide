@@ -45,15 +45,6 @@ public class NotePath : MonoBehaviour {
             return NoteType.NULL;
         }
 
-        else if (ActiveNotes[0].type == NoteType.Regular)
-        {
-            // A note has been touched;
-            Debug.Log("Hit a regular note, we do everything we need to here.");
-            ActiveNotes[0].CalculateError();
-            ActiveNotes.Remove(ActiveNotes[0]);
-            return NoteType.Regular;
-        }
-
         else
         {
             return ActiveNotes[0].type; // This is so much simpler

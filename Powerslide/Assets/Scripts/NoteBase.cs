@@ -123,6 +123,7 @@ public class NoteBase : MonoBehaviour {
         {
             NotePath.NotePaths[notePathID].AddActiveNote(this);
         }
+
         isReadyToHit = true;
     }
 
