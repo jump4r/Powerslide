@@ -68,10 +68,11 @@ public class Conductor : MonoBehaviour
             // NoteSpawner.SpawnNote(0);
             // NoteSpawner.SpawnNote(1);
             // NoteSpawner.SpawnDrag();
-            NoteSpawner.SpawnHold(1, "false", 2);
-            NoteSpawner.SpawnHold(2, "false", 2);
+            NoteSpawner.SpawnHold(1, "true", 2);
+            NoteSpawner.SpawnHold(2, "true", 2);
             //NoteSpawner.SpawnFlick(1,0, "l");
             //NoteSpawner.SpawnFlick(3,2, "l");
+            
             /*
             if (!flip)
             {

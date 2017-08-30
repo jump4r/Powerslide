@@ -116,7 +116,8 @@ public class NoteBase : MonoBehaviour {
         else
             ChangeMaterial(Score50);
 
-        //Invoke("DestroyNote", .2f);
+        // Invoke("DestroyNote", .2f);
+        DestroyNote();
     }
 
     // Trigger events for notes, add them to the collective note pile
@@ -146,8 +147,6 @@ public class NoteBase : MonoBehaviour {
         if (type != NoteType.Drag && type != NoteType.Hold && type != NoteType.Transition)
         {
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
-            isReadyToHit = false;
-            // Just destory it I guess
             Destroy(this.gameObject);
         }
     }
@@ -155,5 +154,12 @@ public class NoteBase : MonoBehaviour {
     public void DestroyNote()
     {
         Destroy(this.gameObject);
+        // MISSED NOTE IF 0, Deactivate Note
+        // We dont' want to destroy notes that have a "length" field.
+        if (type != NoteType.Drag && type != NoteType.Hold && type != NoteType.Transition)
+        {
+            NotePath.NotePaths[notePathID].RemoveActiveNote(this);
+            Destroy(this.gameObject);
+        }
     }
 }

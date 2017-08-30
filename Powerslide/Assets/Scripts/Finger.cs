@@ -11,6 +11,7 @@ public class Finger : MonoBehaviour {
     public NoteType ActiveNoteType;
 
     public bool isMovingSlider = false;
+    public bool enableHoldNote = false; // Finger must tuch the screen before activating a hold note (as opposed to dragging from a different section of the screen)
 
     public Finger(Touch touch, int FingerID)
     {
@@ -18,8 +19,11 @@ public class Finger : MonoBehaviour {
         this.FingerID = FingerID; 
     }
 	
-    public void RemoveActiveNote()
+    public void ResetFinger()
     {
+        Debug.Log("ANDROID DEBUG: Finger has be reset");
         ActiveNote = null;
+        isMovingSlider = false;
+        enableHoldNote = false;
     }
 }

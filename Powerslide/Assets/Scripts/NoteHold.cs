@@ -64,7 +64,10 @@ public class NoteHold : NoteBase {
 
         // If this note should be constructed as a Transition note, remove the mesh renderer
         if (isTransitionNote)
+        {
             GetComponent<MeshRenderer>().enabled = false;
+            type = NoteType.Transition;
+        }
     }
 
 

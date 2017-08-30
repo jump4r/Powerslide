@@ -99,6 +99,7 @@ public class Player : MonoBehaviour {
                         {
                             Debug.Log("ANDROID DEBUG: Hit a Hold Note note, add it to the list");
                             finger.ActiveNote = (NoteHold)hitPath.ActiveNotes[0];
+                            finger.enableHoldNote = true;
                             finger.ActiveNote.CalculateHoldStartError();
                         }
 
@@ -152,19 +153,17 @@ public class Player : MonoBehaviour {
                         {
                             FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote = hitPath.ActiveNotes[0] as NoteFlick;
                             Debug.Log("ANDROID DEBUG: Added a flick note in NotePath" + hitPath.NotePathID + " to the ActiveNote of FingerID: " + Input.GetTouch(i).fingerId);
-                            // activeNoteFlick = (NoteFlick)hitPath.ActiveNotes[0];
                         }
-                        // flickNoteEnabled = true;
                     }
 
                     else if (hitNoteType == NoteType.Hold || hitNoteType == NoteType.Transition)
                     {
                         if (FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote == null)
                         {
+                            Debug.Log("ANDROID DEBUG: Added a hold/transition note in NotePath" + hitPath.NotePathID + " to the ActiveNote of FingerID: " + Input.GetTouch(i).fingerId);
                             FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote = hitPath.ActiveNotes[0] as NoteHold;
-                            FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote.IsBeingHeld();
+                            // FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote.IsBeingHeld();
                         }
-                        // holdNoteEnabled = true;
                     }
                 }
             }
@@ -177,7 +176,7 @@ public class Player : MonoBehaviour {
             {
                 //////////////////////////////////////////////////////////////////////
                 // This could also mean that we released a hold note.
-                if (FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote != null && FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote.type == NoteType.Hold)
+                if (FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote != null && (FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote.type == NoteType.Hold || FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote.type == NoteType.Transition))
                 {
                     Debug.Log("ANDROID DEBUG: Removed finger from a hold note");
                     FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote.CalculateHoldEndError();
@@ -194,7 +193,6 @@ public class Player : MonoBehaviour {
         {
             if (finger.Value.isMovingSlider)
             {
-                Debug.Log("ANDROID DEBUG: Call MoveSlider()");
                 MoveSlider(Input.GetTouch(finger.Key).position);
             }
         }
@@ -210,7 +208,7 @@ public class Player : MonoBehaviour {
         // if (holdNoteEnabled || flickNoteEnabled)
         foreach (KeyValuePair<int, Finger> finger in FingerDictionary)
         {
-            if (finger.Value.ActiveNote != null && (finger.Value.ActiveNote.type == NoteType.Hold || finger.Value.ActiveNote.type == NoteType.Flick))
+            if (finger.Value.ActiveNote != null && (finger.Value.ActiveNote.type == NoteType.Hold || finger.Value.ActiveNote.type == NoteType.Transition || finger.Value.ActiveNote.type == NoteType.Flick))
             {
                 RaycastHit[] hitObjects = GetHitObjects(Input.GetTouch(finger.Key).position); // WRONG.
                 for (int i = 0; i < hitObjects.Length; i++)
@@ -219,24 +217,33 @@ public class Player : MonoBehaviour {
                     {
                         NotePath np = hitObjects[i].collider.gameObject.GetComponent<NotePath>();
                         // CASE: HOLD NOTE //
-                        // In the case where the player's finger slides off of the NotePath, we need to check to see if the HoldNote is finished.
-                        if (finger.Value.ActiveNote.type == NoteType.Hold && np.NotePathID != finger.Value.ActiveNote.notePathID)
+                        // For HOLD notes (Not Transition notes), players need to tap the note before it gets activiated. If the enableHoldNote flag is not active, this should not count as a note press.
+                        if (finger.Value.ActiveNote.type == NoteType.Hold && !finger.Value.enableHoldNote)
                         {
+                            Debug.Log("ANDROID DEBUG: Hold note has not been primed, skip");
+                            continue;
+                        }
+                        // In the case where the player's finger slides off of the NotePath, we need to check to see if the HoldNote is finished.
+                        if ((finger.Value.ActiveNote.type == NoteType.Hold || finger.Value.ActiveNote.type == NoteType.Transition) && np.NotePathID != finger.Value.ActiveNote.notePathID)
+                        {
+                            Debug.Log("ANDROID DEBUG: Missing! Currently on hitpath " + np.NotePathID + " when the correct path is hitpath " + finger.Value.ActiveNote.notePathID);
                             finger.Value.ActiveNote.CalculateHoldEndError();
                         }
 
                         // If the player is on the on the path, tell them to keep on truckin
-                        if (finger.Value.ActiveNote.type == NoteType.Hold && np.NotePathID == finger.Value.ActiveNote.notePathID)
+                        else if ((finger.Value.ActiveNote.type == NoteType.Hold || finger.Value.ActiveNote.type == NoteType.Transition) && np.NotePathID == finger.Value.ActiveNote.notePathID)
                         {
                             Debug.Log("ANDROID DEBUG: Keep on holdin'!");
                             finger.Value.ActiveNote.IsBeingHeld();
                         }
 
+                        // CASE: FLICK NOTE //
                         // In the case when the flick note is finished.
                         else if (finger.Value.ActiveNote.type == NoteType.Flick && np.NotePathID == finger.Value.ActiveNote.endPath)
                         {
                             Debug.Log("ANDROID DEBUG: Flick has been finished");
                             finger.Value.ActiveNote.CalculateError();
+                            finger.Value.ResetFinger();
                         }
 
                         // IN the case that the player is still flicking, tell them to keep going (Debug only)
