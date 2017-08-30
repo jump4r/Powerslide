@@ -20,8 +20,6 @@ public class NoteDrag : NoteBase {
     
     private int numSections; // Number of sections in the note
     private float length; // Calculated in beats
-    private int startPath;
-    private int endPath;
 
     public float EndSliderTime;
 

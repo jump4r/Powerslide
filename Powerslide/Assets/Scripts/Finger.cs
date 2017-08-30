@@ -18,8 +18,8 @@ public class Finger : MonoBehaviour {
         this.FingerID = FingerID; 
     }
 	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public void RemoveActiveNote()
+    {
+        ActiveNote = null;
+    }
 }

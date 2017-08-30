@@ -13,7 +13,6 @@ public class NoteFlick : NoteBase {
     private Material leftFlick;
     private Material rightFlick;
 
-    public int startPath;
     // public int endPath; // Already declared in NoteBase, even though it should probably be declared here.
 
     private NoteBase nextNote; 
@@ -40,7 +39,7 @@ public class NoteFlick : NoteBase {
 
     public override void Construct(int NotePathID, string NoteName, string direction)
     {
-        NotePathID = startPath; // redundant
+        notePathID = startPath; // redundant
         gameObject.name = NoteName;
         SetFlickMaterial(); // last var not neded
     }

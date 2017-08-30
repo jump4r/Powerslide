@@ -94,20 +94,12 @@ public class Player : MonoBehaviour {
                             hitPath.ActiveNotes.Remove(hitPath.ActiveNotes[0]);
                         }
 
-                        // This seems pointless tbh
-                        else if (hitNoteType == NoteType.Drag)
-                        {
-                            Debug.Log("Activate Drag Note");
-                            dragNoteEnabled = true;
-                            activeNoteDrag = (NoteDrag)hitPath.ActiveNotes[0];
-                        }
-
                         // If we hit a hold note (not a transition hold note), we need to see how far the player was from a perfect hit.
                         else if (hitNoteType == NoteType.Hold)
                         {
-                            holdNoteEnabled = true;
-                            activeNoteHold = (NoteHold)hitPath.ActiveNotes[0];
-                            activeNoteHold.CalculateHoldStartError();
+                            Debug.Log("ANDROID DEBUG: Hit a Hold Note note, add it to the list");
+                            finger.ActiveNote = (NoteHold)hitPath.ActiveNotes[0];
+                            finger.ActiveNote.CalculateHoldStartError();
                         }
 
                         // We hit the NotePath with our finger, but we only want to play the notepath once, so I'll call it at the end of update
@@ -132,73 +124,72 @@ public class Player : MonoBehaviour {
                 }
                 // Make the necissary edits to the finger, then add it to the list
                 FingerDictionary.Add(Input.GetTouch(i).fingerId, finger);
-                Debug.Log("ANDROID DEBUG: ADDED FingerID" + Input.GetTouch(i).fingerId.ToString() + ", total number of fingers: " + FingerDictionary.Count);
+                // Debug.Log("ANDROID DEBUG: ADDED FingerID" + Input.GetTouch(i).fingerId.ToString() + ", total number of fingers: " + FingerDictionary.Count);
             }
         }
         PlayHitSound();
 
+        // BUTTON CURRENTLY PRESSED ACTION
         // For android, loop through the current list of Touches, and calculate for each one.
         // If the player has a finger currently touching the screen.
         // Used so that the player doesn't have to lift a finger every hold/flick note
-        if (Input.GetButton("Touch"))
+        for (int i = 0; i < Input.touchCount; i++) 
         {
-            RaycastHit[] hitObjects = GetHitObjects();
+            RaycastHit[] hitObjects = GetHitObjects(Input.GetTouch(i).position);
             NotePath hitPath;
-            for (int i = 0; i < hitObjects.Length; i++)
+            for (int j = 0; j < hitObjects.Length; j++)
             {
-                if (hitObjects[i].collider.tag == "NotePath")
+                if (hitObjects[j].collider.tag == "NotePath")
                 {
-                    hitPath = hitObjects[i].collider.gameObject.GetComponent<NotePath>();
+                    hitPath = hitObjects[j].collider.gameObject.GetComponent<NotePath>();
                     hitNoteType = hitPath.CheckIfValidHit();
+
+                    Debug.Log("Finger at index: " + Input.GetTouch(i).fingerId + "is currently hitting NotePath: " + hitPath.NotePathID + " at position " + Input.GetTouch(i).position);
 
                     if (hitNoteType == NoteType.Flick)
                     {
-                        if (!flickNoteEnabled)
+                        if (FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote == null)
                         {
-                            endFlickPath = NotePath.NotePaths[hitPath.ActiveNotes[0].endPath];
-                            activeNoteFlick = (NoteFlick)hitPath.ActiveNotes[0];
+                            FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote = hitPath.ActiveNotes[0] as NoteFlick;
+                            Debug.Log("ANDROID DEBUG: Added a flick note in NotePath" + hitPath.NotePathID + " to the ActiveNote of FingerID: " + Input.GetTouch(i).fingerId);
+                            // activeNoteFlick = (NoteFlick)hitPath.ActiveNotes[0];
                         }
-                        flickNoteEnabled = true;
+                        // flickNoteEnabled = true;
                     }
 
                     else if (hitNoteType == NoteType.Hold || hitNoteType == NoteType.Transition)
                     {
-                        if (!holdNoteEnabled)
+                        if (FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote == null)
                         {
-                            activeNoteHold = (NoteHold)hitPath.ActiveNotes[0];
-                            activeNoteHold.IsBeingHeld();
+                            FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote = hitPath.ActiveNotes[0] as NoteHold;
+                            FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote.IsBeingHeld();
                         }
-                        holdNoteEnabled = true;
+                        // holdNoteEnabled = true;
                     }
                 }
             }
         }
 
-        // IMPORTANT, THIS WILL HAVE TO CHANGE IN ORDER TO ALLOW MULTIPLE FINGERS TO BE TOUCHING AT THE SAME TIME. 
-        // Remove that finger from the amount of total fingers touching
         // BUTTON UP, THIS CAN PROBABLY BE IN THE SAME LOOP
         for (int i = 0; i < Input.touchCount; i++)
         {
             if (Input.GetTouch(i).phase == TouchPhase.Ended)
             {
+                //////////////////////////////////////////////////////////////////////
+                // This could also mean that we released a hold note.
+                if (FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote != null && FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote.type == NoteType.Hold)
+                {
+                    Debug.Log("ANDROID DEBUG: Removed finger from a hold note");
+                    FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote.CalculateHoldEndError();
+                }
+
                 FingerDictionary.Remove(Input.GetTouch(i).fingerId);
-                Debug.Log("ANDROID DEBUG: REMOVED " + Input.GetTouch(i).fingerId.ToString() + ", total number of fingers: " + FingerDictionary.Count);
+                // Debug.Log("ANDROID DEBUG: REMOVED " + Input.GetTouch(i).fingerId.ToString() + ", total number of fingers: " + FingerDictionary.Count);
             }
-            //////////////////////////////////////////////////////////////////////
-            // This could also mean that we released a hold note.
-            if (activeNoteHold != null)
-            {
-                activeNoteHold.CalculateHoldEndError();
-                activeNoteHold = null;
-            }
-            sliderEnabled = false;
-            flickNoteEnabled = false;
-            holdNoteEnabled = false;
         }
 
         // There might be a better way to do this, but we need to check to see if the touches in the FingersList are finished or not
         // If we are dragging an the slider
-        // 
         foreach (KeyValuePair<int, Finger> finger in FingerDictionary)
         {
             if (finger.Value.isMovingSlider)
@@ -209,40 +200,50 @@ public class Player : MonoBehaviour {
         }
 
         // --- OR ---
-        // Probably not going to use the slider though, so I should start thinking of a workaround
-        if (activeNoteDrag != null)
-        {
-            activeNoteDrag.CheckIfOnPath(Slider.transform);
-        }
+        // If there there is a drag note, we need to check to see if the slider is close enough to the drag note.
+        CheckDragNote();
 
         // IF Currently is either encountering a HOLD note or a FLICK note, we need to account for where the finger is at the current time
         // For a hold note: We need to check to see if the finger is still on the right path
         // Same for a transition note, however we may change this to check constantly.
         // For a flick note: We need to check to see if the flick is finshed.
-        if (holdNoteEnabled || flickNoteEnabled)
+        // if (holdNoteEnabled || flickNoteEnabled)
+        foreach (KeyValuePair<int, Finger> finger in FingerDictionary)
         {
-            RaycastHit[] hitObjects = GetHitObjects();
-            for (int i = 0; i < hitObjects.Length; i++)
+            if (finger.Value.ActiveNote != null && (finger.Value.ActiveNote.type == NoteType.Hold || finger.Value.ActiveNote.type == NoteType.Flick))
             {
-                if (hitObjects[i].collider.tag == "NotePath")
+                RaycastHit[] hitObjects = GetHitObjects(Input.GetTouch(finger.Key).position); // WRONG.
+                for (int i = 0; i < hitObjects.Length; i++)
                 {
-
-                    // In the case where the player's finger slides off of the NotePath, we need to check to see if the HoldNote is finished.
-                    if (activeNoteHold != null && hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID != activeNoteHold.notePathID)
+                    if (hitObjects[i].collider.tag == "NotePath")
                     {
-                        activeNoteHold.CalculateHoldEndError();
-                        // activeNoteHold.Active = false;
-                        holdNoteEnabled = false;
-                        activeNoteHold = null;
-                    }
+                        NotePath np = hitObjects[i].collider.gameObject.GetComponent<NotePath>();
+                        // CASE: HOLD NOTE //
+                        // In the case where the player's finger slides off of the NotePath, we need to check to see if the HoldNote is finished.
+                        if (finger.Value.ActiveNote.type == NoteType.Hold && np.NotePathID != finger.Value.ActiveNote.notePathID)
+                        {
+                            finger.Value.ActiveNote.CalculateHoldEndError();
+                        }
 
-                    // In the case when the flick note is finished.
-                    else if (activeNoteFlick != null && hitObjects[i].collider.gameObject.GetComponent<NotePath>().NotePathID == endFlickPath.NotePathID)
-                    {
-                        Debug.Log("Flick has been finished");
-                        activeNoteFlick.CalculateError();
-                        activeNoteFlick = null;
-                        flickNoteEnabled = false;
+                        // If the player is on the on the path, tell them to keep on truckin
+                        if (finger.Value.ActiveNote.type == NoteType.Hold && np.NotePathID == finger.Value.ActiveNote.notePathID)
+                        {
+                            Debug.Log("ANDROID DEBUG: Keep on holdin'!");
+                            finger.Value.ActiveNote.IsBeingHeld();
+                        }
+
+                        // In the case when the flick note is finished.
+                        else if (finger.Value.ActiveNote.type == NoteType.Flick && np.NotePathID == finger.Value.ActiveNote.endPath)
+                        {
+                            Debug.Log("ANDROID DEBUG: Flick has been finished");
+                            finger.Value.ActiveNote.CalculateError();
+                        }
+
+                        // IN the case that the player is still flicking, tell them to keep going (Debug only)
+                        else if (finger.Value.ActiveNote.type == NoteType.Flick && np.NotePathID == finger.Value.ActiveNote.startPath)
+                        {
+                            Debug.Log("ANDROID DEBUG: Continue Flicking");
+                        }
                     }
                 }
             }
@@ -269,10 +270,18 @@ public class Player : MonoBehaviour {
         Slider.transform.position = new Vector3(newXPosition.x, oldPosition.y, oldPosition.z);
     }
 
-    private RaycastHit[] GetHitObjects()
+    private RaycastHit[] GetHitObjects(Vector3 position)
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray ray = Camera.main.ScreenPointToRay(position);
         RaycastHit[] hitObjects = Physics.RaycastAll(ray, 1000f, layermask);
         return hitObjects;
+    }
+
+    private void CheckDragNote()
+    {
+        if (activeNoteDrag != null)
+        {
+            activeNoteDrag.CheckIfOnPath(Slider.transform);
+        }
     }
 }

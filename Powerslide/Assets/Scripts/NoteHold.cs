@@ -70,7 +70,7 @@ public class NoteHold : NoteBase {
 
     // Calculate the difference between the projected and actual hold STARTS (error when the player begins a hold note)
     // This will only be done on a proper hold note and note a transitional note.
-    public void CalculateHoldStartError()
+    public override void CalculateHoldStartError()
     {
         // Transition notes don't have a HoldStart
         if (type == NoteType.Transition) return;
@@ -80,23 +80,23 @@ public class NoteHold : NoteBase {
         Debug.Log("Delta: " + delta + ", threshold for 50 score, greater than: " + Conductor.spb / 8f);
         if (delta < Conductor.spb / 8f)
         {
-            ChangeMaterial(Score100);
+            GetComponent<Renderer>().material = Score100;
         }
 
         else
         {
-            ChangeMaterial(Score50);
+            GetComponent<Renderer>().material = Score50;
         }
     }
 
-    public void CalculateHoldEndError()
+    public override void CalculateHoldEndError()
     {
         float holdNoteEndTime = EndTime + Conductor.spb * length;
         float delta = Mathf.Abs(Conductor.songPosition - holdNoteEndTime);
         Debug.Log("Expected Hold Note Endtime: " + holdNoteEndTime + ", Actual Endtime: " + Conductor.songPosition);
         if (delta < Conductor.spb / 4f)
         {
-            Debug.Log("Relatively perfect");
+            Debug.Log("ANDROID DEBUG: Relatively perfect");
         }
         else
         {
@@ -104,7 +104,7 @@ public class NoteHold : NoteBase {
         }
     }
 
-    public void IsBeingHeld()
+    public override void IsBeingHeld()
     {
         ChangeMaterial(Score100);
     }

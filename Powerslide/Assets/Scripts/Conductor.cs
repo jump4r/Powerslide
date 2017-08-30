@@ -63,13 +63,15 @@ public class Conductor : MonoBehaviour
         // Update the next beat time.
         if (songPosition > nextBeatTime /*&& !spawnOneNote */)
         {
-            nextBeatTime += spb * 2;
+            nextBeatTime += spb * 4;
             spawnOneNote = true;
-            NoteSpawner.SpawnNote(2);
-            NoteSpawner.SpawnNote(1);
+            // NoteSpawner.SpawnNote(0);
+            // NoteSpawner.SpawnNote(1);
             // NoteSpawner.SpawnDrag();
-            // NoteSpawner.SpawnHold(1, "true", 2);
-            // NoteSpawner.SpawnFlick(2, 1, "l");
+            NoteSpawner.SpawnHold(1, "false", 2);
+            NoteSpawner.SpawnHold(2, "false", 2);
+            //NoteSpawner.SpawnFlick(1,0, "l");
+            //NoteSpawner.SpawnFlick(3,2, "l");
             /*
             if (!flip)
             {

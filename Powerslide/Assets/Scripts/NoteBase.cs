@@ -45,6 +45,7 @@ public class NoteBase : MonoBehaviour {
 
     // Path note is traveling down
     public int notePathID = 4;
+    public int startPath;
     public int endPath; // Used in flick notes, although this should really not be here
     public NoteType type;
     public int noteValue = 0;
@@ -95,9 +96,14 @@ public class NoteBase : MonoBehaviour {
 
     // Virtual Functions
     public virtual void ChangeMaterial(Material mat) { /* GetComponent<MeshRenderer>().material = mat; */ }
-    public virtual void Construct(int NotePathID, string NoteName) { } // Construct the note
-    public virtual void Construct(int NotePathID, string NoteName, string direction) { } // Construction for a flick note.
+    public virtual void Construct(int NotePathID, string NoteName) { } // Construct a Regular note
+    public virtual void Construct(int NotePathID, string NoteName, string direction) { } // Construction  a Flick note.
     public virtual void ParseDefinition(string def) { } // Parse the definition of the note
+
+    // Hold Note Virutal Functions
+    public virtual void IsBeingHeld() { }
+    public virtual void CalculateHoldStartError() { }
+    public virtual void CalculateHoldEndError() { }
 
     // Difference between Player hit and perfect timing.
     public void CalculateError()
@@ -109,6 +115,8 @@ public class NoteBase : MonoBehaviour {
 
         else
             ChangeMaterial(Score50);
+
+        //Invoke("DestroyNote", .2f);
     }
 
     // Trigger events for notes, add them to the collective note pile
@@ -142,5 +150,10 @@ public class NoteBase : MonoBehaviour {
             // Just destory it I guess
             Destroy(this.gameObject);
         }
+    }
+
+    public void DestroyNote()
+    {
+        Destroy(this.gameObject);
     }
 }
