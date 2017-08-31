@@ -53,6 +53,9 @@ public class NoteBase : MonoBehaviour {
     // For testing purposes
     private AudioClip hitSound;
 
+    // The finger currently hitting the note
+    protected int fingerId;
+
     // Use this for initialization
     void Start () {
         playerSpeedMult = 2f;
@@ -73,25 +76,8 @@ public class NoteBase : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        // I'm sure that we'll have a base note class that we'll add later
-        // transform.Translate(Vector3.down * Time.deltaTime * velocity);
         rTP = (Conductor.songPosition - StartTime) / (8f * Conductor.spb);
-        // Debug.Log("Current ratio: " + (Conductor.songPosition - startSongPosition) + " / " + 8f * Conductor.spb);
-        // Debug.Log("rTP set to: " + rTP);
-        // rTP = 1f - rTP;
         transform.position = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
-
-        /****************************
-         * TEST *
-         * Play a hitsound when the note hits the perfect position, then destory it.
-         ***************************/
-        /* 
-         if (Conductor.songPosition > EndTime)
-        {
-            GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().PlayHitSound();
-            Debug.Log("Projected End Time: " + EndTime + ", Actual End Time: " + Conductor.songPosition);
-            Destroy(this.gameObject);
-        } */
     }
 
     // Virtual Functions
@@ -99,6 +85,7 @@ public class NoteBase : MonoBehaviour {
     public virtual void Construct(int NotePathID, string NoteName) { } // Construct a Regular note
     public virtual void Construct(int NotePathID, string NoteName, string direction) { } // Construction  a Flick note.
     public virtual void ParseDefinition(string def) { } // Parse the definition of the note
+    public virtual void SetFingerId(int id) { } // Set the finger id of the note
 
     // Hold Note Virutal Functions
     public virtual void IsBeingHeld() { }
@@ -116,8 +103,8 @@ public class NoteBase : MonoBehaviour {
         else
             ChangeMaterial(Score50);
 
-        // Invoke("DestroyNote", .2f);
-        DestroyNote();
+        Invoke("DestroyNote", .2f);
+        // DestroyNote();
     }
 
     // Trigger events for notes, add them to the collective note pile
@@ -128,7 +115,7 @@ public class NoteBase : MonoBehaviour {
 
 
         // Prepare to activiate a note for the first time
-        if (/* noteValue == 0 && */ type != NoteType.Drag)
+        if (type != NoteType.Drag)
         {
             NotePath.NotePaths[notePathID].AddActiveNote(this);
         }
@@ -153,12 +140,14 @@ public class NoteBase : MonoBehaviour {
 
     public void DestroyNote()
     {
+        Debug.Log("Android Debug: Destroying Note");
+        NotePath.NotePaths[notePathID].RemoveActiveNote(this);
         Destroy(this.gameObject);
+
         // MISSED NOTE IF 0, Deactivate Note
-        // We dont' want to destroy notes that have a "length" field.
+        // We dont' want to destroy notes that have a "length" field. BUT WE DID, WE LITERALLY DID THIS.
         if (type != NoteType.Drag && type != NoteType.Hold && type != NoteType.Transition)
         {
-            NotePath.NotePaths[notePathID].RemoveActiveNote(this);
             Destroy(this.gameObject);
         }
     }

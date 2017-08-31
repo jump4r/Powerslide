@@ -65,28 +65,36 @@ public class Conductor : MonoBehaviour
         {
             nextBeatTime += spb * 4;
             spawnOneNote = true;
-            // NoteSpawner.SpawnNote(0);
-            // NoteSpawner.SpawnNote(1);
+           NoteSpawner.SpawnNote(0);
+           NoteSpawner.SpawnNote(1);
             // NoteSpawner.SpawnDrag();
-            NoteSpawner.SpawnHold(1, "true", 2);
-            NoteSpawner.SpawnHold(2, "true", 2);
+            //NoteSpawner.SpawnHold(1, "false", 2);
+            //NoteSpawner.SpawnHold(2, "false", 2);
             //NoteSpawner.SpawnFlick(1,0, "l");
             //NoteSpawner.SpawnFlick(3,2, "l");
             
             /*
             if (!flip)
             {
-                NoteSpawner.SpawnHold(1, "true", 2);
-                NoteSpawner.SpawnFlick(2, 1, "l");
+                NoteSpawner.SpawnFlick(1,0, "l");
+                NoteSpawner.SpawnHold(0, "true", 2);
+
+                //NoteSpawner.SpawnFlick(2, 3, "r");
+                //NoteSpawner.SpawnHold(3, "true", 2);
                 flip = !flip;
             }
 
             else
             {
-                NoteSpawner.SpawnHold(2, "true", 2);
-                NoteSpawner.SpawnFlick(1, 2, "r");
+                NoteSpawner.SpawnFlick(0, 1, "r");
+                NoteSpawner.SpawnHold(1, "true", 2);
+
+                //NoteSpawner.SpawnFlick(3, 2, "l");
+                //NoteSpawner.SpawnHold(2, "true", 2);
                 flip = !flip;
-            }*/
+            }
+            */
+            Debug.Log("Current Song Position: " + songPosition);
         }
 
         // Debug.Log("Current Song Position: " + songPosition);

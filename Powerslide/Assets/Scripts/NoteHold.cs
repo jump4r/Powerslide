@@ -23,6 +23,7 @@ public class NoteHold : NoteBase {
 
     // Is this particular hold note a transition?
     private bool isTransitionNote;
+    private bool existsNextNote;
     private NoteBase nextNote;
 
     // Use this for initialization
@@ -127,14 +128,8 @@ public class NoteHold : NoteBase {
     {
         if (Conductor.songPosition >= EndTime + (Conductor.spb * length))
         {
-            // Update the objects in the 
+            // Update the objects in the NotePath's Active Notes List.
             NotePath.NotePaths[this.notePathID].RemoveActiveNote(this);
-
-            //////////////////////////////////////////////////////////////////////
-            // Find a better way to fix the problem than this... we should not have to access the Player like this.
-            GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().SetHoldNoteEnabled(false);
-            //////////////////////////////////////////////////////////////////////
-
             Destroy(this.gameObject);
         }
     }

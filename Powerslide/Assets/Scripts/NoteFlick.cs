@@ -17,6 +17,9 @@ public class NoteFlick : NoteBase {
 
     private NoteBase nextNote; 
 
+    // Getters/Setters
+    public override void SetFingerId(int id) { fingerId = id; }
+
 	// Use this for initialization
 	void OnEnable () {
         // TODO: Not really sure yet, but make this work with object pooling
@@ -64,5 +67,24 @@ public class NoteFlick : NoteBase {
         gameObject.GetComponent<Renderer>().material = mat;
     }
 
+    // Trigger events for notes, add them to the collective note pile
+    private void OnTriggerEnter(Collider col)
+    {
+        if (col.name != "Hitbar") return; // Wrong collision
+        if (isReadyToHit) return; // We have already entered the collision, and do not want to add more notes to the ActiveNotes list.
+        Debug.Log("Android Debug: Current NotePathId: " + notePathID);
 
+        // BUG: THIS ISN'T WORKING...
+        // If the flick note is coming directly after a transition note, we need to remove the Transition note from the active notes list.
+        if (NotePath.NotePaths[notePathID].ActiveNotes.Count > 0 && NotePath.NotePaths[notePathID].ActiveNotes[0].type == NoteType.Transition)
+        {
+            Debug.Log("Android Debug: Remove Transition Note " + NotePath.NotePaths[notePathID].ActiveNotes[0].name + " before adding flick note");
+            NotePath.NotePaths[notePathID].ActiveNotes[0].DestroyNote();
+            // Debug.Log("Android Debug: Calling Finger reset on FingerID: " + GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().FingerDictionary[fingerId]);
+            // GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().FingerDictionary[fingerId].ResetFinger(); // Reset the finger
+        }
+        
+        NotePath.NotePaths[notePathID].AddActiveNote(this);
+        isReadyToHit = true;
+    }
 }

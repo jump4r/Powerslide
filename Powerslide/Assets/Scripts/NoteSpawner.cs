@@ -47,11 +47,6 @@ public class NoteSpawner : MonoBehaviour {
         Hold = Resources.Load("Prefabs/Hold") as GameObject;
         Transition = Resources.Load("Prefabs/Transition") as GameObject;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	    
-	}
 
     // Spawns a regular note
     // Definition of a NOTE: [offset, noteType, startPath]

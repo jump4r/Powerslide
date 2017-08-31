@@ -16,7 +16,6 @@ public class Player : MonoBehaviour {
     public int layermask = 1 << 8; // Layermask is broken as fuck.
 
     private bool sliderEnabled = false; // Dragging the slider.
-    private static int fingersTouching = 0; // Number of fingers touching the screen
 
     private NoteType hitNoteType;
     private AudioClip hitSound;
@@ -30,10 +29,6 @@ public class Player : MonoBehaviour {
     private bool flickNoteEnabled = false;
     private NotePath endFlickPath;
     private NoteFlick activeNoteFlick;
-
-    // Hold Note
-    private bool holdNoteEnabled = false;
-    private NoteHold activeNoteHold;
 
     // I don't really know what these are for tbh
     private Vector3 offset = Vector3.zero;
@@ -50,7 +45,6 @@ public class Player : MonoBehaviour {
 
     // Getters and Setters
     public void SetActiveDragNote(NoteDrag drag) { activeNoteDrag = drag;  }
-    public void SetHoldNoteEnabled(bool enabled) { holdNoteEnabled = enabled; }
 	    
 	// Update is called once per frame
 	void Update () {
@@ -97,7 +91,7 @@ public class Player : MonoBehaviour {
                         // If we hit a hold note (not a transition hold note), we need to see how far the player was from a perfect hit.
                         else if (hitNoteType == NoteType.Hold)
                         {
-                            Debug.Log("ANDROID DEBUG: Hit a Hold Note note, add it to the list");
+                            // Debug.Log("ANDROID DEBUG: Hit a Hold Note note, add it to the list");
                             finger.ActiveNote = (NoteHold)hitPath.ActiveNotes[0];
                             finger.enableHoldNote = true;
                             finger.ActiveNote.CalculateHoldStartError();
@@ -152,6 +146,7 @@ public class Player : MonoBehaviour {
                         if (FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote == null)
                         {
                             FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote = hitPath.ActiveNotes[0] as NoteFlick;
+                            FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote.SetFingerId(Input.GetTouch(i).fingerId);
                             Debug.Log("ANDROID DEBUG: Added a flick note in NotePath" + hitPath.NotePathID + " to the ActiveNote of FingerID: " + Input.GetTouch(i).fingerId);
                         }
                     }
@@ -205,7 +200,6 @@ public class Player : MonoBehaviour {
         // For a hold note: We need to check to see if the finger is still on the right path
         // Same for a transition note, however we may change this to check constantly.
         // For a flick note: We need to check to see if the flick is finshed.
-        // if (holdNoteEnabled || flickNoteEnabled)
         foreach (KeyValuePair<int, Finger> finger in FingerDictionary)
         {
             if (finger.Value.ActiveNote != null && (finger.Value.ActiveNote.type == NoteType.Hold || finger.Value.ActiveNote.type == NoteType.Transition || finger.Value.ActiveNote.type == NoteType.Flick))
@@ -233,7 +227,7 @@ public class Player : MonoBehaviour {
                         // If the player is on the on the path, tell them to keep on truckin
                         else if ((finger.Value.ActiveNote.type == NoteType.Hold || finger.Value.ActiveNote.type == NoteType.Transition) && np.NotePathID == finger.Value.ActiveNote.notePathID)
                         {
-                            Debug.Log("ANDROID DEBUG: Keep on holdin'!");
+                            // Debug.Log("ANDROID DEBUG: Keep on holdin'!");
                             finger.Value.ActiveNote.IsBeingHeld();
                         }
 
