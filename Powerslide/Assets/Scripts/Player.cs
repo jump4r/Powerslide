@@ -47,24 +47,24 @@ public class Player : MonoBehaviour {
     public void SetActiveDragNote(NoteDrag drag) { activeNoteDrag = drag;  }
 	    
 	// Update is called once per frame
-	void Update () {
-
-        // BUTTON DOWN ACTION
-        ///////////////////////////////////////////////////////////////////
+	void Update ()
+    {
         //For use in Android development 
         // Search for the touch to be added
         for (int i = 0; i < Input.touchCount; i++)
         {
+            //////////////////////////////////////////////////////////////////////
+            // Player clicks...
+            // Determine which Notepath was hit.
+            Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(i).position);
+            RaycastHit[] hitObjects = Physics.RaycastAll(ray, 1000f, layermask);
+            NotePath hitPath;
+
+            // BUTTON DOWN ACTION
+            ///////////////////////////////////////////////////////////////////
             if (Input.GetTouch(i).phase == TouchPhase.Began)
             {
                 Finger finger = new Finger(Input.GetTouch(i), Input.GetTouch(i).fingerId);
-
-                //////////////////////////////////////////////////////////////////////
-                // Player clicks...
-                // Determine which Notepath was hit.
-                Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(i).position);
-                RaycastHit[] hitObjects = Physics.RaycastAll(ray, 1000f, layermask);
-                NotePath hitPath;
 
                 for (int j = 0; j < hitObjects.Length; i++)
                 {
@@ -121,17 +121,11 @@ public class Player : MonoBehaviour {
                 FingerDictionary.Add(Input.GetTouch(i).fingerId, finger);
                 // Debug.Log("ANDROID DEBUG: ADDED FingerID" + Input.GetTouch(i).fingerId.ToString() + ", total number of fingers: " + FingerDictionary.Count);
             }
-        }
-        PlayHitSound();
 
-        // BUTTON CURRENTLY PRESSED ACTION
-        // For android, loop through the current list of Touches, and calculate for each one.
-        // If the player has a finger currently touching the screen.
-        // Used so that the player doesn't have to lift a finger every hold/flick note
-        for (int i = 0; i < Input.touchCount; i++) 
-        {
-            RaycastHit[] hitObjects = GetHitObjects(Input.GetTouch(i).position);
-            NotePath hitPath;
+            // BUTTON CURRENTLY PRESSED ACTION
+            // For android, loop through the current list of Touches, and calculate for each one.
+            // If the player has a finger currently touching the screen.
+            // Used so that the player doesn't have to lift a finger every hold/flick note
             for (int j = 0; j < hitObjects.Length; j++)
             {
                 if (hitObjects[j].collider.tag == "NotePath")
@@ -162,11 +156,8 @@ public class Player : MonoBehaviour {
                     }
                 }
             }
-        }
 
-        // BUTTON UP, THIS CAN PROBABLY BE IN THE SAME LOOP
-        for (int i = 0; i < Input.touchCount; i++)
-        {
+            // BUTTON UP, THIS CAN PROBABLY BE IN THE SAME LOOP
             if (Input.GetTouch(i).phase == TouchPhase.Ended)
             {
                 //////////////////////////////////////////////////////////////////////
@@ -182,26 +173,29 @@ public class Player : MonoBehaviour {
             }
         }
 
-        // There might be a better way to do this, but we need to check to see if the touches in the FingersList are finished or not
-        // If we are dragging an the slider
-        foreach (KeyValuePair<int, Finger> finger in FingerDictionary)
-        {
-            if (finger.Value.isMovingSlider)
-            {
-                MoveSlider(Input.GetTouch(finger.Key).position);
-            }
-        }
+        PlayHitSound();
 
         // --- OR ---
         // If there there is a drag note, we need to check to see if the slider is close enough to the drag note.
         CheckDragNote();
 
-        // IF Currently is either encountering a HOLD note or a FLICK note, we need to account for where the finger is at the current time
-        // For a hold note: We need to check to see if the finger is still on the right path
-        // Same for a transition note, however we may change this to check constantly.
-        // For a flick note: We need to check to see if the flick is finshed.
+        // Things to do in the FingerDictionary loop
+        /* 
+         * If a finger is currently moving the slider, we need to check to see if the slider is close enougfh to the drag note.
+         * IF Currently is either encountering a HOLD note or a FLICK note, we need to account for where the finger is at the current time
+         * For a hold note: We need to check to see if the finger is still on the right path
+         * Same for a transition note, however we may change this to check constantly.
+         * Lastly, for a flick note: We need to check to see if the flick is finshed.
+         * 
+        */
+
         foreach (KeyValuePair<int, Finger> finger in FingerDictionary)
         {
+            // (1) Check if the finger is moving the slider.
+            if (finger.Value.isMovingSlider)
+            {
+                MoveSlider(Input.GetTouch(finger.Key).position);
+            }
             if (finger.Value.ActiveNote != null && (finger.Value.ActiveNote.type == NoteType.Hold || finger.Value.ActiveNote.type == NoteType.Transition || finger.Value.ActiveNote.type == NoteType.Flick))
             {
                 RaycastHit[] hitObjects = GetHitObjects(Input.GetTouch(finger.Key).position); // WRONG.

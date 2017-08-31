@@ -63,24 +63,24 @@ public class Conductor : MonoBehaviour
         // Update the next beat time.
         if (songPosition > nextBeatTime /*&& !spawnOneNote */)
         {
-            nextBeatTime += spb * 4;
+            nextBeatTime += spb * 2;
             spawnOneNote = true;
-           NoteSpawner.SpawnNote(0);
-           NoteSpawner.SpawnNote(1);
-            // NoteSpawner.SpawnDrag();
+            // NoteSpawner.SpawnNote(0);
+            // NoteSpawner.SpawnNote(1);
+            //NoteSpawner.SpawnDrag();
             //NoteSpawner.SpawnHold(1, "false", 2);
             //NoteSpawner.SpawnHold(2, "false", 2);
             //NoteSpawner.SpawnFlick(1,0, "l");
             //NoteSpawner.SpawnFlick(3,2, "l");
-            
-            /*
+
+
             if (!flip)
             {
-                NoteSpawner.SpawnFlick(1,0, "l");
+                NoteSpawner.SpawnFlick(1, 0, "l");
                 NoteSpawner.SpawnHold(0, "true", 2);
 
-                //NoteSpawner.SpawnFlick(2, 3, "r");
-                //NoteSpawner.SpawnHold(3, "true", 2);
+                NoteSpawner.SpawnFlick(2, 3, "r");
+                NoteSpawner.SpawnHold(3, "true", 2);
                 flip = !flip;
             }
 
@@ -89,11 +89,11 @@ public class Conductor : MonoBehaviour
                 NoteSpawner.SpawnFlick(0, 1, "r");
                 NoteSpawner.SpawnHold(1, "true", 2);
 
-                //NoteSpawner.SpawnFlick(3, 2, "l");
-                //NoteSpawner.SpawnHold(2, "true", 2);
+                NoteSpawner.SpawnFlick(3, 2, "l");
+                NoteSpawner.SpawnHold(2, "true", 2);
                 flip = !flip;
             }
-            */
+            
             Debug.Log("Current Song Position: " + songPosition);
         }
 
