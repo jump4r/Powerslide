@@ -50,7 +50,7 @@ public class NoteSpawner : MonoBehaviour {
 
     // Spawns a regular note
     // Definition of a NOTE: [offset, noteType, startPath]
-    public static void SpawnNote(int spawnNotePath)
+    public static void SpawnNote(float offset, int spawnNotePath)
     {
         // Change the name of the note for easier debugging.
         noteID = "Note " + noteIndex.ToString();
@@ -61,19 +61,19 @@ public class NoteSpawner : MonoBehaviour {
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
         GameObject tmp = Instantiate(Note, spawnPosition, baseRotation) as GameObject;
       
-        tmp.GetComponent<NoteBase>().Construct(randomStartNotePath, noteID); // ROFL APPARENTLY THIS WORKS. $$$$$$YENYENYENYENWONWONWONWON
+        tmp.GetComponent<NoteBase>().Construct(offset, randomStartNotePath, noteID); // ROFL APPARENTLY THIS WORKS. $$$$$$YENYENYENYENWONWONWONWON
 
     }
 
     // Spawns a drag note.
     // Definition of a DRAGNOTE: [offset, noteType, numSections, startPath,endPath,length]
     // Player Notes: Keep randomness note generation, but add more variables to make generation more predicatable for practice.
-    public static void SpawnDrag()
+    public static void SpawnDrag(float offset)
     {
         // Debug.Log("Spawning A DRAG: ");
         int randomStartNotePath = (int)Random.Range(0, 4);
         int randomEndNotePath = (int)Random.Range(0, 4);
-        string def = Conductor.songPosition.ToString() + "," + 2.ToString() + "," + randomStartNotePath.ToString() + "," + randomEndNotePath.ToString() + "," + 2.ToString();
+        string def = offset + "," + 2.ToString() + "," + randomStartNotePath.ToString() + "," + randomEndNotePath.ToString() + "," + 2.ToString();
         
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
         // Debug.Log("Drag Spawning Position: " + spawnPosition);
@@ -84,25 +84,25 @@ public class NoteSpawner : MonoBehaviour {
     // Spawnds a hold note
     // Definition of a HOLDNOTE: [offset, startPath, length, isTransition]]
     // isTransition - bool to decide weather the note is a transition note or not.
-    public static void SpawnHold(int notePath, string isTransition, int length)
+    public static void SpawnHold(float offset, int notePath, string isTransition, int length)
     {
         // Change the name of the note for easier debugging.
         noteID = "Note " + noteIndex.ToString();
         noteIndex++;
 
         int randomStartNotePath = notePath; //(int)Random.Range(0, 4);
-        string def = Conductor.songPosition.ToString() + "," + randomStartNotePath.ToString() + "," + length + "," + isTransition;
+        string def = offset + "," + randomStartNotePath.ToString() + "," + length + "," + isTransition;
 
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
       
         GameObject tmp = Instantiate(Hold, spawnPosition, baseRotation);
         tmp.GetComponent<NoteHold>().ParseDefinition(def);
-        tmp.GetComponent<NoteBase>().Construct(randomStartNotePath, noteID);
+        tmp.GetComponent<NoteBase>().Construct(offset, randomStartNotePath, noteID);
     }
 
     // Spawns a flick note
     // Definition of a FLICKNOTE: [offset,startPath,endPath,flickDirection]
-    public static void SpawnFlick(int startPath, int endPath, string direction)
+    public static void SpawnFlick(float offset, int startPath, int endPath, string direction)
     {
         // Change the name of the note for easier debugging.
         noteID = "Note " + noteIndex.ToString();
@@ -113,7 +113,7 @@ public class NoteSpawner : MonoBehaviour {
         Vector3 spawnPosition = new Vector3((NotePath.NotePaths[startPath].transform.position.x + NotePath.NotePaths[endPath].transform.position.x) / 2, basePosition.y, basePosition.z);
         GameObject tmp = Instantiate(Flick, spawnPosition, baseRotation);
         tmp.GetComponent<NoteFlick>().ParseDefinition(def);
-        tmp.GetComponent<NoteFlick>().Construct(startPath, noteID, "l");
+        tmp.GetComponent<NoteFlick>().Construct(offset, startPath, noteID, "l");
     }
 
 }

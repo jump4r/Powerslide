@@ -44,7 +44,7 @@ public class NoteDrag : NoteBase {
     {
         // Fill definitions.
         string[] splitString = def.Split(',');
-        StartTime = float.Parse(splitString[0]);
+        EndTime = float.Parse(splitString[0]); // offset
         numSections = int.Parse(splitString[1]);
         startPath = int.Parse(splitString[2]);
         endPath = int.Parse(splitString[3]);
@@ -52,7 +52,7 @@ public class NoteDrag : NoteBase {
 
         // This needs to be here for generic purposes
         notePathID = startPath;
-        EndSliderTime = StartTime + (8f * spb) + (length + spb);
+        EndSliderTime = EndTime + (length + spb);
     }
 
     //  the starting and ending positions of theslider.
@@ -65,7 +65,7 @@ public class NoteDrag : NoteBase {
 
     private void Update()
     {
-        float rTP = (Conductor.songPosition - StartTime) / (8f * Conductor.spb);
+        float rTP = 1f - (EndTime - Conductor.songPosition) / (8f * Conductor.spb);
         transform.position = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
 
         lineRenderer.SetPosition(0, beginningPoint);

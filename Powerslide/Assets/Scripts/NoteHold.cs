@@ -37,7 +37,7 @@ public class NoteHold : NoteBase {
     void Update() {
 
         CheckToRemoveFromActiveNotesList();
-        float rTP = (Conductor.songPosition - StartTime) / (8f * Conductor.spb);
+        float rTP = 1f - (EndTime - Conductor.songPosition) / (8f * Conductor.spb);
         transform.position = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
 
         // Set the vertex positions of the Hold Line.
@@ -58,8 +58,9 @@ public class NoteHold : NoteBase {
     }
 
     // May be unneccisary 
-    public override void Construct(int NotePathID, string NoteName)
+    public override void Construct(float offset, int NotePathID, string NoteName)
     {
+        EndTime = offset;
         this.notePathID = NotePathID;
         gameObject.name = NoteName;
 

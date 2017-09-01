@@ -26,12 +26,12 @@ public class NotePath : MonoBehaviour {
 
     public void AddActiveNote(NoteBase n)
     {
-        Debug.Log("Android Debug: Adding " + n.name + " to the ActiveNotes list");
+        // Debug.Log("Android Debug: Adding " + n.name + " to the ActiveNotes list");
         ActiveNotes.Add(n);
     }
 
     public void RemoveActiveNote(NoteBase n) {
-        Debug.Log("Android Debug: Removing " + n.name + " from the ActiveNotes list");
+        // Debug.Log("Android Debug: Removing " + n.name + " from the ActiveNotes list");
         ActiveNotes.Remove(n);
     }
 

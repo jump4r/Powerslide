@@ -20,6 +20,7 @@ public class Conductor : MonoBehaviour
     public static readonly float offset = 2.390f; // was 2.655, changed for Dango Daikazoku
     public static float songPosition = 0f;
     public static float nextBeatTime = 0f; // time of the next beat.
+    public static float spawnTime = 0f; // Time the note should spawn
     private static AudioSource source; // Source of the audio clip
     public static float spb;
 
@@ -37,12 +38,8 @@ public class Conductor : MonoBehaviour
     private bool running = false;
     private float runTime = 0f;
 
-    // Debug
-    private bool spawnOneNote = false;
-
     void Start()
     {
-        nextBeatTime = offset + spb * 4;
         spb = 60f / (float)bpm; // 60 seconds / beats per minute
         accent = signatureHi;
         double startTick = AudioSettings.dspTime;
@@ -50,6 +47,9 @@ public class Conductor : MonoBehaviour
         source = GetComponent<AudioSource>();
         nextTick = startTick * sampleRate;
         running = true;
+
+        nextBeatTime = offset;
+        spawnTime = offset - spb * 8f;
     }
 
     void Update()
@@ -57,23 +57,22 @@ public class Conductor : MonoBehaviour
         runTime += Time.deltaTime;
         songPosition = source.timeSamples / (float)source.clip.frequency;
 
+        /*
         if (songPosition < offset)
-            return; // Don't spawn yet.
+            return; // Don't spawn yet. */
 
         // Update the next beat time.
-        if (songPosition > nextBeatTime /*&& !spawnOneNote */)
+        if (songPosition > spawnTime)
         {
-            nextBeatTime += spb * 2;
-            spawnOneNote = true;
-            // NoteSpawner.SpawnNote(0);
+            // NoteSpawner.SpawnNote(nextBeatTime, 0);
             // NoteSpawner.SpawnNote(1);
-            //NoteSpawner.SpawnDrag();
-            //NoteSpawner.SpawnHold(1, "false", 2);
+            // NoteSpawner.SpawnDrag(nextBeatTime);
+            // NoteSpawner.SpawnHold(nextBeatTime, 1, "false", 2);
             //NoteSpawner.SpawnHold(2, "false", 2);
-            //NoteSpawner.SpawnFlick(1,0, "l");
+            NoteSpawner.SpawnFlick(nextBeatTime, 1,0, "l");
             //NoteSpawner.SpawnFlick(3,2, "l");
 
-
+            /*
             if (!flip)
             {
                 NoteSpawner.SpawnFlick(1, 0, "l");
@@ -92,9 +91,12 @@ public class Conductor : MonoBehaviour
                 NoteSpawner.SpawnFlick(3, 2, "l");
                 NoteSpawner.SpawnHold(2, "true", 2);
                 flip = !flip;
-            }
-            
-            Debug.Log("Current Song Position: " + songPosition);
+            } */
+
+            // Update Timings: 
+            nextBeatTime += spb * 4;
+            spawnTime = nextBeatTime - spb * 8f;
+            // Debug.Log("Current Song Position: " + songPosition);
         }
 
         // Debug.Log("Current Song Position: " + songPosition);

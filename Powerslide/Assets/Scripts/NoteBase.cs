@@ -63,7 +63,7 @@ public class NoteBase : MonoBehaviour {
         endPosition = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation)), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation)));
         // Debug.Log("Distance from Start to finish of note: " + Vector3.Distance(startPosition, endPosition));
         StartTime = Conductor.songPosition;
-        EndTime = StartTime + (8f * Conductor.spb); // 8 beats after the spawn time, that's the end time
+        // EndTime = StartTime + (8f * Conductor.spb); // 8 beats after the spawn time, that's the end time
 
         // Set materials for 50/100 scores
         Score100 = Resources.Load("Materials/100Score", typeof(Material)) as Material;
@@ -76,14 +76,15 @@ public class NoteBase : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        rTP = (Conductor.songPosition - StartTime) / (8f * Conductor.spb);
+        rTP = 1f - (EndTime - Conductor.songPosition) / (8f * Conductor.spb); // Ratio of completion for the song
+        Debug.Log("EndTime: " + EndTime + ", Song Position: " + Conductor.songPosition + ", rTP: " + rTP);
         transform.position = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
     }
 
     // Virtual Functions
     public virtual void ChangeMaterial(Material mat) { /* GetComponent<MeshRenderer>().material = mat; */ }
-    public virtual void Construct(int NotePathID, string NoteName) { } // Construct a Regular note
-    public virtual void Construct(int NotePathID, string NoteName, string direction) { } // Construction  a Flick note.
+    public virtual void Construct(float offset, int NotePathID, string NoteName) { } // Construct a Regular note
+    public virtual void Construct(float offset, int NotePathID, string NoteName, string direction) { } // Construction  a Flick note.
     public virtual void ParseDefinition(string def) { } // Parse the definition of the note
     public virtual void SetFingerId(int id) { } // Set the finger id of the note
 

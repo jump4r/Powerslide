@@ -4,8 +4,9 @@ using System.Collections;
 public class Note : NoteBase {
 
     // When the note is created, fill in the necissary information from NoteSpawner.cs
-    public override void Construct(int notePathID, string NoteName)
+    public override void Construct(float offset, int notePathID, string NoteName)
     {
+        EndTime = offset;
         this.notePathID = notePathID;
         gameObject.name = NoteName;
         // Debug.Log("Notepath is " + this.notePathID);

@@ -40,8 +40,9 @@ public class NoteFlick : NoteBase {
         direction = splitString[3];
     }
 
-    public override void Construct(int NotePathID, string NoteName, string direction)
+    public override void Construct(float offset, int NotePathID, string NoteName, string direction)
     {
+        EndTime = offset;
         notePathID = startPath; // redundant
         gameObject.name = NoteName;
         SetFlickMaterial(); // last var not neded
