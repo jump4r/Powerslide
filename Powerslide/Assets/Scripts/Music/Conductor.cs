@@ -4,9 +4,9 @@ using System.Collections;
 // The code example shows how to implement a metronome that procedurally generates the click sounds via the OnAudioFilterRead callback.
 // While the game is paused or the suspended, this time will not be updated and sounds playing will be paused. Therefore developers of music scheduling routines do not have to do any rescheduling after the app is unpaused 
 
-    // VARAIBLES
-    // BPM = Beats Per Minute
-    // Offset - The amount of time before the first beat hits.
+// VARAIBLES
+// BPM = Beats Per Minute
+// Offset - The amount of time before the first beat hits.
 [RequireComponent(typeof(AudioSource))]
 public class Conductor : MonoBehaviour
 {
@@ -16,16 +16,22 @@ public class Conductor : MonoBehaviour
      * Celestial Stinger - bpm: 259, offset: 572
    :*/
     // public static Conductor conductor;
-    public static readonly float bpm = 100f;
-    public static readonly float offset = 2.390f; // was 2.655, changed for Dango Daikazoku
+    public static float bpm = 100f;
+    public static float offset = 2.390f; // was 2.655, changed for Dango Daikazoku
     public static float songPosition = 0f;
     public static float nextBeatTime = 0f; // time of the next beat.
     public static float spawnTime = 0f; // Time the note should spawn
-    private static AudioSource source; // Source of the audio clip
+
+    [SerializeField]
+    private AudioSource source; // Source of the audio clip
+
     public static float spb;
 
     // Testing purposes
     private bool flip = true;
+
+    private Beatmap beatmap;
+    private int currentNoteIndex = 0;
 
     public float gain = 0.5F;
     public int signatureHi = 4;
@@ -52,54 +58,71 @@ public class Conductor : MonoBehaviour
         spawnTime = offset - spb * 8f;
     }
 
+    public void LoadBeatmap(Beatmap beatmap)
+    {
+        if (source == null) { source = GetComponent<AudioSource>(); }
+        this.beatmap = beatmap;
+        source.clip = beatmap.song;
+        spb = 60f / beatmap.BPM; // Seconds per beat
+        offset = beatmap.Offset / 1000f; // Offset is in milliseconds for easier readibility
+        nextBeatTime = GetNextBeatTime(beatmap.Notes[currentNoteIndex]);
+        Debug.Log("Total Number of notes: " + beatmap.Notes.Count);
+        Play();
+    }
+
+    private float GetNextBeatTime(string hitNote)
+    {
+        float offset = float.Parse(hitNote.Split(',')[0]) / 1000f;
+        Debug.Log("Next Beat Time: " + offset);
+        return offset;
+    }
+
     void Update()
     {
         runTime += Time.deltaTime;
         songPosition = source.timeSamples / (float)source.clip.frequency;
+        // Debug.Log("Song Position: " + songPosition + ", SpawnTime: " + spawnTime);
 
         /*
         if (songPosition < offset)
             return; // Don't spawn yet. */
 
         // Update the next beat time.
-        if (songPosition > spawnTime)
+        while (songPosition > spawnTime && currentNoteIndex < beatmap.Notes.Count)
         {
+            Debug.Log("Spawn Note");
             // NoteSpawner.SpawnNote(nextBeatTime, 0);
             // NoteSpawner.SpawnNote(1);
             // NoteSpawner.SpawnDrag(nextBeatTime);
-            // NoteSpawner.SpawnHold(nextBeatTime, 1, "false", 2);
+            // NoteSpawner.SpawnHold(beatmap.Notes[currentNoteIndex].Split(','));
             //NoteSpawner.SpawnHold(2, "false", 2);
-            NoteSpawner.SpawnFlick(nextBeatTime, 1,0, "l");
+            // NoteSpawner.SpawnFlick(nextBeatTime, 1,0, "l");
             //NoteSpawner.SpawnFlick(3,2, "l");
-
-            /*
-            if (!flip)
-            {
-                NoteSpawner.SpawnFlick(1, 0, "l");
-                NoteSpawner.SpawnHold(0, "true", 2);
-
-                NoteSpawner.SpawnFlick(2, 3, "r");
-                NoteSpawner.SpawnHold(3, "true", 2);
-                flip = !flip;
-            }
-
-            else
-            {
-                NoteSpawner.SpawnFlick(0, 1, "r");
-                NoteSpawner.SpawnHold(1, "true", 2);
-
-                NoteSpawner.SpawnFlick(3, 2, "l");
-                NoteSpawner.SpawnHold(2, "true", 2);
-                flip = !flip;
-            } */
+            NoteSpawner.SpawnHitObject(beatmap.Notes[currentNoteIndex]);
 
             // Update Timings: 
-            nextBeatTime += spb * 4;
-            spawnTime = nextBeatTime - spb * 8f;
+            currentNoteIndex++;
+            if (currentNoteIndex < beatmap.Notes.Count)
+            {
+                nextBeatTime = GetNextBeatTime(beatmap.Notes[currentNoteIndex]);
+                spawnTime = nextBeatTime - spb * 8f;
+            }
             // Debug.Log("Current Song Position: " + songPosition);
         }
 
-        // Debug.Log("Current Song Position: " + songPosition);
+        Debug.Log("Current Song Position: " + songPosition + ", Spawn Time: " + spawnTime);
+    }
+
+    public void Play()
+    {
+        if (source.clip != null) {
+            source.Play();
+        }
+    }
+
+    public void GetNextBeat()
+    {
+        
     }
 
     void OnAudioFilterRead(float[] data, int channels)

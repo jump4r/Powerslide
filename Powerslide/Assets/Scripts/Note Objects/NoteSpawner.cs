@@ -48,20 +48,45 @@ public class NoteSpawner : MonoBehaviour {
         Transition = Resources.Load("Prefabs/Transition") as GameObject;
 	}
 
+    public static void SpawnHitObject(string raw_hitObject)
+    {
+        string[] hitObject = raw_hitObject.Split(',');
+        NoteType hitObjectType;
+        if (hitObject.Length > 2)
+        {
+            hitObjectType = (NoteType)int.Parse(hitObject[1]);
+            switch (hitObjectType)
+            {
+                case (NoteType.Regular):
+                    SpawnNote(raw_hitObject.Split(','));
+                    break;
+
+                case (NoteType.Hold):
+                    SpawnHold(raw_hitObject.Split(','));
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
     // Spawns a regular note
     // Definition of a NOTE: [offset, noteType, startPath]
-    public static void SpawnNote(float offset, int spawnNotePath)
+    public static void SpawnNote(string[] noteDef)
     {
         // Change the name of the note for easier debugging.
         noteID = "Note " + noteIndex.ToString();
         noteIndex++;
 
-        // Spawn the note along a random NotePath
-        int randomStartNotePath = spawnNotePath; // (int)Random.Range(0, 4);
-        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
+        // Parse Def
+        float offset = float.Parse(noteDef[0]) / 1000f;
+        int startPath = int.Parse(noteDef[2]);
+
+        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[startPath].transform.position.x, basePosition.y, basePosition.z);
         GameObject tmp = Instantiate(Note, spawnPosition, baseRotation) as GameObject;
       
-        tmp.GetComponent<NoteBase>().Construct(offset, randomStartNotePath, noteID); // ROFL APPARENTLY THIS WORKS. $$$$$$YENYENYENYENWONWONWONWON
+        tmp.GetComponent<NoteBase>().Construct(offset, startPath, noteID); // ROFL APPARENTLY THIS WORKS. $$$$$$YENYENYENYENWONWONWONWON
 
     }
 
@@ -82,26 +107,37 @@ public class NoteSpawner : MonoBehaviour {
     }
 
     // Spawnds a hold note
-    // Definition of a HOLDNOTE: [offset, startPath, length, isTransition]]
+    // Definition of a HOLDNOTE: [offset, noteType, startPath, length, isTransition]
     // isTransition - bool to decide weather the note is a transition note or not.
-    public static void SpawnHold(float offset, int notePath, string isTransition, int length)
+    public static void SpawnHold(string[] def)
     {
+        Debug.Log("Calling Spawn Hold Note");
         // Change the name of the note for easier debugging.
         noteID = "Note " + noteIndex.ToString();
         noteIndex++;
 
-        int randomStartNotePath = notePath; //(int)Random.Range(0, 4);
-        string def = offset + "," + randomStartNotePath.ToString() + "," + length + "," + isTransition;
+        if (def.Length != 5)
+        {
+            Debug.Log("Something went wrong spawning the hold note");
+            return;
+        } 
 
-        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
+        float offset = float.Parse(def[0]) / 1000f;
+        int path = int.Parse(def[2]);
+        int length = int.Parse(def[3]);
+        bool isTransition = bool.Parse(def[4]);
+
+        string definition = offset + "," + path.ToString() + "," + length + "," + isTransition;
+
+        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[path].transform.position.x, basePosition.y, basePosition.z);
       
         GameObject tmp = Instantiate(Hold, spawnPosition, baseRotation);
-        tmp.GetComponent<NoteHold>().ParseDefinition(def);
-        tmp.GetComponent<NoteBase>().Construct(offset, randomStartNotePath, noteID);
+        tmp.GetComponent<NoteHold>().ParseDefinition(definition);
+        tmp.GetComponent<NoteBase>().Construct(offset, path, noteID);
     }
 
     // Spawns a flick note
-    // Definition of a FLICKNOTE: [offset,startPath,endPath,flickDirection]
+    // Definition of a FLICKNOTE: [offset, noteType, startPath,endPath,flickDirection]
     public static void SpawnFlick(float offset, int startPath, int endPath, string direction)
     {
         // Change the name of the note for easier debugging.
