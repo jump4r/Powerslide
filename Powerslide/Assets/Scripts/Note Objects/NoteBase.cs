@@ -58,7 +58,7 @@ public class NoteBase : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        playerSpeedMult = 2f;
+        playerSpeedMult = 4f;
         startPosition = (this.gameObject.transform.position);
         endPosition = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation)), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation)));
         // Debug.Log("Distance from Start to finish of note: " + Vector3.Distance(startPosition, endPosition));

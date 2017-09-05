@@ -8,7 +8,7 @@ public class NoteSpawner : MonoBehaviour {
     private static Vector3 basePosition;
 
     private float distanceFromHitboard; // distances = mpb * beatsFromHitbaord * speedMultiplier
-    private float pSM = 2.0f; // Player Speed Mulitplier
+    private float pSM = 4.0f; // Player Speed Mulitplier
 
     // Timing Variables
     public float BPM;
@@ -124,10 +124,10 @@ public class NoteSpawner : MonoBehaviour {
 
         float offset = float.Parse(def[0]) / 1000f;
         int path = int.Parse(def[2]);
-        int length = int.Parse(def[3]);
+        float length = float.Parse(def[3]);
         bool isTransition = bool.Parse(def[4]);
 
-        string definition = offset + "," + path.ToString() + "," + length + "," + isTransition;
+        string definition = offset + "," + path.ToString() + "," + length.ToString() + "," + isTransition;
 
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[path].transform.position.x, basePosition.y, basePosition.z);
       

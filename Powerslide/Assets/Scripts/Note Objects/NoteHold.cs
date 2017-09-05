@@ -53,7 +53,7 @@ public class NoteHold : NoteBase {
         string[] splitString = def.Split(',');
 
         notePathID = int.Parse(splitString[1]);
-        length = int.Parse(splitString[2]);
+        length = float.Parse(splitString[2]);
         isTransitionNote = bool.Parse(splitString[3]);
     }
 
