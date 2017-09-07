@@ -1,6 +1,7 @@
 [General]
 AudioFilename: Chihou Sousei
-Offset: 1422
+OsuOffset: 1422
+RawOffset: 1501
 BPM: 170
 
 [HitObjects]
