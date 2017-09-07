@@ -65,6 +65,10 @@ public class NoteSpawner : MonoBehaviour {
                     SpawnHold(raw_hitObject.Split(','));
                     break;
 
+                case (NoteType.Flick):
+                    SpawnFlick(raw_hitObject.Split(','));
+                    break;
+
                 default:
                     break;
             }
@@ -138,18 +142,29 @@ public class NoteSpawner : MonoBehaviour {
 
     // Spawns a flick note
     // Definition of a FLICKNOTE: [offset, noteType, startPath,endPath,flickDirection]
-    public static void SpawnFlick(float offset, int startPath, int endPath, string direction)
+    public static void SpawnFlick(string[] def)
     {
         // Change the name of the note for easier debugging.
         noteID = "Note " + noteIndex.ToString();
         noteIndex++;
 
-        string def = Conductor.songPosition.ToString() + "," + startPath + "," + endPath + "," + direction; // startin with a left flick
+        if (def.Length != 5)
+        {
+            Debug.Log("Note type doesn't match the note parameters");
+            return;
+        }
+
+        float offset = float.Parse(def[0]) / 1000f;
+        int startPath = int.Parse(def[2]);
+        int endPath = int.Parse(def[3]);
+        string direction = def[4];
+
+        string definition = Conductor.songPosition.ToString() + "," + startPath + "," + endPath + "," + direction;
 
         Vector3 spawnPosition = new Vector3((NotePath.NotePaths[startPath].transform.position.x + NotePath.NotePaths[endPath].transform.position.x) / 2, basePosition.y, basePosition.z);
         GameObject tmp = Instantiate(Flick, spawnPosition, baseRotation);
-        tmp.GetComponent<NoteFlick>().ParseDefinition(def);
-        tmp.GetComponent<NoteFlick>().Construct(offset, startPath, noteID, "l");
+        tmp.GetComponent<NoteFlick>().ParseDefinition(definition);
+        tmp.GetComponent<NoteFlick>().Construct(offset, startPath, noteID, direction);
     }
 
 }

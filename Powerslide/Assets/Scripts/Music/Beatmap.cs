@@ -16,7 +16,9 @@ public class Beatmap : MonoBehaviour {
     // General
     public string SongName = "";
     public AudioClip song;
-    public int Offset;
+    public int OsuOffset;
+    public int RawOffset;
+    public int OffsetDifference; // Because we are using osu to generate maps, which will sometimes trim audio files, we must get the real offset from a program like audiacity, and then add the offset difference to each HitObject
     public float BPM;
 
     public List<string> Notes;
@@ -42,7 +44,7 @@ public class Beatmap : MonoBehaviour {
     private bool LoadFile(string filename)
     {
         TextAsset beatmapTextAsset = Resources.Load("Beatmaps/" + filename) as TextAsset;
-        Debug.Log("Beatmap Text: " + beatmapTextAsset.text); // I'm sure this is a horrible way to do this.
+        // Debug.Log("Beatmap Text: " + beatmapTextAsset.text); // I'm sure this is a horrible way to do this.
         // string file = Path.GetFullPath(Application.dataPath + "\\Resources\\Beatmaps\\" + filename + ".txt");
 
         // Load beatmap
@@ -60,7 +62,7 @@ public class Beatmap : MonoBehaviour {
             beatmapSplitText[i] = beatmapSplitText[i].Trim();
         }
 
-        Debug.Log("Beatmap Split Text Count: " + beatmapSplitText[0]);
+        // Debug.Log("Beatmap Split Text Count: " + beatmapSplitText[0]);
         return true;
         /*
         try
@@ -103,21 +105,23 @@ public class Beatmap : MonoBehaviour {
             {
                 Debug.Log("General Messsage");
                 SongName = GetInfoFromLine(beatmapSplitText[i + 1]);
-                Offset = int.Parse(GetInfoFromLine(beatmapSplitText[i + 2]));
-                BPM = float.Parse(GetInfoFromLine(beatmapSplitText[i + 3]));
+                OsuOffset = int.Parse(GetInfoFromLine(beatmapSplitText[i + 2]));
+                RawOffset = int.Parse(GetInfoFromLine(beatmapSplitText[i + 3]));
+                OffsetDifference = RawOffset - OsuOffset;
+                BPM = float.Parse(GetInfoFromLine(beatmapSplitText[i + 4]));
             }
             // Load up the Hit Objects in thew Notes list
             if (string.Compare(beatmapSplitText[i], "[HitObjects]") == 0)
             {
-                Debug.Log("Get Hit Objects:");
+                // Debug.Log("Get Hit Objects:");
                 while (i + 1 < beatmapSplitText.Count)
                 {
-                    Debug.Log("Adding Hit Object To List");
+                    // Debug.Log("Adding Hit Object To List");
                     Notes.Add(beatmapSplitText[i+1]);
                     i++;
                 }
             }
-            else { Debug.Log(beatmapSplitText[i]); }
+            else { /* Debug.Log(beatmapSplitText[i]); */ }
         }
 
         LoadAudio(SongName);
@@ -126,7 +130,7 @@ public class Beatmap : MonoBehaviour {
     private string GetInfoFromLine(string line)
     {
         string rtn = line.Split(':')[1].Trim();
-        Debug.Log("Returning: " + rtn);
+        // Debug.Log("Returning: " + rtn);
         return rtn;
     }
 
@@ -135,10 +139,10 @@ public class Beatmap : MonoBehaviour {
         song = Resources.Load("Sound FX/Music/" + filename) as AudioClip;
         if (song == null)
         {
-            Debug.Log("Loading Failed!");
+            // Debug.Log("Loading Failed!");
             return;
         }
 
-        Debug.Log("Load Successful");
+        // Debug.Log("Load Successful");
     }
 }

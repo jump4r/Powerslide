@@ -10,6 +10,7 @@ public class Note : NoteBase {
         this.notePathID = notePathID;
         gameObject.name = NoteName;
         // Debug.Log("Notepath is " + this.notePathID);
+        Debug.Log(gameObject.name + " Spawned at: " + Conductor.songPosition + ", should end by " + EndTime);
     }
 
 	void OnEnable () {

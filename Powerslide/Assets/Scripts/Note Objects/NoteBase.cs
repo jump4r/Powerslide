@@ -120,7 +120,7 @@ public class NoteBase : MonoBehaviour {
         {
             NotePath.NotePaths[notePathID].AddActiveNote(this);
         }
-
+        Debug.Log(gameObject.name + " is ready to hit at: " + Conductor.songPosition + ", should be around " + EndTime);
         isReadyToHit = true;
     }
 
