@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/playground.unity
+- path: Assets/Song Select.unity
   isLoaded: 1
   isActive: 1
