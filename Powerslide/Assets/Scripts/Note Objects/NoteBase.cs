@@ -61,9 +61,7 @@ public class NoteBase : MonoBehaviour {
         playerSpeedMult = 4f;
         startPosition = (this.gameObject.transform.position);
         endPosition = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation)), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation)));
-        // Debug.Log("Distance from Start to finish of note: " + Vector3.Distance(startPosition, endPosition));
         StartTime = Conductor.songPosition;
-        // EndTime = StartTime + (8f * Conductor.spb); // 8 beats after the spawn time, that's the end time
 
         // Set materials for 50/100 scores
         Score100 = Resources.Load("Materials/100Score", typeof(Material)) as Material;
@@ -76,9 +74,9 @@ public class NoteBase : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        rTP = 1f - (EndTime - Conductor.songPosition) / (8f * Conductor.spb); // Ratio of completion for the song
-        Debug.Log("EndTime: " + EndTime + ", Song Position: " + Conductor.songPosition + ", rTP: " + rTP);
-        transform.position = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
+        rTP = 1f - (EndTime - Conductor.songPosition) / (NoteHelper.Whole * Conductor.spb); // Ratio of completion for the song
+        // Debug.Log("EndTime: " + EndTime + ", Song Position: " + Conductor.songPosition + ", rTP: " + rTP);
+        transform.position = new Vector3(startPosition.x, startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
     }
 
     // Virtual Functions

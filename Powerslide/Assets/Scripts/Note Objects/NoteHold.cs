@@ -37,8 +37,8 @@ public class NoteHold : NoteBase {
     void Update() {
 
         CheckToRemoveFromActiveNotesList();
-        float rTP = 1f - (EndTime - Conductor.songPosition) / (8f * Conductor.spb);
-        transform.position = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
+        float rTP = 1f - (EndTime - Conductor.songPosition) / (NoteHelper.Whole * Conductor.spb);
+        transform.position = new Vector3(startPosition.x, startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
 
         // Set the vertex positions of the Hold Line.
         CalculatePositions(); // Recalculate the positions of the points

@@ -32,7 +32,7 @@ public class NoteSpawner : MonoBehaviour {
 	void Start () {
         // TODO: Given a list of distance, a BPM, and Velocity Mulitplier, prepare to spawn notes.
         // Set up the rotation, Spawn the hitmarkers
-        distanceFromHitboard = 8f * pSM; // how far away we are going to spawn the notes.
+        distanceFromHitboard = NoteHelper.Whole * pSM; // how far away we are going to spawn the notes.
         baseRotation = BoardObject.transform.rotation;
         xRotation = 55f * Mathf.PI / 180f;
         basePosition = new Vector3(0f, BoardObject.transform.position.y + distanceFromHitboard * Mathf.Sin(xRotation) + 0.1f, BoardObject.transform.position.z + distanceFromHitboard * Mathf.Cos(xRotation));

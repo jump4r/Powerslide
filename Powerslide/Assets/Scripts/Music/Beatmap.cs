@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.IO;
 using System.Text;
 using System.Linq;
@@ -32,6 +33,12 @@ public class Beatmap : MonoBehaviour {
         if (beatmapLoaded)
         {
             ParseBeatmap();
+        }
+
+        // For debug purposes, only play beatmap on start if we are in the Playground
+        // This can be removed later.
+        if (SceneManager.GetActiveScene().name == "Playground")
+        {
             GameObject.FindGameObjectWithTag("Conductor").GetComponent<Conductor>().LoadBeatmap(this);
         }
     }
@@ -64,35 +71,14 @@ public class Beatmap : MonoBehaviour {
 
         // Debug.Log("Beatmap Split Text Count: " + beatmapSplitText[0]);
         return true;
-        /*
-        try
-        {
-            string line;
-            StreamReader reader = new StreamReader(file, Encoding.Default);
-            using (reader)
-            {
-                do
-                {
-                    line = reader.ReadLine();
-                    if (line != null)
-                    {
-                        beatmapSplitText.Add(line);
-                    }
-                }
-                while (line != null);
-                reader.Close();
-                Debug.Log("Loaded Beatmap, number of lines: " + beatmapSplitText.Count);
-                return true;
-            }
-        }
+    }
 
-        catch (Exception e)
-        {
-            Console.WriteLine("{0}\n", e.Message);
-            Debug.Log("Error Loading Beatmap");
-            return false;
-        }
-        */
+    // Beatmap has been selected for loading into the playground
+    public void BeatmapSelected()
+    {
+        gameObject.transform.SetParent(null);
+        DontDestroyOnLoad(gameObject);
+        Debug.Log("Don't Destroy This Object");
     }
 
     // Load up the variables from the beatmap file.

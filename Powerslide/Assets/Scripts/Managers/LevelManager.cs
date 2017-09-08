@@ -15,4 +15,9 @@ public class LevelManager : MonoBehaviour {
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(1);
     }
+
+    public void DestroyBeatmapBeforeLoad()
+    {
+        Destroy(GameObject.FindGameObjectWithTag("Beatmap"));
+    }
 }

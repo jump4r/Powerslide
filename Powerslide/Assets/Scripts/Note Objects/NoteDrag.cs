@@ -65,8 +65,8 @@ public class NoteDrag : NoteBase {
 
     private void Update()
     {
-        float rTP = 1f - (EndTime - Conductor.songPosition) / (8f * Conductor.spb);
-        transform.position = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
+        float rTP = 1f - (EndTime - Conductor.songPosition) / (NoteHelper.Whole * Conductor.spb);
+        transform.position = new Vector3(startPosition.x, startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
 
         lineRenderer.SetPosition(0, beginningPoint);
         lineRenderer.SetPosition(1, endingPoint);

@@ -21,18 +21,19 @@ public class Conductor : MonoBehaviour
     public static float songPosition = 0f;
     public static float nextBeatTime = 0f; // time of the next beat.
     public static float spawnTime = 0f; // Time the note should spawn
+    public static float SpawnTimeOffset;
 
     [SerializeField]
     private AudioSource source; // Source of the audio clip
 
     public static float spb;
 
-    // Testing purposes
-    private bool flip = true;
-
     private Beatmap beatmap;
     public static int OffsetDifference;
     private int currentNoteIndex = 0;
+
+    // Song
+    private bool isNotesFinished = false;
 
     public float gain = 0.5F;
     public int signatureHi = 4;
@@ -58,6 +59,7 @@ public class Conductor : MonoBehaviour
         Debug.Log("Set Spawn Time: " + spawnTime);
     }
 
+    // Takes information from the beatmap and loads the paramters into the conductor
     public void LoadBeatmap(Beatmap beatmap)
     {
         if (source == null) { source = GetComponent<AudioSource>(); }
@@ -65,12 +67,11 @@ public class Conductor : MonoBehaviour
         source.clip = beatmap.song;
         spb = 60f / beatmap.BPM; // Seconds per beat
         offset = beatmap.OsuOffset / 1000f; // Offset is in milliseconds for easier readibility
-        OffsetDifference = beatmap.OffsetDifference;
+        OffsetDifference = beatmap.OffsetDifference; // Difference between the osu offset and the actual offset of the song
         nextBeatTime = GetNextBeatTime(CompileNoteForSpawning(beatmap.Notes[currentNoteIndex]));
-        spawnTime = nextBeatTime - (spb * 8f);
-        
-        Debug.Log("Set Spawn Time To: " + spawnTime);
-        Play();
+        SpawnTimeOffset = spb * NoteHelper.Whole; // Difference between the EndTime and the SpawnTime
+        spawnTime = nextBeatTime - SpawnTimeOffset;
+        Play(); // Play the audio
     }
 
     private float GetNextBeatTime(string hitNote)
@@ -101,10 +102,13 @@ public class Conductor : MonoBehaviour
             if (currentNoteIndex < beatmap.Notes.Count)
             {
                 nextBeatTime = GetNextBeatTime(CompileNoteForSpawning(beatmap.Notes[currentNoteIndex]));
-                spawnTime = nextBeatTime - (spb * 8f);
+                spawnTime = nextBeatTime - SpawnTimeOffset;
             }
             // Debug.Log("Current Song Position: " + songPosition);
         }
+
+        // Check to finish
+        CheckIfFinished();
 
         // Debug.Log("Current Song Position: " + songPosition + ", Spawn Time: " + spawnTime);
     }
@@ -124,6 +128,24 @@ public class Conductor : MonoBehaviour
         if (source.clip != null) {
             source.Play();
         }
+    }
+
+    private void CheckIfFinished()
+    {
+        if (currentNoteIndex < beatmap.Notes.Count) { return; } // Check to see if we are not on the alst note
+        if (songPosition > spawnTime + (NoteHelper.Whole * 2f * spb))
+        {
+            Finish();
+        }
+    }
+
+    // Song has been finished, display score screen.
+    public void Finish()
+    {
+        // To do: Figure out a better place to put this Clear function. We need to clear all of the notepaths out of the static list.
+        NotePath.NotePaths.Clear(); 
+        GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().DestroyBeatmapBeforeLoad();
+        GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().ChangeLevel(2);
     }
 
     void OnAudioFilterRead(float[] data, int channels)
