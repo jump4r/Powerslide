@@ -103,7 +103,6 @@ public class Beatmap : MonoBehaviour {
         {
             if (string.Compare(beatmapSplitText[i], "[General]") == 0)
             {
-                Debug.Log("General Messsage");
                 SongName = GetInfoFromLine(beatmapSplitText[i + 1]);
                 OsuOffset = int.Parse(GetInfoFromLine(beatmapSplitText[i + 2]));
                 RawOffset = int.Parse(GetInfoFromLine(beatmapSplitText[i + 3]));

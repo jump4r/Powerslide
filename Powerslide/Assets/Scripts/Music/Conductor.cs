@@ -47,7 +47,6 @@ public class Conductor : MonoBehaviour
 
     void Start()
     {
-        spb = 60f / (float)bpm; // 60 seconds / beats per minute
         accent = signatureHi;
         double startTick = AudioSettings.dspTime;
         sampleRate = AudioSettings.outputSampleRate;
@@ -56,7 +55,7 @@ public class Conductor : MonoBehaviour
         running = true;
 
         nextBeatTime = offset;
-        spawnTime = offset - spb * 8f;
+        Debug.Log("Set Spawn Time: " + spawnTime);
     }
 
     public void LoadBeatmap(Beatmap beatmap)
@@ -68,7 +67,9 @@ public class Conductor : MonoBehaviour
         offset = beatmap.OsuOffset / 1000f; // Offset is in milliseconds for easier readibility
         OffsetDifference = beatmap.OffsetDifference;
         nextBeatTime = GetNextBeatTime(CompileNoteForSpawning(beatmap.Notes[currentNoteIndex]));
-        // Debug.Log("Total Number of notes: " + beatmap.Notes.Count);
+        spawnTime = nextBeatTime - (spb * 8f);
+        
+        Debug.Log("Set Spawn Time To: " + spawnTime);
         Play();
     }
 
@@ -83,7 +84,7 @@ public class Conductor : MonoBehaviour
     {
         runTime += Time.deltaTime;
         songPosition = source.timeSamples / (float)source.clip.frequency;
-        // Debug.Log("Song Position: " + songPosition + ", SpawnTime: " + spawnTime);
+        Debug.Log("Song Position: " + songPosition + ", SpawnTime: " + spawnTime);
 
         /*
         if (songPosition < offset)
@@ -92,13 +93,7 @@ public class Conductor : MonoBehaviour
         // Update the next beat time.
         while (songPosition > spawnTime && currentNoteIndex < beatmap.Notes.Count)
         {
-            // NoteSpawner.SpawnNote(nextBeatTime, 0);
-            // NoteSpawner.SpawnNote(1);
-            // NoteSpawner.SpawnDrag(nextBeatTime);
-            // NoteSpawner.SpawnHold(beatmap.Notes[currentNoteIndex].Split(','));
-            //NoteSpawner.SpawnHold(2, "false", 2);
-            // NoteSpawner.SpawnFlick(nextBeatTime, 1,0, "l");
-            //NoteSpawner.SpawnFlick(3,2, "l");
+            Debug.Log("Spawn Time: " + spawnTime + ", Song Position " + songPosition);
             NoteSpawner.SpawnHitObject(CompileNoteForSpawning(beatmap.Notes[currentNoteIndex]));
 
             // Update Timings: 
@@ -106,7 +101,7 @@ public class Conductor : MonoBehaviour
             if (currentNoteIndex < beatmap.Notes.Count)
             {
                 nextBeatTime = GetNextBeatTime(CompileNoteForSpawning(beatmap.Notes[currentNoteIndex]));
-                spawnTime = nextBeatTime - spb * 8f;
+                spawnTime = nextBeatTime - (spb * 8f);
             }
             // Debug.Log("Current Song Position: " + songPosition);
         }
@@ -121,7 +116,6 @@ public class Conductor : MonoBehaviour
         int newEndTime = int.Parse(split[0]) + OffsetDifference;
         split[0] = newEndTime.ToString();
         string rtn = string.Join(",", split);
-        Debug.Log("New Note: " + rtn);
         return rtn;
     }
 
