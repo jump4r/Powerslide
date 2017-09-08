@@ -1,0 +1,15 @@
+[General]
+AudioFilename: Everlasting Message
+OsuOffset: 145
+RawOffset: 145
+BPM: 230
+
+[HitObjects]
+6405,3,0,1,false
+6927,3,1,1,false
+7449,3,0,1,false
+7971,3,1,1,false
+8492,3,0,1,false
+9014,3,1,1,false
+9536,3,0,1,false
+10058,3,1,1,false
