@@ -1,7 +1,7 @@
 # To Do List
 General
-- Make song selection screen and link to it from the intro screen
-- Make song selection buttons which each load a specific song and beatmap
+- ~~Make song selection screen and link to it from the intro screen~~
+- ~~Make song selection buttons which each load a specific song and beatmap~~
 - Create a tutorial scene which explains each of the different hit objects and their functions
 - Create a results screen which will show the players score and hit accuracy.
 
