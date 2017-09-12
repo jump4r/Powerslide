@@ -11,7 +11,7 @@ Game
 
 Beatmaps
 - ~~Create EASY difficulty beatmap~~
-- Create NORMAL difficulty beatmap
+- ~~Create NORMAL difficulty beatmap~~
 - (In Progress) Create HARD difficulty beatmap
 - Create XX difficulty beatmap
 
