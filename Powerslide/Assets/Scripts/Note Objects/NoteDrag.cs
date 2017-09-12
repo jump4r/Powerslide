@@ -55,6 +55,15 @@ public class NoteDrag : NoteBase {
         EndSliderTime = EndTime + (length + spb);
     }
 
+    public override void Construct(float offset, int startPath, int endPath, float length, string NoteName)
+    {
+        EndTime = offset;
+        this.notePathID = startPath;
+        this.endPath = endPath;
+        this.length = length;
+        name = NoteName;
+    }
+
     //  the starting and ending positions of theslider.
     private void CalculatePositions()
     {
@@ -109,6 +118,7 @@ public class NoteDrag : NoteBase {
         if (Mathf.Abs(xRelPos - sliderPosition.position.x) < 1.14f / 2f) // WHAT IS THIS FLOAT LMAO
         {
             lineRenderer.material = Score100;
+            gm.UpdateScore(Mathf.RoundToInt(HIT_PERFECT * Conductor.spb * Time.deltaTime));
         }
 
         else

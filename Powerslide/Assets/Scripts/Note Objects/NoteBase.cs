@@ -92,6 +92,7 @@ public class NoteBase : MonoBehaviour {
     public virtual void ChangeMaterial(Material mat) { /* GetComponent<MeshRenderer>().material = mat; */ }
     public virtual void Construct(float offset, int NotePathID, string NoteName) { } // Construct a Regular note
     public virtual void Construct(float offset, int NotePathID, string NoteName, string direction) { } // Construction  a Flick note.
+    public virtual void Construct(float offset, int startPath, int endPath, float length, string NoteName) { } // Construction of a Drag Note
     public virtual void ParseDefinition(string def) { } // Parse the definition of the note
     public virtual void SetFingerId(int id) { } // Set the finger id of the note
 

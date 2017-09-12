@@ -69,6 +69,10 @@ public class NoteSpawner : MonoBehaviour {
                     SpawnFlick(raw_hitObject.Split(','));
                     break;
 
+                case (NoteType.Drag):
+                    SpawnDrag(raw_hitObject.Split(','));
+                    break;
+
                 default:
                     break;
             }
@@ -97,17 +101,25 @@ public class NoteSpawner : MonoBehaviour {
     // Spawns a drag note.
     // Definition of a DRAGNOTE: [offset, noteType, numSections, startPath,endPath,length]
     // Player Notes: Keep randomness note generation, but add more variables to make generation more predicatable for practice.
-    public static void SpawnDrag(float offset)
+    public static void SpawnDrag(string[] def)
     {
-        // Debug.Log("Spawning A DRAG: ");
-        int randomStartNotePath = (int)Random.Range(0, 4);
-        int randomEndNotePath = (int)Random.Range(0, 4);
-        string def = offset + "," + 2.ToString() + "," + randomStartNotePath.ToString() + "," + randomEndNotePath.ToString() + "," + 2.ToString();
-        
-        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[randomStartNotePath].transform.position.x, basePosition.y, basePosition.z);
+        // Change the name of the note for easier debugging.
+        noteID = "Note " + noteIndex.ToString();
+        noteIndex++;
+
+        float offset = float.Parse(def[0]) / 1000f;
+        int numSections = int.Parse(def[2]);
+        int startPath = int.Parse(def[3]);
+        int endPath = int.Parse(def[4]);
+        float length = float.Parse(def[5]);
+
+        string definition = offset + "," + numSections + "," + startPath + "," + endPath + "," + length;
+
+        Vector3 spawnPosition = new Vector3(NotePath.NotePaths[startPath].transform.position.x, basePosition.y, basePosition.z);
         // Debug.Log("Drag Spawning Position: " + spawnPosition);
         GameObject tmp = Instantiate(Drag, spawnPosition, baseRotation) as GameObject;
-        tmp.GetComponent<NoteDrag>().ParseDefinition(def);
+        tmp.GetComponent<NoteDrag>().ParseDefinition(definition);
+        tmp.GetComponent<NoteBase>().Construct(offset, startPath, endPath, length, noteID);
     }
 
     // Spawnds a hold note
