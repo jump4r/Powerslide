@@ -82,15 +82,18 @@ public class NoteHold : NoteBase {
 
         float delta = Mathf.Abs(Conductor.songPosition - EndTime);
         //Debug.Log("Expected Hold Note STARTTIME: " + EndTime + ", Actual STARTTIME: " + Conductor.songPosition);
+        // Update the accuracy
         Debug.Log("Delta: " + delta + ", threshold for 50 score, greater than: " + Conductor.spb / 8f);
         if (delta < Conductor.spb / 8f)
         {
             GetComponent<Renderer>().material = Score100;
+            gm.UpdateAccuracy(1f);
         }
 
         else
         {
             GetComponent<Renderer>().material = Score50;
+            gm.UpdateAccuracy(0.5f);
         }
     }
 
@@ -111,6 +114,9 @@ public class NoteHold : NoteBase {
 
     public override void IsBeingHeld()
     {
+        // Update Score 
+        gm.UpdateScore(Mathf.RoundToInt(300f * Conductor.spb * Time.deltaTime));
+        Debug.Log("Android Debug: Score is set to " + Mathf.RoundToInt(300f * Conductor.spb * Time.deltaTime) + " during update");
         ChangeMaterial(Score100);
     }
 

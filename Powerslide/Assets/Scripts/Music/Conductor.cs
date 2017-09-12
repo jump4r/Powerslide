@@ -144,7 +144,7 @@ public class Conductor : MonoBehaviour
     {
         // To do: Figure out a better place to put this Clear function. We need to clear all of the notepaths out of the static list.
         NotePath.NotePaths.Clear(); 
-        GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().DestroyBeatmapBeforeLoad();
+        GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().ResetPlayground();
         GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().ChangeLevel(2);
     }
 

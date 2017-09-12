@@ -86,8 +86,6 @@ public class NoteDrag : NoteBase {
         {
             Active = false;
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
-            // GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().SetActiveDragNote(this);
-            // Debug.Log("We have deactivated a Drag Note in lane: " + notePathID);
         }
     }
 

@@ -10,14 +10,15 @@ public class LevelManager : MonoBehaviour {
         UnityEngine.SceneManagement.SceneManager.LoadScene(levelIndex); // Unity buggy asf..
     }
 
-    // Trying to specificall
+    // Trying to specific
     public void LoadGame()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(1);
     }
 
-    public void DestroyBeatmapBeforeLoad()
+    public void ResetPlayground()
     {
         Destroy(GameObject.FindGameObjectWithTag("Beatmap"));
+        GameManager.ResetGameManager();
     }
 }

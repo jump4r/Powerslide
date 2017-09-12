@@ -17,15 +17,21 @@ public class NoteBase : MonoBehaviour {
 
     public string Name;
     public string definition;
-    public bool active = true;
+    public bool active = true; // Has the note been hit yet?
     public bool isReadyToHit = false;
 
-    // Use this for initialization
+    // Access Game Manager so we can update the score
+    [SerializeField]
+    protected GameManager gm;
+
+    // Score Variables
     public Material Score100;
     public Material Score50;
 
-    // Time note is to arrive at the hit bar
-    public int time;
+    public const int HIT_PERFECT = 300;
+    public const int HIT_GOOD = 100;
+    public const int HIT_BAD = 50;
+    public const int HIT_MISS = 0;
 
     // Speed based things
     public int bpm = 100; // Beats per minute
@@ -63,6 +69,9 @@ public class NoteBase : MonoBehaviour {
         endPosition = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation)), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation)));
         StartTime = Conductor.songPosition;
 
+        // Get The GM
+        gm = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+
         // Set materials for 50/100 scores
         Score100 = Resources.Load("Materials/100Score", typeof(Material)) as Material;
         Score50 = Resources.Load("Materials/50Score", typeof(Material)) as Material;
@@ -96,12 +105,21 @@ public class NoteBase : MonoBehaviour {
     {
         float delta = Mathf.Abs(Conductor.songPosition - EndTime); // Error calculation
         Debug.Log("Error Calculation results in: " + delta);
+
+        // Update the Score based on the accuracy of the hit.
         if (delta < Conductor.spb / 4f)
+        {
+            gm.UpdateAccuracy(1f);
+            gm.UpdateScore(HIT_PERFECT);
             ChangeMaterial(Score100);
-
+        }
         else
+        {
+            gm.UpdateAccuracy(0.5f);
+            gm.UpdateScore(HIT_GOOD);
             ChangeMaterial(Score50);
-
+        }
+        active = false;
         Invoke("DestroyNote", .2f);
         // DestroyNote();
     }
@@ -132,6 +150,13 @@ public class NoteBase : MonoBehaviour {
         // We dont' want to destroy notes that have a "length" field.
         if (type != NoteType.Drag && type != NoteType.Hold && type != NoteType.Transition)
         {
+            // Update the score if we haven't already (In the case where the player missed the note)
+            if (active)
+            {
+                gm.UpdateAccuracy(0f);
+                gm.UpdateScore(HIT_MISS);
+            }
+
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
             Destroy(this.gameObject);
         }
