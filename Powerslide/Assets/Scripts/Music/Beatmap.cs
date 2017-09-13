@@ -22,6 +22,7 @@ public class Beatmap : MonoBehaviour {
     public int OffsetDifference; // Because we are using osu to generate maps, which will sometimes trim audio files, we must get the real offset from a program like audiacity, and then add the offset difference to each HitObject
     public float BPM;
 
+    // Notes List
     public List<string> Notes;
 
     // Use this for initialization

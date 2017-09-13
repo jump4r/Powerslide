@@ -87,13 +87,13 @@ public class NoteHold : NoteBase {
         if (delta < Conductor.spb / 8f)
         {
             GetComponent<Renderer>().material = Score100;
-            gm.UpdateAccuracy(1f);
+            sm.UpdateAccuracy(1f);
         }
 
         else
         {
             GetComponent<Renderer>().material = Score50;
-            gm.UpdateAccuracy(0.5f);
+            sm.UpdateAccuracy(0.5f);
         }
     }
 
@@ -115,7 +115,7 @@ public class NoteHold : NoteBase {
     public override void IsBeingHeld()
     {
         // Update Score 
-        gm.UpdateScore(Mathf.RoundToInt(300f * Conductor.spb * Time.deltaTime));
+        sm.UpdateScore(Mathf.RoundToInt(300f * Conductor.spb * Time.deltaTime));
         Debug.Log("Android Debug: Score is set to " + Mathf.RoundToInt(300f * Conductor.spb * Time.deltaTime) + " during update");
         ChangeMaterial(Score100);
     }

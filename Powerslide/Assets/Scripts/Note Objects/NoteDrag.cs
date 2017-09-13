@@ -2,6 +2,11 @@
 using System.Collections;
 
 [RequireComponent(typeof(LineRenderer))]
+public static class NoteDragSpawnPlacements
+{
+
+}
+
 public class NoteDrag : NoteBase {
 
     // Definition of a DRAGNOTE: [offset,numSections,startPath,endPath,length]
@@ -74,6 +79,8 @@ public class NoteDrag : NoteBase {
 
     private void Update()
     {
+        CheckToRemoveFromActiveNotesList();
+
         float rTP = 1f - (EndTime - Conductor.songPosition) / (NoteHelper.Whole * Conductor.spb);
         transform.position = new Vector3(startPosition.x, startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
 
@@ -118,12 +125,22 @@ public class NoteDrag : NoteBase {
         if (Mathf.Abs(xRelPos - sliderPosition.position.x) < 1.14f / 2f) // WHAT IS THIS FLOAT LMAO
         {
             lineRenderer.material = Score100;
-            gm.UpdateScore(Mathf.RoundToInt(HIT_PERFECT * Conductor.spb * Time.deltaTime));
+            sm.UpdateScore(Mathf.RoundToInt(HIT_PERFECT * Conductor.spb * Time.deltaTime));
         }
 
         else
         {
             lineRenderer.material = Score50;
+        }
+    }
+
+    private void CheckToRemoveFromActiveNotesList()
+    {
+        if (Conductor.songPosition >= EndTime + (Conductor.spb * length))
+        {
+            // Update the objects in the NotePath's Active Notes List.
+            NotePath.NotePaths[notePathID].RemoveActiveNote(this);
+            Destroy(gameObject);
         }
     }
 }

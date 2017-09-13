@@ -22,7 +22,7 @@ public class NoteBase : MonoBehaviour {
 
     // Access Game Manager so we can update the score
     [SerializeField]
-    protected GameManager gm;
+    protected ScoreManager sm;
 
     // Score Variables
     public Material Score100;
@@ -70,7 +70,7 @@ public class NoteBase : MonoBehaviour {
         StartTime = Conductor.songPosition;
 
         // Get The GM
-        gm = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        sm = GameObject.FindGameObjectWithTag("ScoreManager").GetComponent<ScoreManager>();
 
         // Set materials for 50/100 scores
         Score100 = Resources.Load("Materials/100Score", typeof(Material)) as Material;
@@ -110,14 +110,14 @@ public class NoteBase : MonoBehaviour {
         // Update the Score based on the accuracy of the hit.
         if (delta < Conductor.spb / 4f)
         {
-            gm.UpdateAccuracy(1f);
-            gm.UpdateScore(HIT_PERFECT);
+            sm.UpdateAccuracy(1f);
+            sm.UpdateScore(HIT_PERFECT);
             ChangeMaterial(Score100);
         }
         else
         {
-            gm.UpdateAccuracy(0.5f);
-            gm.UpdateScore(HIT_GOOD);
+            sm.UpdateAccuracy(0.5f);
+            sm.UpdateScore(HIT_GOOD);
             ChangeMaterial(Score50);
         }
         active = false;
@@ -154,8 +154,8 @@ public class NoteBase : MonoBehaviour {
             // Update the score if we haven't already (In the case where the player missed the note)
             if (active)
             {
-                gm.UpdateAccuracy(0f);
-                gm.UpdateScore(HIT_MISS);
+                sm.UpdateAccuracy(0f);
+                sm.UpdateScore(HIT_MISS);
             }
 
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);

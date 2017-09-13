@@ -85,7 +85,7 @@ public class Conductor : MonoBehaviour
     {
         runTime += Time.deltaTime;
         songPosition = source.timeSamples / (float)source.clip.frequency;
-        Debug.Log("Song Position: " + songPosition + ", SpawnTime: " + spawnTime);
+        // Debug.Log("Song Position: " + songPosition + ", SpawnTime: " + spawnTime);
 
         /*
         if (songPosition < offset)
@@ -133,7 +133,7 @@ public class Conductor : MonoBehaviour
     private void CheckIfFinished()
     {
         if (currentNoteIndex < beatmap.Notes.Count) { return; } // Check to see if we are not on the alst note
-        if (songPosition > spawnTime + (NoteHelper.Whole * 2f * spb))
+        if (songPosition > spawnTime + (NoteHelper.Whole * 4f * spb))
         {
             Finish();
         }
@@ -145,7 +145,7 @@ public class Conductor : MonoBehaviour
         // To do: Figure out a better place to put this Clear function. We need to clear all of the notepaths out of the static list.
         NotePath.NotePaths.Clear(); 
         GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().ResetPlayground();
-        GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().ChangeLevel(2);
+        GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().ChangeLevel(3);
     }
 
     void OnAudioFilterRead(float[] data, int channels)

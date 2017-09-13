@@ -7,18 +7,22 @@ public class LevelManager : MonoBehaviour {
     
     public void ChangeLevel(int levelIndex)
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(levelIndex); // Unity buggy asf..
-    }
-
-    // Trying to specific
-    public void LoadGame()
-    {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+        SceneManager.LoadScene(levelIndex); // Unity buggy asf..
     }
 
     public void ResetPlayground()
     {
         Destroy(GameObject.FindGameObjectWithTag("Beatmap"));
-        GameManager.ResetGameManager();
+    }
+    
+    // For now, we can just destroy it.
+    public void ResetGameManager()
+    {
+        Destroy(GameObject.FindGameObjectWithTag("GameManager"));
+    }
+
+    public void ResetScoreManager()
+    {
+        ScoreManager.ResetScoreManager();
     }
 }
