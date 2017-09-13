@@ -3,11 +3,12 @@ General
 - ~~Make song selection screen and link to it from the intro screen~~
 - ~~Make song selection buttons which each load a specific song and beatmap~~
 - Create a tutorial scene which explains each of the different hit objects and their functions
-- Create a results screen which will show the players score and hit accuracy.
+- ~~Create a results screen which will show the players score and hit accuracy.~~
+- Allow players to replay maps from the results screen
 
 Game
-- Switch to the score screen after the last hit note has finished playing. 
-- Make hit sounds more subtle
+- ~~Switch to the score screen after the last hit note has finished playing. ~~
+- ~~Make hit sounds more subtle~~
 
 Beatmaps
 - ~~Create EASY difficulty beatmap~~
@@ -16,8 +17,9 @@ Beatmaps
 - Create XX difficulty beatmap
 
 HitObjects
+- (Urgent) Flick objects feel like the need to be started very early in order to land a hit.
 - Allow flick notes to be able to end on a different path than they started from (stretch)
-- Allow drag notes to be spawned with more than simply a start and end position (3+ position which allows for more advanced movement)
+- ~~(Altered) Allow drag notes to be spawned with more than simply a start and end position (3+ position which allows for more advanced movement)~~
 - Allow drag notes to be spawned on a curve (as opposed to linearly)
 
 Editor
