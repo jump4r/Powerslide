@@ -64,7 +64,7 @@ public class NoteBase : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        playerSpeedMult = 4f;
+        playerSpeedMult = Settings.PlayerSpeedMult;
         startPosition = (this.gameObject.transform.position);
         endPosition = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation)), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation)));
         StartTime = Conductor.songPosition;
