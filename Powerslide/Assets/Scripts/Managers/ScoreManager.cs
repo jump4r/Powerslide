@@ -80,7 +80,7 @@ public class ScoreManager : MonoBehaviour {
     {
         Score += noteScore;
         string rtn = Score.ToString("0000000");
-        Debug.Log("Testing String: " + rtn);
+        //Debug.Log("Testing String: " + rtn);
         ScoreText.text = rtn;
     }
 
@@ -89,8 +89,8 @@ public class ScoreManager : MonoBehaviour {
         TotalNotes++;
         PlayerHitNotes += noteAccuracy;
         Accuracy = PlayerHitNotes / TotalNotes;
-        Debug.Log("Testing Accuracy: " + PlayerHitNotes + " / " + TotalNotes);
-        Debug.Log("Testing Accuracy: " + Accuracy.ToString("p"));
+        //Debug.Log("Testing Accuracy: " + PlayerHitNotes + " / " + TotalNotes);
+        //Debug.Log("Testing Accuracy: " + Accuracy.ToString("p"));
         AccuracyText.text = Accuracy.ToString("p");
     }
 

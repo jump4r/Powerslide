@@ -32,7 +32,7 @@ public class NoteSpawner : MonoBehaviour {
 	void Start () {
         // TODO: Given a list of distance, a BPM, and Velocity Mulitplier, prepare to spawn notes.
         // Set up the rotation, Spawn the hitmarkers
-        distanceFromHitboard = NoteHelper.Whole * pSM; // how far away we are going to spawn the notes.
+        distanceFromHitboard = NoteHelper.Whole * Settings.PlayerSpeedMult; // how far away we are going to spawn the notes.
         baseRotation = BoardObject.transform.rotation;
         xRotation = 55f * Mathf.PI / 180f;
         basePosition = new Vector3(0f, BoardObject.transform.position.y + distanceFromHitboard * Mathf.Sin(xRotation) + 0.1f, BoardObject.transform.position.z + distanceFromHitboard * Mathf.Cos(xRotation));
@@ -99,7 +99,7 @@ public class NoteSpawner : MonoBehaviour {
     }
 
     // Spawns a drag note.
-    // Definition of a DRAGNOTE: [offset, noteType, numSections, startPath,endPath,length]
+    // Definition of a DRAGNOTE: [offset, noteType, numSections, startPath,endPath,length,DragNoteType]
     // Player Notes: Keep randomness note generation, but add more variables to make generation more predicatable for practice.
     public static void SpawnDrag(string[] def)
     {
@@ -112,6 +112,21 @@ public class NoteSpawner : MonoBehaviour {
         int startPath = int.Parse(def[3]);
         int endPath = int.Parse(def[4]);
         float length = float.Parse(def[5]);
+        string dragNoteTypeString = def[6];
+        NoteDragType dragNoteType;
+        switch(dragNoteTypeString)
+        {
+            case ("L"):
+                dragNoteType = NoteDragType.Linear;
+                break;
+            case ("C"):
+                Debug.Log("Drag Note Type is set to Curve");
+                dragNoteType = NoteDragType.Curve;
+                break;
+            default:
+                dragNoteType = NoteDragType.Linear; // ugh
+                break;
+        }
 
         string definition = offset + "," + numSections + "," + startPath + "," + endPath + "," + length;
 
@@ -119,7 +134,7 @@ public class NoteSpawner : MonoBehaviour {
         // Debug.Log("Drag Spawning Position: " + spawnPosition);
         GameObject tmp = Instantiate(Drag, spawnPosition, baseRotation) as GameObject;
         tmp.GetComponent<NoteDrag>().ParseDefinition(definition);
-        tmp.GetComponent<NoteBase>().Construct(offset, startPath, endPath, length, noteID);
+        tmp.GetComponent<NoteBase>().Construct(offset, startPath, endPath, length, dragNoteType, noteID);
     }
 
     // Spawnds a hold note

@@ -8,7 +8,7 @@ public class Settings : MonoBehaviour {
     private TouchScreenKeyboard keyboard;
 
     // Player Speed Mult
-    public static float PlayerSpeedMult;
+    public static float PlayerSpeedMult = 4f;
     private bool PlayerSpeedMultMenuOpen = false;
     [SerializeField]
     private Text playerSpeedMultButton;
