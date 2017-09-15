@@ -23,7 +23,7 @@ public class NoteDrag : NoteBase {
     // 2) Start checking after Conductor.songPosition + 8 * playerSpeedMult * spb has been reached. 
 
     // Curved Slider Variables
-    private const int numSegments = 8; // The number of segments we want to represent our "curve"
+    private const int numSegments = 16; // The number of segments we want to represent our "curve"
     private float totalHeight;
     private float segmentHeight;
     private float activeSegment;
@@ -99,7 +99,7 @@ public class NoteDrag : NoteBase {
             segmentEndTime = EndTime + ((1 / numSegments - 1) * length * Conductor.spb); // End Time of the first segment in the curved slider
             curveStartPos = NotePath.NotePaths[startPath].transform.position.x;
             curveEndPos = NotePath.NotePaths[endPath].transform.position.x;
-            totalHeight = Mathf.Pow(2, numSegments - 1) - 1;
+            totalHeight = Mathf.Pow(numSegments, 2);
         }
     }
 
@@ -117,7 +117,7 @@ public class NoteDrag : NoteBase {
             float xOffset = (curveEndPos - curveStartPos) / (numSegments - 1); // How far apart the curve segement points will be placed.
             for (int i = 0; i < segments.Count; i++)
             {
-                segments[i] = new Vector3(transform.position.x + (xOffset * i), transform.position.y + (((Mathf.Pow(2, i) - 1) / totalHeight) * length * playerSpeedMult * Mathf.Sin(xRotation)), transform.position.z + (((Mathf.Pow(2, i) - 1) / totalHeight) * length * playerSpeedMult * Mathf.Cos(xRotation)));
+                segments[i] = new Vector3(transform.position.x + (xOffset * i), transform.position.y + ((Mathf.Pow(i, 2) / totalHeight) * length * playerSpeedMult * Mathf.Sin(xRotation)), transform.position.z + ((Mathf.Pow(i, 2) / totalHeight) * length * playerSpeedMult * Mathf.Cos(xRotation)));
             }
         }
     }
@@ -187,6 +187,7 @@ public class NoteDrag : NoteBase {
         float x0 = curveStartPos + (xOffset * activeSegment);
         float x1 = curveStartPos + (xOffset * (activeSegment + 1));
         float tRatio = (Conductor.songPosition - segmentStartTime) / (length * Conductor.spb);
+        tRatio = Mathf.Pow(tRatio, 2f);
         float xRelPos = x0 + (x1 - x0) * tRatio;
         return xRelPos;
     }
