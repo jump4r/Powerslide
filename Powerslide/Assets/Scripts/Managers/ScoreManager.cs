@@ -61,11 +61,6 @@ public class ScoreManager : MonoBehaviour {
             GameObject.Find("Score").GetComponent<Text>().text = Score.ToString("########0");
             GameObject.Find("Accuracy").GetComponent<Text>().text = Accuracy.ToString("p");
         }
-
-        else
-        {
-            Debug.Log("Current Build Index: " + scene.buildIndex);
-        }
     }
 
     public static void ResetScoreManager()

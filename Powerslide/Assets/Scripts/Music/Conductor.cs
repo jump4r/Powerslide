@@ -56,7 +56,6 @@ public class Conductor : MonoBehaviour
         running = true;
 
         nextBeatTime = offset;
-        Debug.Log("Set Spawn Time: " + spawnTime);
     }
 
     // Takes information from the beatmap and loads the paramters into the conductor

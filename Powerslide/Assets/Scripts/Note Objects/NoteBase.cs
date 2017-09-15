@@ -38,7 +38,7 @@ public class NoteBase : MonoBehaviour {
     public float velocity; // = playerSpeedMult * (1 / (bpm / 60s)) or 1 / spb, we are going to travel 1 meter per beat. Increase the playerSpeedMult for increase
     public float spb; // Seconds per beat, how many seconds pass for one beat to occur (ie. 1spb = 60bpm, lower = higher bpm).
     public float playerSpeedMult; // Player speed mulitplier
-    private float rTP = 0f; // Ratio of how long has passed between the note spawn and the hit marker. Basically : StartTime / PlannedEndTime
+    protected float rTP = 0f; // Ratio of how long has passed between the note spawn and the hit marker. Basically : StartTime / PlannedEndTime
 
     // Start and End position, rotation, and timings
     public Vector3 startPosition;
@@ -64,7 +64,6 @@ public class NoteBase : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        Debug.Log("Player Speed Mult: " + Settings.PlayerSpeedMult);
         playerSpeedMult = Settings.PlayerSpeedMult;
         startPosition = (this.gameObject.transform.position);
         endPosition = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation)), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation)));
@@ -85,8 +84,9 @@ public class NoteBase : MonoBehaviour {
     void Update()
     {
         rTP = 1f - (EndTime - Conductor.songPosition) / (NoteHelper.Whole * Conductor.spb); // Ratio of completion for the song
-        // Debug.Log("EndTime: " + EndTime + ", Song Position: " + Conductor.songPosition + ", rTP: " + rTP);
         transform.position = new Vector3(startPosition.x, startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
+        CheckToActivateNote(); // Bad Form will fix later
+        CheckToDeactivateNote();
     }
 
     // Virtual Functions
@@ -103,11 +103,46 @@ public class NoteBase : MonoBehaviour {
     public virtual void CalculateHoldStartError() { }
     public virtual void CalculateHoldEndError() { }
 
+    // Check to see if the note has gotten close enough to the hitbar.
+    public virtual void CheckToActivateNote()
+    {
+        if (rTP > 0.9f && !isReadyToHit)
+        {
+            // Prepare to activiate a note for the first time
+            if (type != NoteType.Drag)
+            {
+                NotePath.NotePaths[notePathID].AddActiveNote(this);
+            }
+            Debug.Log(gameObject.name + " is ready to hit at: " + Conductor.songPosition + ", should be around " + EndTime);
+            isReadyToHit = true;
+        }
+    }
+
+    public virtual void CheckToDeactivateNote()
+    {
+        if (rTP > 1.1f && isReadyToHit)
+        {
+            // MISSED NOTE IF 0, Deactivate Note
+            // We dont' want to destroy notes that have a "length" field.
+            if (type != NoteType.Drag && type != NoteType.Hold && type != NoteType.Transition)
+            {
+                // Update the score if we haven't already (In the case where the player missed the note)
+                if (active)
+                {
+                    sm.UpdateAccuracy(0f);
+                    sm.UpdateScore(HIT_MISS);
+                }
+                Debug.Log(gameObject.name + " has been missed, deactivating");
+                NotePath.NotePaths[notePathID].RemoveActiveNote(this);
+                Destroy(this.gameObject);
+            }
+        }
+    }
+
     // Difference between Player hit and perfect timing.
     public void CalculateError()
     {
         float delta = Mathf.Abs(Conductor.songPosition - EndTime); // Error calculation
-        Debug.Log("Error Calculation results in: " + delta);
 
         // Update the Score based on the accuracy of the hit.
         if (delta < Conductor.spb / 4f)
@@ -125,44 +160,6 @@ public class NoteBase : MonoBehaviour {
         active = false;
         Invoke("DestroyNote", .2f);
         // DestroyNote();
-    }
-
-    // Trigger events for notes, add them to the collective note pile
-    private void OnTriggerEnter(Collider col)
-    {
-        if (col.name != "Hitbar") return; // Wrong collision
-        if (isReadyToHit) return; // We have already entered the collision, and do not want to add more notes to the ActiveNotes list.
-
-
-        // Prepare to activiate a note for the first time
-        if (type != NoteType.Drag)
-        {
-            NotePath.NotePaths[notePathID].AddActiveNote(this);
-        }
-        Debug.Log(gameObject.name + " is ready to hit at: " + Conductor.songPosition + ", should be around " + EndTime);
-        isReadyToHit = true;
-    }
-
-    private void OnTriggerExit(Collider col)
-    {
-        if (col.name != "Hitbar") return; // Wrong collision
-        if (this.gameObject.GetComponent<NoteDrag>() != null) return; // We are not removing the object for drag notes >:3
-        if (!isReadyToHit) return; // The object has already be deactiviated
-
-        // MISSED NOTE IF 0, Deactivate Note
-        // We dont' want to destroy notes that have a "length" field.
-        if (type != NoteType.Drag && type != NoteType.Hold && type != NoteType.Transition)
-        {
-            // Update the score if we haven't already (In the case where the player missed the note)
-            if (active)
-            {
-                sm.UpdateAccuracy(0f);
-                sm.UpdateScore(HIT_MISS);
-            }
-
-            NotePath.NotePaths[notePathID].RemoveActiveNote(this);
-            Destroy(this.gameObject);
-        }
     }
 
     public void DestroyNote()

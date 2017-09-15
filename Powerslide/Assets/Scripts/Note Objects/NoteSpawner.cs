@@ -120,7 +120,6 @@ public class NoteSpawner : MonoBehaviour {
                 dragNoteType = NoteDragType.Linear;
                 break;
             case ("C"):
-                Debug.Log("Drag Note Type is set to Curve");
                 dragNoteType = NoteDragType.Curve;
                 break;
             default:
@@ -142,7 +141,6 @@ public class NoteSpawner : MonoBehaviour {
     // isTransition - bool to decide weather the note is a transition note or not.
     public static void SpawnHold(string[] def)
     {
-        Debug.Log("Calling Spawn Hold Note");
         // Change the name of the note for easier debugging.
         noteID = "Note " + noteIndex.ToString();
         noteIndex++;

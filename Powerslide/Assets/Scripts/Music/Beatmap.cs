@@ -79,7 +79,6 @@ public class Beatmap : MonoBehaviour {
     {
         gameObject.transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
-        Debug.Log("Don't Destroy This Object");
     }
 
     // Load up the variables from the beatmap file.

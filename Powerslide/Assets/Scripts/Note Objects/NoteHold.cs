@@ -36,8 +36,9 @@ public class NoteHold : NoteBase {
     // Update is called once per frame
     void Update() {
 
+        CheckToActivateNote();
         CheckToRemoveFromActiveNotesList();
-        float rTP = 1f - (EndTime - Conductor.songPosition) / (NoteHelper.Whole * Conductor.spb);
+        rTP = 1f - (EndTime - Conductor.songPosition) / (NoteHelper.Whole * Conductor.spb);
         transform.position = new Vector3(startPosition.x, startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
 
         // Set the vertex positions of the Hold Line.
