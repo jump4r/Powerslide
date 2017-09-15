@@ -28,30 +28,20 @@ public class NoteFlick : NoteBase {
         rightFlick = Resources.Load("Materials/RightFlick") as Material;
 	}
 
-    // Definition of a flick note: [offset,startpath,endpath,direction]
-    public override void ParseDefinition(string def)
-    {
-        string[] splitString = def.Split(',');
-
-        // Set the variables from the definition
-        StartTime = float.Parse(splitString[0]);
-        startPath = int.Parse(splitString[1]);
-        endPath = int.Parse(splitString[2]);
-        direction = splitString[3];
-    }
-
-    public override void Construct(float offset, int NotePathID, string NoteName, string direction)
+    public override void Construct(float offset, int startPath, int endPath, string direction, string NoteName)
     {
         EndTime = offset;
         notePathID = startPath; // redundant
+        this.startPath = startPath;
+        this.endPath = endPath;
         gameObject.name = NoteName;
-        SetFlickMaterial(); // last var not neded
+        SetFlickMaterial(direction); // last var not neded
     }
 
     // Sets the material on the Flick Note.
-    public void SetFlickMaterial()
+    public void SetFlickMaterial(string dir)
     {
-        if (direction == "r")
+        if (dir == "r")
         {
             gameObject.GetComponent<Renderer>().material = rightFlick;
         }

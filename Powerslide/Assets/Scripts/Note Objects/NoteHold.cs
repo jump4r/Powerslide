@@ -48,21 +48,14 @@ public class NoteHold : NoteBase {
 
     }
 
-    public override void ParseDefinition(string def)
-    {
-        string[] splitString = def.Split(',');
-
-        notePathID = int.Parse(splitString[1]);
-        length = float.Parse(splitString[2]);
-        isTransitionNote = bool.Parse(splitString[3]);
-    }
-
     // May be unneccisary 
-    public override void Construct(float offset, int NotePathID, string NoteName)
+    public override void Construct(float offset, int NotePathID, float length, bool isTransitionNote, string NoteName)
     {
         EndTime = offset;
         this.notePathID = NotePathID;
         gameObject.name = NoteName;
+        this.length = length;
+        this.isTransitionNote = isTransitionNote;
 
         // If this note should be constructed as a Transition note, remove the mesh renderer
         if (isTransitionNote)

@@ -133,7 +133,7 @@ public class NoteSpawner : MonoBehaviour {
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[startPath].transform.position.x, basePosition.y, basePosition.z);
         // Debug.Log("Drag Spawning Position: " + spawnPosition);
         GameObject tmp = Instantiate(Drag, spawnPosition, baseRotation) as GameObject;
-        tmp.GetComponent<NoteDrag>().ParseDefinition(definition);
+        // tmp.GetComponent<NoteDrag>().ParseDefinition(definition);
         tmp.GetComponent<NoteBase>().Construct(offset, startPath, endPath, length, dragNoteType, noteID);
     }
 
@@ -163,8 +163,7 @@ public class NoteSpawner : MonoBehaviour {
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[path].transform.position.x, basePosition.y, basePosition.z);
       
         GameObject tmp = Instantiate(Hold, spawnPosition, baseRotation);
-        tmp.GetComponent<NoteHold>().ParseDefinition(definition);
-        tmp.GetComponent<NoteBase>().Construct(offset, path, noteID);
+        tmp.GetComponent<NoteBase>().Construct(offset, path, length, isTransition, noteID);
     }
 
     // Spawns a flick note
@@ -190,8 +189,7 @@ public class NoteSpawner : MonoBehaviour {
 
         Vector3 spawnPosition = new Vector3((NotePath.NotePaths[startPath].transform.position.x + NotePath.NotePaths[endPath].transform.position.x) / 2, basePosition.y, basePosition.z);
         GameObject tmp = Instantiate(Flick, spawnPosition, baseRotation);
-        tmp.GetComponent<NoteFlick>().ParseDefinition(definition);
-        tmp.GetComponent<NoteFlick>().Construct(offset, startPath, noteID, direction);
+        tmp.GetComponent<NoteBase>().Construct(offset, startPath, endPath, direction, noteID);
     }
 
 }

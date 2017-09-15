@@ -22,15 +22,15 @@ public class NoteDrag : NoteBase {
     // 1) Check to see whether or not the starting Point is in line with HitBar
     // 2) Start checking after Conductor.songPosition + 8 * playerSpeedMult * spb has been reached. 
 
-    // Curved Slider Variables
-    private const int numSegments = 16; // The number of segments we want to represent our "curve"
+    // DEBUG VARS
+    private GameObject DragNoteDebugger;
+
+    // Drag Note Positional Variables
+    private int numSegments = 16; // The number of segments we want to represent our "curve". A numSegments of 2 will be used for a straight line
     private float totalHeight;
-    private float segmentHeight;
-    private float activeSegment;
-    private float segmentEndTime = 0f;
-    private float segmentStartTime = 0f;
-    private float curveStartPos;
-    private float curveEndPos;
+
+    private float dragStartPos;
+    private float dragEndPos;
 
     private NoteDragType dragType;
     private List<Vector3> segments;
@@ -56,69 +56,54 @@ public class NoteDrag : NoteBase {
     {
         type = NoteType.Drag;
         beatTest = Resources.Load("Sound FX/normal-hitwhistle.wav") as AudioClip;
+        DragNoteDebugger = GameObject.Find("Drag Note Debugger");
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = 2; // ATM, we only need two points, but we may need n + 1 depending on the number of segments
         // Debug.Log("Drag OnEnable Position: " + transform.position);
       
     }
 
-    public override void ParseDefinition(string def) 
-    {
-        // Fill definitions.
-        string[] splitString = def.Split(',');
-        EndTime = float.Parse(splitString[0]); // offset
-        numSections = int.Parse(splitString[1]);
-        startPath = int.Parse(splitString[2]);
-        endPath = int.Parse(splitString[3]);
-        length = int.Parse(splitString[4]);
-
-        // This needs to be here for generic purposes
-        notePathID = startPath;
-        EndSliderTime = EndTime + (length + spb);
-    }
-
     public override void Construct(float offset, int startPath, int endPath, float length, NoteDragType dragType, string NoteName)
     {
         EndTime = offset;
         this.notePathID = startPath;
+        this.startPath = startPath;
         this.endPath = endPath;
         this.length = length;
         this.dragType = dragType;
         name = NoteName;
 
-        if (dragType == NoteDragType.Curve)
+        // Determine number of segments needed
+        if (dragType == NoteDragType.Linear)
         {
-            segments = new List<Vector3>(numSegments);
-            for (int i = 0; i < numSegments; i++)
-            {
-                segments.Add(Vector3.zero);
-            }
-            Debug.Log("Amount of segments " + segments.Count);
-            lineRenderer.positionCount = numSegments;
-            segmentStartTime = EndTime;
-            segmentEndTime = EndTime + ((1 / numSegments - 1) * length * Conductor.spb); // End Time of the first segment in the curved slider
-            curveStartPos = NotePath.NotePaths[startPath].transform.position.x;
-            curveEndPos = NotePath.NotePaths[endPath].transform.position.x;
-            totalHeight = Mathf.Pow(numSegments, 2);
+            numSegments = 2;
         }
+
+        else
+        {
+            numSegments = 16;
+        }
+        // Load the segment points.
+        segments = new List<Vector3>(numSegments);
+        for (int i = 0; i < numSegments; i++)
+        {
+            segments.Add(Vector3.zero);
+        }
+        Debug.Log("Amount of segments " + segments.Count);
+        lineRenderer.positionCount = numSegments;
+
+        dragStartPos = NotePath.NotePaths[startPath].transform.position.x;
+        dragEndPos = NotePath.NotePaths[endPath].transform.position.x;
+        totalHeight = Mathf.Pow(numSegments-1, 2);
     }
 
     //  the starting and ending positions of theslider.
     private void CalculatePositions()
-    {   
-        if (dragType == NoteDragType.Linear)
+    {
+        float xOffset = (dragEndPos - dragStartPos) / (numSegments - 1); // How far apart the curve segement points will be placed.
+        for (int i = 0; i < segments.Count; i++)
         {
-            beginningPoint = this.transform.position; // We might need a StartPosition here. OR MAYBE THIS IS REDUNDANT
-            endingPoint = new Vector3(NotePath.NotePaths[endPath].transform.position.x, beginningPoint.y + (length * playerSpeedMult * Mathf.Sin(xRotation)), beginningPoint.z + (length * playerSpeedMult * Mathf.Cos(xRotation)));
-        }
-
-        else if (dragType == NoteDragType.Curve)
-        {
-            float xOffset = (curveEndPos - curveStartPos) / (numSegments - 1); // How far apart the curve segement points will be placed.
-            for (int i = 0; i < segments.Count; i++)
-            {
-                segments[i] = new Vector3(transform.position.x + (xOffset * i), transform.position.y + ((Mathf.Pow(i, 2) / totalHeight) * length * playerSpeedMult * Mathf.Sin(xRotation)), transform.position.z + ((Mathf.Pow(i, 2) / totalHeight) * length * playerSpeedMult * Mathf.Cos(xRotation)));
-            }
+            segments[i] = new Vector3(transform.position.x + (xOffset * i), transform.position.y + ((Mathf.Pow(i, 2) / totalHeight) * length * playerSpeedMult * Mathf.Sin(xRotation)), transform.position.z + ((Mathf.Pow(i, 2) / totalHeight) * length * playerSpeedMult * Mathf.Cos(xRotation)));
         }
     }
 
@@ -129,20 +114,11 @@ public class NoteDrag : NoteBase {
         float rTP = 1f - (EndTime - Conductor.songPosition) / (NoteHelper.Whole * Conductor.spb);
         transform.position = new Vector3(startPosition.x, startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
 
-        if (dragType == NoteDragType.Linear)
+        for (int i = 0; i < segments.Count; i++)
         {
-            lineRenderer.SetPosition(0, beginningPoint);
-            lineRenderer.SetPosition(1, endingPoint);
+            lineRenderer.SetPosition(i, segments[i]);
         }
 
-        if (dragType == NoteDragType.Curve)
-        {
-            for (int i = 0; i < segments.Count; i++)
-            {
-                lineRenderer.SetPosition(i, segments[i]);
-            }
-        }
-        
         CalculatePositions(); // Recalculate the positions of the points
 
         // Potentially Activate real note
@@ -162,7 +138,7 @@ public class NoteDrag : NoteBase {
     }
 
     // Determine the x position of point on the hitbar
-    public float GetXRelPos()
+    public float GetXCurveRelPos()
     {
         float tRatio = (Conductor.songPosition - EndTime) / (length * Conductor.spb);
         // Debug.Log("Don't be infinity: " + tRatio);
@@ -173,21 +149,23 @@ public class NoteDrag : NoteBase {
     }
 
     // Determines the x position of point on a curved slider
-    public float GetXCurveRelPos()
+    public float GetXRelPos()
     {
-        activeSegment = 0f;
-        float xOffset = (curveEndPos - curveStartPos) / (numSegments - 1); // How far apart the curve segement points will be placed.
-        if (segmentEndTime <= Conductor.songPosition && activeSegment < (numSegments - 1))
+        float x0 = NotePath.NotePaths[startPath].transform.position.x;
+        float x1 = NotePath.NotePaths[endPath].transform.position.x;
+        float tRatio = (Conductor.songPosition - EndTime) / (length * Conductor.spb);
+
+        // We need to do some more math depending on what the curve type is
+        if (dragType == NoteDragType.Curve)
         {
-            Debug.Log("Change Segment");
-            segmentStartTime = segmentEndTime;
-            segmentEndTime += (1 / numSegments) * length * Conductor.spb;
-            activeSegment++;                
+            tRatio = Mathf.Sqrt(tRatio);
         }
-        float x0 = curveStartPos + (xOffset * activeSegment);
-        float x1 = curveStartPos + (xOffset * (activeSegment + 1));
-        float tRatio = (Conductor.songPosition - segmentStartTime) / (length * Conductor.spb);
-        tRatio = Mathf.Pow(tRatio, 2f);
+
+        else if (dragType == NoteDragType.Root)
+        {
+            tRatio = Mathf.Pow(tRatio, 2f);
+        }
+
         float xRelPos = x0 + (x1 - x0) * tRatio;
         return xRelPos;
     }
@@ -196,7 +174,7 @@ public class NoteDrag : NoteBase {
     {
         float xRelPos = GetXRelPos();
         //Debug.Log("Slider X Position: " + sliderPosition.position.x + ", Relative xPos of Drag Note: " + xRelPos);
-        
+
         // I believe 1.14  = Width of one NotePath * 2
         if (Mathf.Abs(xRelPos - sliderPosition.position.x) < 1.14f / 2f) // WHAT IS THIS FLOAT LMAO
         {
@@ -208,6 +186,9 @@ public class NoteDrag : NoteBase {
         {
             lineRenderer.material = Score50;
         }
+#if UNITY_EDITOR
+        // DragNoteDebugger.transform.position = new Vector3(xRelPos, DragNoteDebugger.transform.position.y, DragNoteDebugger.transform.position.z);
+#endif
     }
 
     private void CheckToRemoveFromActiveNotesList()
