@@ -28,14 +28,10 @@ public class Settings : MonoBehaviour {
     {
         if (keyboard != null && (keyboard.done))
         {
-            // Update Player Speed Multiplier
-            if (keyboard.type == TouchScreenKeyboardType.NumberPad)
-            {
-                Debug.Log("Android Debug: Keyboard Input Completed");
-                PlayerSpeedMult = float.Parse(keyboard.text);
-                playerSpeedMultButton.text = keyboard.text;
-                ResetKeyboard(ref PlayerSpeedMultMenuOpen);
-            }
+            Debug.Log("Android Debug: Keyboard Input Completed");
+            PlayerSpeedMult = float.Parse(keyboard.text);
+            playerSpeedMultButton.text = keyboard.text;
+            ResetKeyboard(ref PlayerSpeedMultMenuOpen);
         }
     }
 

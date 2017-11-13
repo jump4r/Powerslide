@@ -17,9 +17,20 @@ public class Note : NoteBase {
         type = NoteType.Regular;
 	}
 
-    
+
+    public override void Tapped(int notePathID)
+    {
+        if (this.notePathID == notePathID)
+        {
+            NotePath.NotePaths[notePathID].RemoveActiveNote(this);
+            CalculateError();
+        }
+    }
+
+
     public override void ChangeMaterial(Material mat)
     {
         gameObject.GetComponent<Renderer>().material = mat;
     }
+
 }

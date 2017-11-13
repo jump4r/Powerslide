@@ -58,7 +58,7 @@ public class NoteDrag : NoteBase {
         beatTest = Resources.Load("Sound FX/normal-hitwhistle.wav") as AudioClip;
         DragNoteDebugger = GameObject.Find("Drag Note Debugger");
         lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.positionCount = 2; // ATM, we only need two points, but we may need n + 1 depending on the number of segments
+        lineRenderer.numPositions = 2; // ATM, we only need two points, but we may need n + 1 depending on the number of segments
         // Debug.Log("Drag OnEnable Position: " + transform.position);
       
     }
@@ -90,7 +90,7 @@ public class NoteDrag : NoteBase {
             segments.Add(Vector3.zero);
         }
         Debug.Log("Amount of segments " + segments.Count);
-        lineRenderer.positionCount = numSegments;
+        lineRenderer.numPositions = numSegments;
 
         dragStartPos = NotePath.NotePaths[startPath].transform.position.x;
         dragEndPos = NotePath.NotePaths[endPath].transform.position.x;
@@ -122,6 +122,7 @@ public class NoteDrag : NoteBase {
         CalculatePositions(); // Recalculate the positions of the points
 
         // Potentially Activate real note
+        // This looks kinda ugly tbh
         if (Conductor.songPosition > EndTime && Conductor.songPosition < EndTime + (length * Conductor.spb) && !Active)
         {
             Active = true;
@@ -187,7 +188,7 @@ public class NoteDrag : NoteBase {
             lineRenderer.material = Score50;
         }
 #if UNITY_EDITOR
-        // DragNoteDebugger.transform.position = new Vector3(xRelPos, DragNoteDebugger.transform.position.y, DragNoteDebugger.transform.position.z);
+        DragNoteDebugger.transform.position = new Vector3(xRelPos, DragNoteDebugger.transform.position.y, DragNoteDebugger.transform.position.z);
 #endif
     }
 

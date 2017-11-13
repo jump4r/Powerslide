@@ -18,6 +18,7 @@ public class NoteBase : MonoBehaviour {
     public string Name;
     public string definition;
     public bool active = true; // Has the note been hit yet?
+    public bool IsTapped = false; // Has the note been tapped?
     public bool isReadyToHit = false;
 
     // Access Game Manager so we can update the score
@@ -97,6 +98,12 @@ public class NoteBase : MonoBehaviour {
     public virtual void Construct(float offset, int startPath, int endPath, float length, NoteDragType noteDragType, string NoteName) { } // Construct a Drag Note
     public virtual void ParseDefinition(string def) { } // Parse the definition of the note
     public virtual void SetFingerId(int id) { } // Set the finger id of the note
+
+    // Actions to take given state change from Finger
+    public virtual void Tapped(int notePathID) { }
+    public virtual void Held(int notePathID) { }
+    public virtual void Transitioned(int startPathID, int endPathID) { }
+    public virtual void Lift(int notePathID) { }
 
     // Hold Note Virutal Functions
     public virtual void IsBeingHeld() { }

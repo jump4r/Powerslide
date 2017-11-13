@@ -30,7 +30,7 @@ public class NoteHold : NoteBase {
     void OnEnable() {
         type = NoteType.Hold;
         lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.positionCount = 2; // We will only need two vertices for this, the begining and the end.
+        lineRenderer.numPositions = 2; // We will only need two vertices for this, the begining and the end.
     }
 
     // Update is called once per frame
@@ -64,6 +64,12 @@ public class NoteHold : NoteBase {
             GetComponent<MeshRenderer>().enabled = false;
             type = NoteType.Transition;
         }
+    }
+
+    public override void Tapped(int notePathID)
+    {
+        IsTapped = true;
+        CalculateHoldStartError();
     }
 
 
@@ -110,7 +116,7 @@ public class NoteHold : NoteBase {
     {
         // Update Score 
         sm.UpdateScore(Mathf.RoundToInt(300f * Conductor.spb * Time.deltaTime));
-        Debug.Log("Android Debug: Score is set to " + Mathf.RoundToInt(300f * Conductor.spb * Time.deltaTime) + " during update");
+        // Debug.Log("Android Debug: Score is set to " + Mathf.RoundToInt(300f * Conductor.spb * Time.deltaTime) + " during update");
         ChangeMaterial(Score100);
     }
 

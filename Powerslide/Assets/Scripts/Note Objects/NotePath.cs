@@ -51,5 +51,15 @@ public class NotePath : MonoBehaviour {
         }
     }
 
+    public void Tapped() {
+        if (ActiveNotes.Count <= 0) // no active notes
+        {
+            return;
+        }
+
+        Debug.Log("Android Debug: Tapped (NotePath)");
+        ActiveNotes[0].Tapped(this.NotePathID);
+    }
+
 
 }
