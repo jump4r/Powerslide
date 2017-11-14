@@ -61,5 +61,41 @@ public class NotePath : MonoBehaviour {
         ActiveNotes[0].Tapped(this.NotePathID);
     }
 
+    public void Held()
+    {
+        if (ActiveNotes.Count <= 0) // no active notes
+        {
+            return;
+        }
 
+        // Debug.Log("Android Debug: Held (NotePath");
+        ActiveNotes[0].Held(this.NotePathID);
+    }
+
+    // Finger has transitioned FROM this path TO another path (endPath)
+    public void Transitioned(int endPath)
+    {
+        if (ActiveNotes.Count <= 0) // no active notes
+        {
+            return;
+        }
+
+        Debug.Log("Android Debug: Transitioned to NotePath: " + endPath);
+
+        foreach (NoteBase note in ActiveNotes)
+        {
+            note.Transitioned(this.NotePathID, endPath);
+        }
+    }
+
+    // Finger lifted from the screen
+    public void Lifted()
+    {
+        if (ActiveNotes.Count <= 0)
+        {
+            return;
+        }
+
+        ActiveNotes[0].Lift(this.NotePathID);
+    }
 }

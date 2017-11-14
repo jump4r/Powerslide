@@ -72,6 +72,41 @@ public class NoteHold : NoteBase {
         CalculateHoldStartError();
     }
 
+    public override void Held(int notePathID)
+    {
+        if (!IsTapped && !isTransitionNote)
+        {
+            Debug.Log("Android Debug: Note has not been primed, returning");
+            return;
+        }
+
+        IsBeingHeld();
+    }
+
+    // Transitioned on hold note means that player moved from one Note Path to another
+    // In this case, we need to check to see if the player had already tapped the note, so we can calculate the hold end error. 
+    public override void Transitioned(int startPathID, int endPathID)
+    {
+        if (endPathID == this.notePathID)
+        {
+            Held(endPathID);
+        }
+
+        else if (IsTapped)
+        {
+            CalculateHoldEndError();
+        }
+    }
+
+    // Finger lifted from the screen
+    public override void Lift(int notePathID)
+    {
+        if (IsTapped)
+        {
+            CalculateHoldEndError();
+        }
+    }
+
 
     // Calculate the difference between the projected and actual hold STARTS (error when the player begins a hold note)
     // This will only be done on a proper hold note and note a transitional note.

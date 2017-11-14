@@ -52,13 +52,6 @@ public class Player : MonoBehaviour {
         // Search for the touch to be added
         for (int i = 0; i < Input.touchCount; i++)
         {
-            //////////////////////////////////////////////////////////////////////
-            // Player taps...
-            // Determine which Notepath was hit.
-            Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(i).position);
-            RaycastHit[] hitObjects = Physics.RaycastAll(ray, 1000f, layermask);
-            NotePath hitPath;
-
             // BUTTON DOWN ACTION
             ///////////////////////////////////////////////////////////////////
             if (Input.GetTouch(i).phase == TouchPhase.Began)
@@ -73,16 +66,8 @@ public class Player : MonoBehaviour {
             // BUTTON UP, THIS CAN PROBABLY BE IN THE SAME LOOP
             if (Input.GetTouch(i).phase == TouchPhase.Ended)
             {
-                //////////////////////////////////////////////////////////////////////
-                // This could also mean that we released a hold note.
-                if (FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote != null && (FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote.type == NoteType.Hold || FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote.type == NoteType.Transition))
-                {
-                    Debug.Log("ANDROID DEBUG: Removed finger from a hold note");
-                    FingerDictionary[Input.GetTouch(i).fingerId].ActiveNote.CalculateHoldEndError();
-                }
-
+                FingerDictionary[Input.GetTouch(i).fingerId].LiftFinger();
                 FingerDictionary.Remove(Input.GetTouch(i).fingerId);
-                // Debug.Log("ANDROID DEBUG: REMOVED " + Input.GetTouch(i).fingerId.ToString() + ", total number of fingers: " + FingerDictionary.Count);
             }
         }
 

@@ -24,6 +24,7 @@ public class Finger : MonoBehaviour {
     private FingerState fingerState;
 
     // Where is the finger on the hitboard
+    private int previousNotePathID;
     private int notePathID;
     public bool isMovingSlider = false;
     public bool enableHoldNote = false; // Finger must tuch the screen before activating a hold note (as opposed to dragging from a different section of the screen)
@@ -51,6 +52,8 @@ public class Finger : MonoBehaviour {
             {
                 NotePath hitPath = hitObjects[i].collider.gameObject.GetComponent<NotePath>();
                 notePathID = hitPath.NotePathID;
+                Debug.Log("Call Finger Tap ONCE");
+                previousNotePathID = notePathID;
                 NoteType noteType = hitPath.CheckIfValidHit();
 
                 if (noteType != NoteType.NULL)
@@ -76,16 +79,24 @@ public class Finger : MonoBehaviour {
 	
     public void ResetFinger()
     {
-        Debug.Log("ANDROID DEBUG: Finger has be reset");
+        Debug.Log("Android Debug: Finger has be reset");
         ActiveNote = null;
         fingerState = FingerState.HOLD;
     }
 
     public void UpdateFinger()
     {
+
+        // Update fingerState to check for transitions. 
+        bool cancelUpdate = UpdateFingerState();
+
+        if (cancelUpdate)
+        {
+            return;
+        }
+
         if (fingerState == FingerState.SLIDE)
         {
-            // player.MoveSlider(Input.GetTouch(FingerID).position);
             if (slider != null)
             {
                 slider.Move(Input.GetTouch(FingerID).position);
@@ -93,55 +104,58 @@ public class Finger : MonoBehaviour {
             }
         }
 
-        // Do not update finger on first press, instead update to a HOLD state.
-        else if (fingerState == FingerState.TAP)
+        else if (fingerState == FingerState.HOLD)
+        {
+            NotePath.NotePaths[notePathID].Held();
+        }
+
+        else if (fingerState == FingerState.TRANSITION)
+        {
+            NotePath.NotePaths[previousNotePathID].Transitioned(notePathID);
+            previousNotePathID = notePathID;
+        }
+    }
+
+    // Returns a cancellation request to the Update Finger function
+    public bool UpdateFingerState()
+    {
+        // Tap -> Hold
+        if (fingerState == FingerState.TAP || fingerState == FingerState.TRANSITION || fingerState == FingerState.RESET)
         {
             fingerState = FingerState.HOLD;
-            return;
+            return true;
         }
 
-        if (ActiveNote != null && (ActiveNote.type == NoteType.Hold || ActiveNote.type == NoteType.Transition || ActiveNote.type == NoteType.Flick))
+        // Check Hold -> Transition
+        RaycastHit[] hitObjects = player.GetHitObjects(Input.GetTouch(FingerID).position);
+        NotePath np = null;
+
+        for (int i = 0; i < hitObjects.Length; i++)
         {
-            RaycastHit[] hitObjects = player.GetHitObjects(Input.GetTouch(FingerID).position);
-            int objectIndex = player.GetRelevantHitObjectIndex(Input.GetTouch(FingerID).position);
-
-            for (int i = 0; i < hitObjects.Length; i++)
+            if (hitObjects[i].collider.tag == "NotePath")
             {
-                NotePath np = hitObjects[i].collider.gameObject.GetComponent<NotePath>();
-                // CASE: HOLD NOTE //
-                // For HOLD notes (Not Transition notes), players need to tap the note before it gets activiated. If the enableHoldNote flag is not active, this should not count as a note press.
-                if (ActiveNote.type == NoteType.Hold && !ActiveNote.IsTapped)
-                {
-                    Debug.Log("Android Debug: note has not been primed, skip");
-                    continue;
-                }
-
-                // In the case where the player's finger slides off of the NotePath, we need to check to see if the HoldNote is finished.
-                if ((ActiveNote.type == NoteType.Hold || ActiveNote.type == NoteType.Transition) && np.NotePathID != ActiveNote.notePathID)
-                {
-                    ActiveNote.CalculateHoldEndError();
-                }
-
-                // If the player is on the on the path, tell them to keep on truckin
-                else if ((ActiveNote.type == NoteType.Hold || ActiveNote.type == NoteType.Transition) && np.NotePathID == ActiveNote.notePathID)
-                {
-                    ActiveNote.IsBeingHeld();
-                }
-
-                // CASE: FLICK NOTE //
-                // In the case when the flick note is finished.
-                else if (ActiveNote.type == NoteType.Flick && np.NotePathID == ActiveNote.endPath)
-                {
-                    Debug.Log("Android Debug: Flick has been finished");
-                    ActiveNote.CalculateError();
-                    ResetFinger();
-                }
-
-                else if (ActiveNote.type == NoteType.Flick && np.NotePathID == ActiveNote.startPath)
-                {
-                    Debug.Log("Android Debug: Continue Flicking");
-                }
+                np = hitObjects[i].collider.gameObject.GetComponent<NotePath>();
+                notePathID = np.NotePathID;
+                // Debug.Log("Android Debug: Currently Holding on Note Path: " + hitObjects[i].collider.gameObject.GetComponent<NotePath>() + ", previous Note Path was :);
             }
         }
+
+        if (np = null)
+        {
+            return true;
+        }
+
+        if (previousNotePathID != notePathID)
+        {
+            fingerState = FingerState.TRANSITION;
+            return false;
+        }
+
+        return false;
+    }
+
+    public void LiftFinger()
+    {
+        NotePath.NotePaths[notePathID].Lifted();
     }
 }
