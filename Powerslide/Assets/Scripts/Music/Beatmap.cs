@@ -82,7 +82,7 @@ public class Beatmap : MonoBehaviour {
     }
 
     // Load up the variables from the beatmap file.
-    private void ParseBeatmap()
+    public void ParseBeatmap()
     {
         // beatmapSplitText = raw_beatmap.Split('\n');
         for (int i = 0; i < beatmapSplitText.Count; i++)
@@ -124,10 +124,7 @@ public class Beatmap : MonoBehaviour {
         song = Resources.Load("Sound FX/Music/" + filename) as AudioClip;
         if (song == null)
         {
-            // Debug.Log("Loading Failed!");
             return;
         }
-
-        // Debug.Log("Load Successful");
     }
 }
