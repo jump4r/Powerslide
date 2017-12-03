@@ -9,7 +9,7 @@ public enum FlickType
 
 public class NoteFlick : NoteBase {
 
-    public string direction; // l - left, r - right, could easily be done with a boolean but better for readibility
+    public bool direction; // True - right, False = Left, could easily be done with a boolean but better for readibility
     private Material leftFlick;
     private Material rightFlick;
 
@@ -28,7 +28,7 @@ public class NoteFlick : NoteBase {
         rightFlick = Resources.Load("Materials/RightFlick") as Material;
 	}
 
-    public override void Construct(float offset, int startPath, int endPath, string direction, string NoteName)
+    public override void Construct(float offset, int startPath, int endPath, bool direction, string NoteName)
     {
         EndTime = offset;
         notePathID = startPath; // redundant
@@ -39,17 +39,9 @@ public class NoteFlick : NoteBase {
     }
 
     // Sets the material on the Flick Note.
-    public void SetFlickMaterial(string dir)
+    public void SetFlickMaterial(bool dir)
     {
-        if (dir == "r")
-        {
-            gameObject.GetComponent<Renderer>().material = rightFlick;
-        }
-
-        else
-        {
-            gameObject.GetComponent<Renderer>().material = leftFlick;
-        }
+        gameObject.GetComponent<Renderer>().material = dir ? rightFlick : leftFlick;
     }
 
     // Changes the material of the note depending on the 

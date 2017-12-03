@@ -84,11 +84,6 @@ public class Conductor : MonoBehaviour
     {
         runTime += Time.deltaTime;
         songPosition = source.timeSamples / (float)source.clip.frequency;
-        // Debug.Log("Song Position: " + songPosition + ", SpawnTime: " + spawnTime);
-
-        /*
-        if (songPosition < offset)
-            return; // Don't spawn yet. */
 
         // Update the next beat time.
         while (songPosition > spawnTime && currentNoteIndex < beatmap.Notes.Count)

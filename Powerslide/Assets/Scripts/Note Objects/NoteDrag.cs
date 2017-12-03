@@ -103,8 +103,27 @@ public class NoteDrag : NoteBase {
         float xOffset = (dragEndPos - dragStartPos) / (numSegments - 1); // How far apart the curve segement points will be placed.
         for (int i = 0; i < segments.Count; i++)
         {
-            segments[i] = new Vector3(transform.position.x + (xOffset * i), transform.position.y + ((Mathf.Pow(i, 2) / totalHeight) * length * playerSpeedMult * Mathf.Sin(xRotation)), transform.position.z + ((Mathf.Pow(i, 2) / totalHeight) * length * playerSpeedMult * Mathf.Cos(xRotation)));
+            float curveHeight = CurveExponential(i);
+            segments[i] = new Vector3(transform.position.x + (xOffset * i),
+                                      transform.position.y + ((curveHeight / totalHeight) * length * playerSpeedMult * Mathf.Sin(xRotation)), 
+                                      transform.position.z + ((curveHeight / totalHeight) * length * playerSpeedMult * Mathf.Cos(xRotation)));
         }
+    }
+
+    // For Root Types, return square root,
+    // For Linear and Curve Types, return the index squared 
+    private float CurveExponential(float index)
+    {
+        // This is actually more complicated than I expected.
+        // We can't do a simple square root, but rather we're doing an "upside down x^2"
+        if (dragType == NoteDragType.Root)
+        {
+            if (index == 0) return 0;
+            float newIndex = numSegments - index;
+            return totalHeight - Mathf.Pow(newIndex, 2f);
+        }
+
+        return Mathf.Pow(index, 2f);
     }
 
     private void Update()
@@ -162,7 +181,7 @@ public class NoteDrag : NoteBase {
             tRatio = Mathf.Sqrt(tRatio);
         }
 
-        else if (dragType == NoteDragType.Root)
+        else if (dragType == NoteDragType.Root) // Incorrect
         {
             tRatio = Mathf.Pow(tRatio, 2f);
         }

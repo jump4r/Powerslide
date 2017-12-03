@@ -42,12 +42,13 @@ public class EditorConductor : MonoBehaviour {
         }
 
         spb = 60f / beatmap.BPM;
-        offset = beatmap.OsuOffset / 1000f;
+        offset = beatmap.RawOffset / 1000f;
         SpawnTimeOffset = spb * NoteHelper.Whole;
 
 
         Debug.Log("Initializing The Seperators");
         MeasureSeperatorManager.instance.InitializeSeperators();
+        EditorNoteManager.instance.PreloadNotes(beatmap.Notes);
     }
 
     private void Update()
@@ -64,5 +65,24 @@ public class EditorConductor : MonoBehaviour {
         {
             source.Play();
         }
+    }
+
+    public void PauseOrPlay()
+    {
+        if (source.isPlaying)
+        {
+            source.Pause();
+        }
+
+        else
+        {
+            source.UnPause();
+        }
+    }
+
+    public void SetSongPosition(float newSongPos)
+    {
+        source.timeSamples = Mathf.RoundToInt(newSongPos * source.clip.frequency);
+        songPosition = (float)source.timeSamples / source.clip.frequency;
     }
 }

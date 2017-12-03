@@ -94,7 +94,7 @@ public class NoteBase : MonoBehaviour {
     public virtual void ChangeMaterial(Material mat) { }
     public virtual void Construct(float offset, int NotePathID, string NoteName) { } // Construct a Regular note
     public virtual void Construct(float offset, int NotePathID, float length, bool isTransition, string NoteName) { } // Construct a Hold note
-    public virtual void Construct(float offset, int startPath, int endPath, string direction, string NoteName) { } // Construct a Flick note.
+    public virtual void Construct(float offset, int startPath, int endPath, bool direction, string NoteName) { } // Construct a Flick note.
     public virtual void Construct(float offset, int startPath, int endPath, float length, NoteDragType noteDragType, string NoteName) { } // Construct a Drag Note
     public virtual void ParseDefinition(string def) { } // Parse the definition of the note
     public virtual void SetFingerId(int id) { } // Set the finger id of the note

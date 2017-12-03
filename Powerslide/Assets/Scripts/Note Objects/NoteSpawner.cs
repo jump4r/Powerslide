@@ -181,7 +181,7 @@ public class NoteSpawner : MonoBehaviour {
         float offset = float.Parse(def[0]) / 1000f;
         int startPath = int.Parse(def[2]);
         int endPath = int.Parse(def[3]);
-        string direction = def[4];
+        bool direction = bool.Parse(def[4]);
 
         string definition = Conductor.songPosition.ToString() + "," + startPath + "," + endPath + "," + direction;
 

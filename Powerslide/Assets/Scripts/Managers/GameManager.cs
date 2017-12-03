@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-        private void LoadBeatmapToConductor()
+    private void LoadBeatmapToConductor()
     {
         beatmap = GameObject.FindGameObjectWithTag("Beatmap").GetComponent<Beatmap>();
         if (beatmap != null)
