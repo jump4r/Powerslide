@@ -13,10 +13,6 @@ public class NoteFlick : NoteBase {
     private Material leftFlick;
     private Material rightFlick;
 
-    // public int endPath; // Already declared in NoteBase, even though it should probably be declared here.
-
-    private NoteBase nextNote; 
-
     // Getters/Setters
     public override void SetFingerId(int id) { fingerId = id; }
 
@@ -28,10 +24,14 @@ public class NoteFlick : NoteBase {
         rightFlick = Resources.Load("Materials/RightFlick") as Material;
 	}
 
-    public override void Construct(float offset, int startPath, int endPath, bool direction, string NoteName)
+    public override void Construct(Vector3 spawnPosition, float offset, int startPath, int endPath, bool direction, string NoteName)
     {
         EndTime = offset;
         notePathID = startPath; // redundant
+
+        transform.position = spawnPosition;
+        startPosition = spawnPosition;
+
         this.startPath = startPath;
         this.endPath = endPath;
         gameObject.name = NoteName;

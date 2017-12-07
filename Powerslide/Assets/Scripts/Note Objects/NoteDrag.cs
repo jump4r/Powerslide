@@ -35,19 +35,13 @@ public class NoteDrag : NoteBase {
     private NoteDragType dragType;
     private List<Vector3> segments;
 
-    public AudioClip beatTest;
-
-    [HideInInspector]
-    public bool Active = false; // Start tracking the movement of the "finger" or the 
-    
-    private int numSections; // Number of sections in the note
     private float length; // Calculated in beats
 
     public float EndSliderTime;
+    private Transform sliderTrasform;
 
-    // Slider Path Calculation
-    private Vector3 beginningPoint;
-    private Vector3 endingPoint;
+    private bool dragNoteActive = false; // A little confusing, because we have a 'active' bool in the NoteBase, should be changed to 
+
 
     // Line renderer
     private LineRenderer lineRenderer;
@@ -55,16 +49,17 @@ public class NoteDrag : NoteBase {
     void OnEnable()
     {
         type = NoteType.Drag;
-        beatTest = Resources.Load("Sound FX/normal-hitwhistle.wav") as AudioClip;
         DragNoteDebugger = GameObject.Find("Drag Note Debugger");
+        sliderTrasform = GameObject.Find("Slider").transform;
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.numPositions = 2; // ATM, we only need two points, but we may need n + 1 depending on the number of segments
-        // Debug.Log("Drag OnEnable Position: " + transform.position);
-      
     }
 
-    public override void Construct(float offset, int startPath, int endPath, float length, NoteDragType dragType, string NoteName)
+    public override void Construct(Vector3 spawnPosition, float offset, int startPath, int endPath, float length, NoteDragType dragType, string NoteName)
     {
+        startPosition = spawnPosition;
+        transform.position = spawnPosition;
+
         EndTime = offset;
         this.notePathID = startPath;
         this.startPath = startPath;
@@ -83,6 +78,7 @@ public class NoteDrag : NoteBase {
         {
             numSegments = 16;
         }
+
         // Load the segment points.
         segments = new List<Vector3>(numSegments);
         for (int i = 0; i < numSegments; i++)
@@ -131,7 +127,9 @@ public class NoteDrag : NoteBase {
         CheckToRemoveFromActiveNotesList();
 
         rTP = 1f - (EndTime - Conductor.songPosition) / (NoteHelper.Whole * Conductor.spb);
-        transform.position = new Vector3(startPosition.x, startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
+        transform.position = new Vector3(startPosition.x, 
+                                         startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP),
+                                         startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
 
         for (int i = 0; i < segments.Count; i++)
         {
@@ -142,30 +140,19 @@ public class NoteDrag : NoteBase {
 
         // Potentially Activate real note
         // This looks kinda ugly tbh
-        if (Conductor.songPosition > EndTime && Conductor.songPosition < EndTime + (length * Conductor.spb) && !Active)
+        if (Conductor.songPosition > EndTime && Conductor.songPosition < EndTime + (length * Conductor.spb) && !dragNoteActive)
         {
-            Active = true;
+            dragNoteActive = true;
             NotePath.NotePaths[notePathID].AddActiveNote(this);
             GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().SetActiveDragNote(this);
         }
 
         // Potentially Activate real note
-        if (Conductor.songPosition > EndTime + (length * Conductor.spb) && Active)
+        if (Conductor.songPosition > EndTime + (length * Conductor.spb) && dragNoteActive)
         {
-            Active = false;
+            dragNoteActive = false;
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
         }
-    }
-
-    // Determine the x position of point on the hitbar
-    public float GetXCurveRelPos()
-    {
-        float tRatio = (Conductor.songPosition - EndTime) / (length * Conductor.spb);
-        // Debug.Log("Don't be infinity: " + tRatio);
-        float x0 = NotePath.NotePaths[startPath].transform.position.x;
-        float x1 = NotePath.NotePaths[endPath].transform.position.x;
-        float xRelPos = x0 + (x1 - x0) * tRatio;
-        return xRelPos;
     }
 
     // Determines the x position of point on a curved slider
@@ -215,9 +202,7 @@ public class NoteDrag : NoteBase {
     {
         if (Conductor.songPosition >= EndTime + (Conductor.spb * length))
         {
-            // Update the objects in the NotePath's Active Notes List.
-            NotePath.NotePaths[notePathID].RemoveActiveNote(this);
-            Destroy(gameObject);
+            DestroyNote();
         }
     }
 }

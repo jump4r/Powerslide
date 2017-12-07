@@ -8,12 +8,9 @@ public class NoteSpawner : MonoBehaviour {
     private static Vector3 basePosition;
 
     private float distanceFromHitboard; // distances = mpb * beatsFromHitbaord * speedMultiplier
-    private float pSM = 4.0f; // Player Speed Mulitplier
 
     // Timing Variables
     public float BPM;
-    private float spb; // Seconds per beat
-    private float velocity; // Note travel velocity, notes move at a rate of 1 (Unity) meter per 1 beat.
 
     // Falling note prefabs.
     public static GameObject Note;
@@ -92,9 +89,10 @@ public class NoteSpawner : MonoBehaviour {
         int startPath = int.Parse(noteDef[2]);
 
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[startPath].transform.position.x, basePosition.y, basePosition.z);
-        GameObject tmp = Instantiate(Note, spawnPosition, baseRotation) as GameObject;
-      
-        tmp.GetComponent<NoteBase>().Construct(offset, startPath, noteID); // ROFL APPARENTLY THIS WORKS. $$$$$$YENYENYENYENWONWONWONWON
+
+        Note n = (Note)GetNoteFromPool(NoteType.Regular);
+        n.Construct(spawnPosition, offset, startPath, noteID); // ROFL APPARENTLY THIS WORKS. $$$$$$YENYENYENYENWONWONWONWON
+        n.gameObject.SetActive(true);
 
     }
 
@@ -122,19 +120,23 @@ public class NoteSpawner : MonoBehaviour {
             case ("C"):
                 dragNoteType = NoteDragType.Curve;
                 break;
+            case ("R"):
+                dragNoteType = NoteDragType.Root;
+                break;
             default:
-                dragNoteType = NoteDragType.Linear; // ugh
+                dragNoteType = NoteDragType.Linear;
                 break;
         }
 
         string definition = offset + "," + numSections + "," + startPath + "," + endPath + "," + length;
 
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[startPath].transform.position.x, basePosition.y, basePosition.z);
-        // Debug.Log("Drag Spawning Position: " + spawnPosition);
-        GameObject tmp = Instantiate(Drag, spawnPosition, baseRotation) as GameObject;
-        // tmp.GetComponent<NoteDrag>().ParseDefinition(definition);
-        tmp.GetComponent<NoteBase>().Construct(offset, startPath, endPath, length, dragNoteType, noteID);
+        NoteDrag n = (NoteDrag)GetNoteFromPool(NoteType.Drag);
+
+        n.Construct(spawnPosition, offset, startPath, endPath, length, dragNoteType, noteID);
+        n.gameObject.SetActive(true);
     }
+    
 
     // Spawnds a hold note
     // Definition of a HOLDNOTE: [offset, noteType, startPath, length, isTransition]
@@ -160,8 +162,9 @@ public class NoteSpawner : MonoBehaviour {
 
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[path].transform.position.x, basePosition.y, basePosition.z);
       
-        GameObject tmp = Instantiate(Hold, spawnPosition, baseRotation);
-        tmp.GetComponent<NoteBase>().Construct(offset, path, length, isTransition, noteID);
+        NoteHold n = (NoteHold) GetNoteFromPool(NoteType.Hold);
+        n.Construct(spawnPosition, offset, path, length, isTransition, noteID);
+        n.gameObject.SetActive(true);
     }
 
     // Spawns a flick note
@@ -186,8 +189,65 @@ public class NoteSpawner : MonoBehaviour {
         string definition = Conductor.songPosition.ToString() + "," + startPath + "," + endPath + "," + direction;
 
         Vector3 spawnPosition = new Vector3((NotePath.NotePaths[startPath].transform.position.x + NotePath.NotePaths[endPath].transform.position.x) / 2, basePosition.y, basePosition.z);
-        GameObject tmp = Instantiate(Flick, spawnPosition, baseRotation);
-        tmp.GetComponent<NoteBase>().Construct(offset, startPath, endPath, direction, noteID);
+        NoteFlick n = (NoteFlick)GetNoteFromPool(NoteType.Flick);
+        n.Construct(spawnPosition, offset, startPath, endPath, direction, noteID);
+        n.gameObject.SetActive(true);
+    }
+
+    private static NoteBase GetNoteFromPool(NoteType type)
+    {
+        NoteBase rtn = null;
+        switch (type)
+        {
+            case (NoteType.Regular):
+                foreach (Note n in NoteManager.instance.NoteList)
+                {
+                    if (!n.gameObject.activeInHierarchy)
+                    {
+                        Debug.Log("Enabling from Pool");
+                        rtn = n as NoteBase;
+                        break;
+                    }
+                }
+                break;
+
+            case (NoteType.Hold):
+                foreach (NoteHold n in NoteManager.instance.HoldList)
+                {
+                    if (!n.gameObject.activeInHierarchy)
+                    {
+                        rtn = n as NoteBase;
+                        break;
+                    }
+                }
+                break;
+
+            case (NoteType.Flick):
+                foreach (NoteFlick n in NoteManager.instance.FlickList)
+                {
+                    if (!n.gameObject.activeInHierarchy)
+                    {
+                        rtn = n as NoteBase;
+                        break;
+                    }
+                }
+                break;
+
+            case (NoteType.Drag):
+                foreach (NoteDrag n in NoteManager.instance.DragList)
+                {
+                    if (!n.gameObject.activeInHierarchy)
+                    {
+                        rtn = n as NoteBase;
+                        break;
+                    }
+                }
+                break;
+        }
+
+        if (rtn == null) { Debug.Log("Something went wrong"); }
+
+        return rtn;
     }
 
 }

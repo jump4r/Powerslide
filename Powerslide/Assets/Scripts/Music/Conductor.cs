@@ -32,27 +32,12 @@ public class Conductor : MonoBehaviour
     public static int OffsetDifference;
     private int currentNoteIndex = 0;
 
-    // Song
-    private bool isNotesFinished = false;
-
-    public float gain = 0.5F;
-    public int signatureHi = 4;
-    public int signatureLo = 4;
-    private double nextTick = 0.0F;
-    private float amp = 0.0F;
-    private float phase = 0.0F;
-    private double sampleRate = 0.0F;
-    private int accent;
     private bool running = false;
     private float runTime = 0f;
 
     void Start()
     {
-        accent = signatureHi;
-        double startTick = AudioSettings.dspTime;
-        sampleRate = AudioSettings.outputSampleRate;
         source = GetComponent<AudioSource>();
-        nextTick = startTick * sampleRate;
         running = true;
 
         nextBeatTime = offset;
@@ -76,19 +61,22 @@ public class Conductor : MonoBehaviour
     private float GetNextBeatTime(string hitNote)
     {
         float hitTime = float.Parse(hitNote.Split(',')[0]) / 1000f;
-        Debug.Log("Next Beat Time: " + hitTime);
+        // Debug.Log("Next Beat Time: " + hitTime);
         return hitTime;
     }
 
     void Update()
     {
+        // Only run update if there is an Audio Clip
+        if (source.clip == null) return;
+
         runTime += Time.deltaTime;
         songPosition = source.timeSamples / (float)source.clip.frequency;
 
         // Update the next beat time.
         while (songPosition > spawnTime && currentNoteIndex < beatmap.Notes.Count)
         {
-            Debug.Log("Spawn Time: " + spawnTime + ", Song Position " + songPosition);
+            // Debug.Log("Spawn Time: " + spawnTime + ", Song Position " + songPosition + ", bIndex: " + currentNoteIndex + "/" + beatmap.Notes.Count);
             NoteSpawner.SpawnHitObject(CompileNoteForSpawning(beatmap.Notes[currentNoteIndex]));
 
             // Update Timings: 
@@ -137,46 +125,11 @@ public class Conductor : MonoBehaviour
     public void Finish()
     {
         // To do: Figure out a better place to put this Clear function. We need to clear all of the notepaths out of the static list.
-        NotePath.NotePaths.Clear(); 
-        GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().ResetPlayground();
-        GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().ChangeLevel(3);
-    }
+        NotePath.NotePaths.Clear();
+        //GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().ResetPlayground();
+        // GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().ChangeLevel(3);
 
-    void OnAudioFilterRead(float[] data, int channels)
-    {
-        /*if (!running)
-            return;
-
-        if (runTime < offset)
-            return;
-
-        double samplesPerTick = sampleRate * 60.0F / bpm * 4.0F / signatureLo;
-        double sample = AudioSettings.dspTime * sampleRate;
-        int dataLen = data.Length / channels;
-        int n = 0;
-        while (n < dataLen)
-        {
-            float x = gain * amp * Mathf.Sin(phase);
-            int i = 0;
-            while (i < channels)
-            {
-                data[n * channels + i] += x;
-                i++;
-            }
-            while (sample + n >= nextTick)
-            {
-                nextTick += samplesPerTick;
-                amp = 1.0F;
-                if (++accent > signatureHi)
-                {
-                    accent = 1;
-                    amp *= 2.0F;
-                }
-                Debug.Log("Tick: " + accent + "/" + signatureHi);
-            }
-            phase += amp * 0.3F;
-            amp *= 0.993F;
-            n++;
-        }*/
+        LevelManager.instance.ResetPlayground();
+        LevelManager.instance.ChangeLevel(3);
     }
 }

@@ -39,7 +39,7 @@ public class NoteBase : MonoBehaviour {
     public float velocity; // = playerSpeedMult * (1 / (bpm / 60s)) or 1 / spb, we are going to travel 1 meter per beat. Increase the playerSpeedMult for increase
     public float spb; // Seconds per beat, how many seconds pass for one beat to occur (ie. 1spb = 60bpm, lower = higher bpm).
     public float playerSpeedMult; // Player speed mulitplier
-    protected float rTP = 0f; // Ratio of how long has passed between the note spawn and the hit marker. Basically : StartTime / PlannedEndTime
+    public float rTP = 0f; // Ratio of how long has passed between the note spawn and the hit marker. Basically : StartTime / PlannedEndTime
 
     // Start and End position, rotation, and timings
     public Vector3 startPosition;
@@ -84,6 +84,12 @@ public class NoteBase : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        // Do not update the note when it isn't active
+        if (!gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
         rTP = 1f - (EndTime - Conductor.songPosition) / (NoteHelper.Whole * Conductor.spb); // Ratio of completion for the song
         transform.position = new Vector3(startPosition.x, startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
         CheckToActivateNote(); // Bad Form will fix later
@@ -92,10 +98,10 @@ public class NoteBase : MonoBehaviour {
 
     // Virtual Functions
     public virtual void ChangeMaterial(Material mat) { }
-    public virtual void Construct(float offset, int NotePathID, string NoteName) { } // Construct a Regular note
-    public virtual void Construct(float offset, int NotePathID, float length, bool isTransition, string NoteName) { } // Construct a Hold note
-    public virtual void Construct(float offset, int startPath, int endPath, bool direction, string NoteName) { } // Construct a Flick note.
-    public virtual void Construct(float offset, int startPath, int endPath, float length, NoteDragType noteDragType, string NoteName) { } // Construct a Drag Note
+    public virtual void Construct(Vector3 spawnPosition, float offset, int NotePathID, string NoteName) { } // Construct a Regular note
+    public virtual void Construct(Vector3 spawnPosition, float offset, int NotePathID, float length, bool isTransition, string NoteName) { } // Construct a Hold note
+    public virtual void Construct(Vector3 spawnPosition, float offset, int startPath, int endPath, bool direction, string NoteName) { } // Construct a Flick note.
+    public virtual void Construct(Vector3 spawnPosition, float offset, int startPath, int endPath, float length, NoteDragType noteDragType, string NoteName) { } // Construct a Drag Note
     public virtual void ParseDefinition(string def) { } // Parse the definition of the note
     public virtual void SetFingerId(int id) { } // Set the finger id of the note
 
@@ -120,7 +126,7 @@ public class NoteBase : MonoBehaviour {
             {
                 NotePath.NotePaths[notePathID].AddActiveNote(this);
             }
-            Debug.Log(gameObject.name + " is ready to hit at: " + Conductor.songPosition + ", should be around " + EndTime);
+            // Debug.Log(gameObject.name + " is ready to hit at: " + Conductor.songPosition + ", should be around " + EndTime);
             isReadyToHit = true;
         }
     }
@@ -139,9 +145,7 @@ public class NoteBase : MonoBehaviour {
                     sm.UpdateAccuracy(0f);
                     sm.UpdateScore(HIT_MISS);
                 }
-                Debug.Log(gameObject.name + " has been missed, deactivating");
-                NotePath.NotePaths[notePathID].RemoveActiveNote(this);
-                Destroy(this.gameObject);
+                DestroyNote();
             }
         }
     }
@@ -171,15 +175,8 @@ public class NoteBase : MonoBehaviour {
 
     public void DestroyNote()
     {
-        Debug.Log("Android Debug: Destroying Note");
         NotePath.NotePaths[notePathID].RemoveActiveNote(this);
-        Destroy(this.gameObject);
-
-        // MISSED NOTE IF 0, Deactivate Note
-        // We dont' want to destroy notes that have a "length" field. BUT WE DID, WE LITERALLY DID THIS.
-        if (type != NoteType.Drag && type != NoteType.Hold && type != NoteType.Transition)
-        {
-            Destroy(this.gameObject);
-        }
+        gameObject.transform.position = new Vector3(-99f, -99f, -99f);
+        gameObject.SetActive(false);
     }
 }

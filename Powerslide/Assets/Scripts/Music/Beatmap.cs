@@ -101,6 +101,12 @@ public class Beatmap : MonoBehaviour {
                 // Debug.Log("Get Hit Objects:");
                 while (i + 1 < beatmapSplitText.Count)
                 {
+                    if (beatmapSplitText[i + 1].Trim() == "")
+                    {
+                        i++;
+                        continue;
+                    }
+
                     // Debug.Log("Adding Hit Object To List");
                     Notes.Add(beatmapSplitText[i+1]);
                     i++;

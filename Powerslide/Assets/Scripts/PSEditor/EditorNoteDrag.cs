@@ -83,6 +83,11 @@ public class EditorNoteDrag : EditorNoteBase {
         {
             PlayHitSound();
         }
+
+        else if (rTP < 1f)
+        {
+            activateHitSound = true;
+        }
     }
 
     public void SetNote(float length, int endPath)

@@ -23,8 +23,6 @@ public class NoteHold : NoteBase {
 
     // Is this particular hold note a transition?
     private bool isTransitionNote;
-    private bool existsNextNote;
-    private NoteBase nextNote;
 
     // Use this for initialization
     void OnEnable() {
@@ -35,11 +33,20 @@ public class NoteHold : NoteBase {
 
     // Update is called once per frame
     void Update() {
+        // Do no update note if the object is not active
+        if (!gameObject.activeInHierarchy)
+        {
+            transform.position = new Vector3(99f, 99f, 99f);
+            Debug.Log("Game Object is not active...");
+            return;
+        }
+
+
+        rTP = 1f - (EndTime - Conductor.songPosition) / (NoteHelper.Whole * Conductor.spb);
+        transform.position = new Vector3(startPosition.x, startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
 
         CheckToActivateNote();
         CheckToRemoveFromActiveNotesList();
-        rTP = 1f - (EndTime - Conductor.songPosition) / (NoteHelper.Whole * Conductor.spb);
-        transform.position = new Vector3(startPosition.x, startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
 
         // Set the vertex positions of the Hold Line.
         CalculatePositions(); // Recalculate the positions of the points
@@ -50,8 +57,11 @@ public class NoteHold : NoteBase {
     }
 
     // May be unneccisary 
-    public override void Construct(float offset, int NotePathID, float length, bool isTransitionNote, string NoteName)
+    public override void Construct(Vector3 spawnPosition, float offset, int NotePathID, float length, bool isTransitionNote, string NoteName)
     {
+        startPosition = spawnPosition;
+        transform.position = spawnPosition;
+
         EndTime = offset;
         this.notePathID = NotePathID;
         gameObject.name = NoteName;
@@ -63,6 +73,12 @@ public class NoteHold : NoteBase {
         {
             GetComponent<MeshRenderer>().enabled = false;
             type = NoteType.Transition;
+        }
+
+        else
+        {
+            GetComponent<MeshRenderer>().enabled = true;
+            type = NoteType.Hold;
         }
     }
 
@@ -170,9 +186,7 @@ public class NoteHold : NoteBase {
     {
         if (Conductor.songPosition >= EndTime + (Conductor.spb * length))
         {
-            // Update the objects in the NotePath's Active Notes List.
-            NotePath.NotePaths[this.notePathID].RemoveActiveNote(this);
-            Destroy(this.gameObject);
+            DestroyNote();
         }
     }
     

@@ -23,11 +23,7 @@ public class EditorManager : MonoBehaviour {
 
     // Debug
     [SerializeField]
-    private GameObject ClickVisualizer;
-
-    // Mouse down positions
-    private Vector3 mouseDownPosition;
-    private Vector3 mouseUpPosition;
+    // private GameObject ClickVisualizer;
 
     private void Start()
     {

@@ -4,7 +4,22 @@ using UnityEngine;
 using UnityEngine.SceneManagement; // Even though I added this...
 
 public class LevelManager : MonoBehaviour {
-    
+
+    public static LevelManager instance = null;
+
+    private void Start()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     public void ChangeLevel(int levelIndex)
     {
         SceneManager.LoadScene(levelIndex); // Unity buggy asf..

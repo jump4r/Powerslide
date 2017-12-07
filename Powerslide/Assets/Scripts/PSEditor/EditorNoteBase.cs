@@ -33,6 +33,11 @@ public class EditorNoteBase : MonoBehaviour
             PlayHitSound();
         }
 
+        else if (rTP < 1f)
+        {
+            activateHitSound = true;
+        }
+
     }
     public virtual void Construct(float offset, int notePathId, Vector3 spawnPosition) { }
     public virtual void Construct(float offset, int notePathId, float length, bool isTransition, Vector3 spawnPosition) { }

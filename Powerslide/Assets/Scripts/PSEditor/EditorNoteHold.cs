@@ -46,6 +46,11 @@ public class EditorNoteHold : EditorNoteBase {
         {
             PlayHitSound();
         }
+
+        else if (rTP < 1f)
+        {
+            activateHitSound = true;
+        }
     }
 
     private void CalculatePositions()

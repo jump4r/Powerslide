@@ -16,18 +16,12 @@ public class Player : MonoBehaviour {
 
     private bool sliderEnabled = false; // Dragging the slider.
 
-    private NoteType hitNoteType;
     private AudioClip hitSound;
 
     // Dragging Variables
     // Stretch Goal: See if we can get it so that we can have two flicks at the same time
     private bool dragNoteEnabled = false;
     private NoteDrag activeNoteDrag;
-
-    // Flick variables
-    private bool flickNoteEnabled = false;
-    private NotePath endFlickPath;
-    private NoteFlick activeNoteFlick;
 
     // I don't really know what these are for tbh
     public Vector3 offset = Vector3.zero;

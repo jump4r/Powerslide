@@ -10,6 +10,7 @@ public class Settings : MonoBehaviour {
     // Player Speed Mult
     public static float PlayerSpeedMult = 4f;
     private bool PlayerSpeedMultMenuOpen = false;
+
     [SerializeField]
     private Text playerSpeedMultButton;
 
