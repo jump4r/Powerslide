@@ -26,6 +26,8 @@ public class NoteBase : MonoBehaviour {
     protected ScoreManager sm;
 
     // Score Variables
+    public Material Def; // Defautl Material
+    public Material LineMat;
     public Material Score100;
     public Material Score50;
 
@@ -45,7 +47,6 @@ public class NoteBase : MonoBehaviour {
     public Vector3 startPosition;
     public Vector3 endPosition;
     public static readonly float xRotation = 55f * Mathf.PI / 180f;
-    [HideInInspector]
     public float EndTime; // When the note hits the hitbar
     [HideInInspector]
     public float StartTime; // When the note spawns
@@ -64,7 +65,7 @@ public class NoteBase : MonoBehaviour {
     protected int fingerId;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         playerSpeedMult = Settings.PlayerSpeedMult;
         startPosition = (this.gameObject.transform.position);
         endPosition = new Vector3(startPosition.x, startPosition.y - (8f * playerSpeedMult * Mathf.Sin(xRotation)), startPosition.z - (8f * playerSpeedMult * Mathf.Cos(xRotation)));
@@ -74,6 +75,8 @@ public class NoteBase : MonoBehaviour {
         sm = GameObject.FindGameObjectWithTag("ScoreManager").GetComponent<ScoreManager>();
 
         // Set materials for 50/100 scores
+        Def = Resources.Load("Materials/Playnote", typeof(Material)) as Material;
+        LineMat = Resources.Load("Materials/Line", typeof(Material)) as Material;
         Score100 = Resources.Load("Materials/100Score", typeof(Material)) as Material;
         Score50 = Resources.Load("Materials/50Score", typeof(Material)) as Material;
 
@@ -102,6 +105,8 @@ public class NoteBase : MonoBehaviour {
     public virtual void Construct(Vector3 spawnPosition, float offset, int NotePathID, float length, bool isTransition, string NoteName) { } // Construct a Hold note
     public virtual void Construct(Vector3 spawnPosition, float offset, int startPath, int endPath, bool direction, string NoteName) { } // Construct a Flick note.
     public virtual void Construct(Vector3 spawnPosition, float offset, int startPath, int endPath, float length, NoteDragType noteDragType, string NoteName) { } // Construct a Drag Note
+
+    protected virtual void ResetNote() { }
     public virtual void ParseDefinition(string def) { } // Parse the definition of the note
     public virtual void SetFingerId(int id) { } // Set the finger id of the note
 
@@ -176,7 +181,9 @@ public class NoteBase : MonoBehaviour {
     public void DestroyNote()
     {
         NotePath.NotePaths[notePathID].RemoveActiveNote(this);
+        ResetNote();
         gameObject.transform.position = new Vector3(-99f, -99f, -99f);
         gameObject.SetActive(false);
+       
     }
 }

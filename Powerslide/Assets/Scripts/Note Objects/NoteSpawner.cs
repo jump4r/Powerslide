@@ -133,8 +133,12 @@ public class NoteSpawner : MonoBehaviour {
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[startPath].transform.position.x, basePosition.y, basePosition.z);
         NoteDrag n = (NoteDrag)GetNoteFromPool(NoteType.Drag);
 
-        n.Construct(spawnPosition, offset, startPath, endPath, length, dragNoteType, noteID);
-        n.gameObject.SetActive(true);
+        // n.gameObject.SetActive(true);
+        // n.Construct(spawnPosition, offset, startPath, endPath, length, dragNoteType, noteID);
+
+        NoteDrag temp = Instantiate(Drag, spawnPosition, baseRotation).GetComponent<NoteDrag>();
+        temp.Construct(spawnPosition, offset, startPath, endPath, length, dragNoteType, noteID);
+
     }
     
 

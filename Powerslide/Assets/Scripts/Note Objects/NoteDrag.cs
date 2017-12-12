@@ -52,7 +52,7 @@ public class NoteDrag : NoteBase {
         DragNoteDebugger = GameObject.Find("Drag Note Debugger");
         sliderTrasform = GameObject.Find("Slider").transform;
         lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.numPositions = 2; // ATM, we only need two points, but we may need n + 1 depending on the number of segments
+        
     }
 
     public override void Construct(Vector3 spawnPosition, float offset, int startPath, int endPath, float length, NoteDragType dragType, string NoteName)
@@ -85,43 +85,18 @@ public class NoteDrag : NoteBase {
         {
             segments.Add(Vector3.zero);
         }
-        Debug.Log("Amount of segments " + segments.Count);
+
+        
         lineRenderer.numPositions = numSegments;
+
+        Debug.Log("Amount of segments " + lineRenderer.numPositions);
 
         dragStartPos = NotePath.NotePaths[startPath].transform.position.x;
         dragEndPos = NotePath.NotePaths[endPath].transform.position.x;
         totalHeight = Mathf.Pow(numSegments-1, 2);
     }
 
-    //  the starting and ending positions of theslider.
-    private void CalculatePositions()
-    {
-        float xOffset = (dragEndPos - dragStartPos) / (numSegments - 1); // How far apart the curve segement points will be placed.
-        for (int i = 0; i < segments.Count; i++)
-        {
-            float curveHeight = CurveExponential(i);
-            segments[i] = new Vector3(transform.position.x + (xOffset * i),
-                                      transform.position.y + ((curveHeight / totalHeight) * length * playerSpeedMult * Mathf.Sin(xRotation)), 
-                                      transform.position.z + ((curveHeight / totalHeight) * length * playerSpeedMult * Mathf.Cos(xRotation)));
-        }
-    }
-
-    // For Root Types, return square root,
-    // For Linear and Curve Types, return the index squared 
-    private float CurveExponential(float index)
-    {
-        // This is actually more complicated than I expected.
-        // We can't do a simple square root, but rather we're doing an "upside down x^2"
-        if (dragType == NoteDragType.Root)
-        {
-            if (index == 0) return 0;
-            float newIndex = numSegments - index;
-            return totalHeight - Mathf.Pow(newIndex, 2f);
-        }
-
-        return Mathf.Pow(index, 2f);
-    }
-
+   
     private void Update()
     {
         CheckToRemoveFromActiveNotesList();
@@ -131,7 +106,7 @@ public class NoteDrag : NoteBase {
                                          startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP),
                                          startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
 
-        for (int i = 0; i < segments.Count; i++)
+        for (int i = 0; i < lineRenderer.numPositions; i++)
         {
             lineRenderer.SetPosition(i, segments[i]);
         }
@@ -154,6 +129,36 @@ public class NoteDrag : NoteBase {
             NotePath.NotePaths[notePathID].RemoveActiveNote(this);
         }
     }
+
+    //  the starting and ending positions of theslider.
+    private void CalculatePositions()
+    {
+        float xOffset = (dragEndPos - dragStartPos) / (numSegments - 1); // How far apart the curve segement points will be placed.
+        for (int i = 0; i < segments.Count; i++)
+        {
+            float curveHeight = CurveExponential(i);
+            segments[i] = new Vector3(transform.position.x + (xOffset * i),
+                                      transform.position.y + ((curveHeight / totalHeight) * length * playerSpeedMult * Mathf.Sin(xRotation)),
+                                      transform.position.z + ((curveHeight / totalHeight) * length * playerSpeedMult * Mathf.Cos(xRotation)));
+        }
+    }
+
+    // For Root Types, return square root,
+    // For Linear and Curve Types, return the index squared 
+    private float CurveExponential(float index)
+    {
+        // This is actually more complicated than I expected.
+        // We can't do a simple square root, but rather we're doing an "upside down x^2"
+        if (dragType == NoteDragType.Root)
+        {
+            if (index == 0) return 0;
+            float newIndex = numSegments - index;
+            return totalHeight - Mathf.Pow(newIndex, 2f);
+        }
+
+        return Mathf.Pow(index, 2f);
+    }
+
 
     // Determines the x position of point on a curved slider
     public float GetXRelPos()
@@ -204,5 +209,19 @@ public class NoteDrag : NoteBase {
         {
             DestroyNote();
         }
+    }
+
+    protected override void ResetNote()
+    {
+        
+        active = true;
+        dragNoteActive = false;
+        IsTapped = false;
+        isReadyToHit = false;
+
+        ChangeMaterial(Def);
+        lineRenderer.material = LineMat;
+
+        Destroy(gameObject);
     }
 }

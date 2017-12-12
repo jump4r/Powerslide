@@ -11,6 +11,7 @@ using System.Collections;
 public class Conductor : MonoBehaviour
 {
 
+    public static Conductor instance = null;
     /**** For testing
      * Dango Daikazoku - bpm: 100, offset: 2.390
      * Celestial Stinger - bpm: 259, offset: 572
@@ -23,8 +24,7 @@ public class Conductor : MonoBehaviour
     public static float spawnTime = 0f; // Time the note should spawn
     public static float SpawnTimeOffset;
 
-    [SerializeField]
-    private AudioSource source; // Source of the audio clip
+    public AudioSource source; // Source of the audio clip
 
     public static float spb;
 
@@ -37,6 +37,16 @@ public class Conductor : MonoBehaviour
 
     void Start()
     {
+        if (instance == null)
+        {
+            instance = this;
+        }
+
+        else
+        {
+            Destroy(gameObject);
+        }
+
         source = GetComponent<AudioSource>();
         running = true;
 
@@ -55,6 +65,7 @@ public class Conductor : MonoBehaviour
         nextBeatTime = GetNextBeatTime(CompileNoteForSpawning(beatmap.Notes[currentNoteIndex]));
         SpawnTimeOffset = spb * NoteHelper.Whole; // Difference between the EndTime and the SpawnTime
         spawnTime = nextBeatTime - SpawnTimeOffset;
+
         Play(); // Play the audio
     }
 

@@ -61,7 +61,7 @@ public class EditorNoteDrag : EditorNoteBase {
         for (int i = 0; i < lineRenderer.numPositions; i++)
         {
             lineRenderer.SetPosition(i, segments[i]);
-            Debug.Log("Set Position " + i + ": " + segments[i]);
+            // Debug.Log("Set Position " + i + ": " + segments[i]);
         }
     }
 

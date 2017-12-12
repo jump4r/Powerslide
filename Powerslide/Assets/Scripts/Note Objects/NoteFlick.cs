@@ -57,4 +57,13 @@ public class NoteFlick : NoteBase {
             CalculateError();
         }
     }
+
+    protected override void ResetNote()
+    {
+        active = true;
+        IsTapped = false;
+        isReadyToHit = false;
+
+        ChangeMaterial(Def);
+    }
 }

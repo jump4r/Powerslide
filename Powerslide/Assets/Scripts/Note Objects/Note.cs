@@ -37,4 +37,13 @@ public class Note : NoteBase {
         gameObject.GetComponent<Renderer>().material = mat;
     }
 
+    protected override void ResetNote()
+    {
+        active = true;
+        IsTapped = false;
+        isReadyToHit = false;
+
+        ChangeMaterial(Def);
+    }
+
 }

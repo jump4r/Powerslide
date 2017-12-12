@@ -68,6 +68,8 @@ public class NoteHold : NoteBase {
         this.length = length;
         this.isTransitionNote = isTransitionNote;
 
+        lineRenderer.material = LineMat;
+
         // If this note should be constructed as a Transition note, remove the mesh renderer
         if (isTransitionNote)
         {
@@ -167,7 +169,6 @@ public class NoteHold : NoteBase {
     {
         // Update Score 
         sm.UpdateScore(Mathf.RoundToInt(300f * Conductor.spb * Time.deltaTime));
-        // Debug.Log("Android Debug: Score is set to " + Mathf.RoundToInt(300f * Conductor.spb * Time.deltaTime) + " during update");
         ChangeMaterial(Score100);
     }
 
@@ -189,5 +190,16 @@ public class NoteHold : NoteBase {
             DestroyNote();
         }
     }
-    
+
+    protected override void ResetNote()
+    {
+        active = true;
+        Active = false;
+        IsTapped = false;
+        isReadyToHit = false;
+
+        GetComponent<Renderer>().material = Def;
+        lineRenderer.material = LineMat;
+    }
+
 }
