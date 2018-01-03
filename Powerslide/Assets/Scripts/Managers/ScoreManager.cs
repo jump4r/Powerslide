@@ -33,11 +33,6 @@ public class ScoreManager : MonoBehaviour {
         }
     }
 
-    private void Start()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
-
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;

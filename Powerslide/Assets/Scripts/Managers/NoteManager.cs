@@ -24,7 +24,7 @@ public class NoteManager : MonoBehaviour {
     public List<NoteDrag> DragList;
     public List<NoteFlick> FlickList;
 
-    private const int noteAmount = 20;
+    private const int noteAmount = 30;
     private const int dragAmount = 10;
 
     private 

@@ -29,7 +29,6 @@ public class Conductor : MonoBehaviour
     public static float spb;
 
     private Beatmap beatmap;
-    public static int OffsetDifference;
     private int currentNoteIndex = 0;
 
     private bool running = false;
@@ -60,9 +59,9 @@ public class Conductor : MonoBehaviour
         this.beatmap = beatmap;
         source.clip = beatmap.song;
         spb = 60f / beatmap.BPM; // Seconds per beat
-        offset = beatmap.OsuOffset / 1000f; // Offset is in milliseconds for easier readibility
-        OffsetDifference = beatmap.OffsetDifference; // Difference between the osu offset and the actual offset of the song
-        nextBeatTime = GetNextBeatTime(CompileNoteForSpawning(beatmap.Notes[currentNoteIndex]));
+        offset = beatmap.RawOffset / 1000f; // Offset is in milliseconds for easier readibility
+
+        nextBeatTime = GetNextBeatTime(beatmap.Notes[currentNoteIndex]);
         SpawnTimeOffset = spb * NoteHelper.Whole; // Difference between the EndTime and the SpawnTime
         spawnTime = nextBeatTime - SpawnTimeOffset;
 
@@ -88,13 +87,13 @@ public class Conductor : MonoBehaviour
         while (songPosition > spawnTime && currentNoteIndex < beatmap.Notes.Count)
         {
             // Debug.Log("Spawn Time: " + spawnTime + ", Song Position " + songPosition + ", bIndex: " + currentNoteIndex + "/" + beatmap.Notes.Count);
-            NoteSpawner.SpawnHitObject(CompileNoteForSpawning(beatmap.Notes[currentNoteIndex]));
+            NoteSpawner.SpawnHitObject(beatmap.Notes[currentNoteIndex]);
 
             // Update Timings: 
             currentNoteIndex++;
             if (currentNoteIndex < beatmap.Notes.Count)
             {
-                nextBeatTime = GetNextBeatTime(CompileNoteForSpawning(beatmap.Notes[currentNoteIndex]));
+                nextBeatTime = GetNextBeatTime(beatmap.Notes[currentNoteIndex]);
                 spawnTime = nextBeatTime - SpawnTimeOffset;
             }
             // Debug.Log("Current Song Position: " + songPosition);
@@ -106,20 +105,16 @@ public class Conductor : MonoBehaviour
         // Debug.Log("Current Song Position: " + songPosition + ", Spawn Time: " + spawnTime);
     }
 
-    // Given a raw note, change the EndTime (first element in the Note string array), by adding the OffsetDifference, and then return the new note.
-    private string CompileNoteForSpawning(string note)
-    {
-        string[] split = note.Split(',');
-        int newEndTime = int.Parse(split[0]) + OffsetDifference;
-        split[0] = newEndTime.ToString();
-        string rtn = string.Join(",", split);
-        return rtn;
-    }
-
     public void Play()
     {
         if (source.clip != null) {
             source.Play();
+            Debug.Log("Playing Clip");
+        }
+
+        else
+        {
+            Debug.LogWarning("No Audio Clip Present");
         }
     }
 
@@ -137,10 +132,7 @@ public class Conductor : MonoBehaviour
     {
         // To do: Figure out a better place to put this Clear function. We need to clear all of the notepaths out of the static list.
         NotePath.NotePaths.Clear();
-        //GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().ResetPlayground();
-        // GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>().ChangeLevel(3);
-
         LevelManager.instance.ResetPlayground();
-        LevelManager.instance.ChangeLevel(3);
+        LevelManager.instance.ChangeLevel(2);
     }
 }

@@ -43,16 +43,18 @@ public class Finger : MonoBehaviour {
 
     private void FingerTap()
     {
-        RaycastHit[] hitObjects = player.GetHitObjects(Input.GetTouch(FingerID).position);
+        Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(FingerID).position);
+        RaycastHit hit;
 
-        for (int i = 0; i < hitObjects.Length; i++)
+
+
+        if (Physics.Raycast(ray, out hit, 100f, player.layermask))
         {
             // If we hit a Notepath...
-            if (hitObjects[i].collider.tag == "NotePath")
+            if (hit.collider.tag == "NotePath")
             {
-                NotePath hitPath = hitObjects[i].collider.gameObject.GetComponent<NotePath>();
+                NotePath hitPath = hit.collider.gameObject.GetComponent<NotePath>();
                 notePathID = hitPath.NotePathID;
-                Debug.Log("Call Finger Tap ONCE");
                 previousNotePathID = notePathID;
                 NoteType noteType = hitPath.CheckIfValidHit();
 
@@ -64,22 +66,19 @@ public class Finger : MonoBehaviour {
                 hitPath.Tapped();
 
                 player.hitNotePathWithFinger = true;
-                break;
             }
 
-            else if (hitObjects[i].collider.tag == "SliderBar")
+            else if (hit.collider.tag == "SliderBar")
             {
                 slider = player.Slider.GetComponent<Slider>();
-                slider.SetSliderRelativeToFinger(FingerID, hitObjects[i].point);
+                slider.SetSliderRelativeToFinger(FingerID, hit.point);
                 fingerState = FingerState.SLIDE;
-                break;
             }
         }
     }
 	
     public void ResetFinger()
     {
-        Debug.Log("Android Debug: Finger has be reset");
         ActiveNote = null;
         fingerState = FingerState.HOLD;
     }
@@ -127,14 +126,16 @@ public class Finger : MonoBehaviour {
         }
 
         // Check Hold -> Transition
-        RaycastHit[] hitObjects = player.GetHitObjects(Input.GetTouch(FingerID).position);
+        Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(FingerID).position);
+        RaycastHit hit;
+
         NotePath np = null;
 
-        for (int i = 0; i < hitObjects.Length; i++)
+        if (Physics.Raycast(ray, out hit, 100f, player.layermask))
         {
-            if (hitObjects[i].collider.tag == "NotePath")
+            if (hit.collider.tag == "NotePath")
             {
-                np = hitObjects[i].collider.gameObject.GetComponent<NotePath>();
+                np = hit.collider.gameObject.GetComponent<NotePath>();
                 notePathID = np.NotePathID;
                 // Debug.Log("Android Debug: Currently Holding on Note Path: " + hitObjects[i].collider.gameObject.GetComponent<NotePath>() + ", previous Note Path was :);
             }

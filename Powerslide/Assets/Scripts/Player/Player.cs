@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 public class Player : MonoBehaviour {
 
+    public static Player instance = null; 
+
     // Behaviours of Touch Objects
     public Dictionary<int, Finger> FingerDictionary; // Touch t, int fingerID
     public List<int> fingerIDList;
@@ -98,37 +100,6 @@ public class Player : MonoBehaviour {
         }
     }
 
-    public void MoveSlider(Vector3 position)
-    {
-        // This will be replaced with finger location via finger ID
-        // TODO: See if there is an easier way to do this 1-Dimmentional Movement
-        Ray ray = Camera.main.ScreenPointToRay(position);
-        Vector3 oldPosition = Slider.transform.position;
-        Vector3 newXPosition = ray.GetPoint(distanceFromRayOrigin) + offset;
-        Slider.transform.position = new Vector3(newXPosition.x, oldPosition.y, oldPosition.z);
-        Debug.Log("Android Debug: Set Position: " + Slider.transform.position);
-    }
-
-    public RaycastHit[] GetHitObjects(Vector3 position)
-    {
-        Ray ray = Camera.main.ScreenPointToRay(position);
-        RaycastHit[] hitObjects = Physics.RaycastAll(ray, 1000f, layermask);
-        return hitObjects;
-    }
-
-    public int GetRelevantHitObjectIndex(Vector3 position)
-    {
-        Ray ray = Camera.main.ScreenPointToRay(position);
-        RaycastHit[] hitObjects = Physics.RaycastAll(ray, 1000f, layermask);
-        for (int i = 0; i < hitObjects.Length; i++)
-        {
-            if (hitObjects[i].collider.tag == "NotePath" || hitObjects[i].collider.tag == "SliderBar")
-            {
-                return i;
-            }
-        }
-        return -1;
-    }
 
     private void CheckDragNote()
     {

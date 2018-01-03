@@ -7,34 +7,52 @@ using System.Text;
 using System.Linq;
 using System;
 
+public enum BeatmapState
+{
+    Empty = 0,
+    Selected = 1,
+    Loading = 2,
+    Loaded = 3
+}
+
 public class Beatmap : MonoBehaviour {
 
+    private BeatmapState state = BeatmapState.Empty;
+    private bool beatmapLoaded = false;
+
     [SerializeField]
-    private string beatmapFilename;
-    private string raw_beatmap;
+    private string beatmapFilename { get; set; }
+    [SerializeField]
+    private string beatmapDirectory { get; set; }
+
+    private string raw_beatmap { get; set; }
     private List<string> beatmapSplitText;
 
     // General
     public string SongName = "";
     public AudioClip song;
-    public int OsuOffset;
-    public int RawOffset;
+    public int OsuOffset { get; private set; }
+    public int RawOffset { get; private set; }
     public int OffsetDifference; // Because we are using osu to generate maps, which will sometimes trim audio files, we must get the real offset from a program like audiacity, and then add the offset difference to each HitObject
     public float BPM;
 
     // Notes List
     public List<string> Notes;
 
+    public void SetFilename(string beatmapFilename)
+    {
+        this.beatmapFilename = beatmapFilename;
+    }
+
+    public void SetDirectoryName(string name)
+    {
+        this.beatmapDirectory = name;
+    }
+
     // Use this for initialization
     void Start() {
         beatmapSplitText = new List<string>();
         Notes = new List<string>();
-
-        bool beatmapLoaded = LoadFile(beatmapFilename);
-        if (beatmapLoaded)
-        {
-            ParseBeatmap();
-        }
 
         // For debug purposes, only play beatmap on start if we are in the Playground
         // This can be removed later.
@@ -44,41 +62,73 @@ public class Beatmap : MonoBehaviour {
         }
     }
 
+    private void Update()
+    {
+        if (state == BeatmapState.Loading)
+        {
+            Debug.Log("Loading Beatmap");
+        }
+    }
+
     // To do, find a way to load a file on Android without making said object a TextAsset
     /* Tried list
      * Application.persistantDataPath -> useful for when we want players to write & save, however, not so much at this point
      * Application.dataPath does not point to the right location on android
      * */
-    private bool LoadFile(string filename)
+    private IEnumerator LoadFile(string filename)
     {
-        TextAsset beatmapTextAsset = Resources.Load("Beatmaps/" + filename) as TextAsset;
-        // Debug.Log("Beatmap Text: " + beatmapTextAsset.text); // I'm sure this is a horrible way to do this.
-        // string file = Path.GetFullPath(Application.dataPath + "\\Resources\\Beatmaps\\" + filename + ".txt");
+        state = BeatmapState.Loading;
+
+        WWW beatmapWWW = new WWW("file://" + filename);
+        yield return beatmapWWW;
 
         // Load beatmap
-        string file = beatmapTextAsset.text;
-        beatmapSplitText = beatmapTextAsset.text.Split('\n').ToList();
-        
-        if (beatmapSplitText.Count == 0)
+        string file = beatmapWWW.text;
+        Debug.Log(file);
+        beatmapSplitText = file.Split('\n').ToList();
+
+        bool successfulLoad = beatmapSplitText.Count > 0 ? true : false;
+
+        if (!successfulLoad)
         {
-            Debug.Log("Error Loading Beatmap");
-            return false;
-        }
-        
-        for (int i = 0; i < beatmapSplitText.Count; i++)
-        {
-            beatmapSplitText[i] = beatmapSplitText[i].Trim();
+            Debug.LogWarning("Failed to load beatmap file");
+            yield return false;
         }
 
-        // Debug.Log("Beatmap Split Text Count: " + beatmapSplitText[0]);
-        return true;
+        else
+        {
+            for (int i = 0; i < beatmapSplitText.Count; i++)
+            {
+                beatmapSplitText[i] = beatmapSplitText[i].Trim();
+            }
+
+            state = BeatmapState.Loaded;
+
+            ParseBeatmap();
+
+            yield return LoadAudio(beatmapDirectory);
+
+            if (song != null)
+            {
+                // After Loading Beatmap, Call Level Manager to change the level.
+                LevelManager.instance.ChangeLevel(1);
+            }
+
+            else
+            {
+                Debug.LogWarning("Failed to load audio");
+            }
+        }
     }
 
     // Beatmap has been selected for loading into the playground
     public void BeatmapSelected()
     {
+        LevelManager.instance.SetLoadingScreen(true);
         gameObject.transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
+
+        StartCoroutine(LoadFile(beatmapFilename));
     }
 
     // Load up the variables from the beatmap file.
@@ -114,8 +164,6 @@ public class Beatmap : MonoBehaviour {
             }
             else { /* Debug.Log(beatmapSplitText[i]); */ }
         }
-
-        LoadAudio(SongName);
     }
 
     private string GetInfoFromLine(string line)
@@ -125,12 +173,19 @@ public class Beatmap : MonoBehaviour {
         return rtn;
     }
 
-    private void LoadAudio(string filename)
+    private IEnumerator LoadAudio(string directory)
     {
-        song = Resources.Load("Sound FX/Music/" + filename) as AudioClip;
-        if (song == null)
+        var files = new DirectoryInfo(directory).GetFiles("*.mp3");
+
+        if (files.Length < 1)
         {
-            return;
+            Debug.LogWarning("No mp3 files found in this directory");
         }
+
+        Debug.Log(files[0].FullName);
+
+        var songWWW = new WWW("file://" + files[0].FullName);
+        yield return song;
+        song = songWWW.GetAudioClip(true);
     }
 }
