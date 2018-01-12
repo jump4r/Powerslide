@@ -11,7 +11,7 @@ public enum FingerState
     SLIDE = 4
 }
 
-public class Finger : MonoBehaviour {
+public class Finger {
 
     private Player player;
     private Slider slider = null;
@@ -37,16 +37,13 @@ public class Finger : MonoBehaviour {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
         // Initial Finger Tap
-        FingerTap();
-        
+        FingerTap();  
     }
 
     private void FingerTap()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(FingerID).position);
         RaycastHit hit;
-
-
 
         if (Physics.Raycast(ray, out hit, 100f, player.layermask))
         {

@@ -17,21 +17,35 @@ public class Player : MonoBehaviour {
     public int layermask = 1 << 8; // Layermask is broken as fuck.
 
     private bool sliderEnabled = false; // Dragging the slider.
+    public bool isSliderOnPath;
 
     private AudioClip hitSound;
 
     // Dragging Variables
-    // Stretch Goal: See if we can get it so that we can have two flicks at the same time
     private bool dragNoteEnabled = false;
-    private NoteDrag activeNoteDrag;
+    public NoteDrag activeNoteDrag;
 
     // I don't really know what these are for tbh
     public Vector3 offset = Vector3.zero;
     public float distanceFromRayOrigin = 0;
 
+    // Bot
+    [SerializeField]
+    private bool enableBot = false;
+
     public GameObject Slider;
 	// Use this for initialization
 	void Start () {
+        if (instance == null)
+        {
+            instance = this;
+        }
+
+        else
+        {
+            Destroy(this.gameObject);
+        }
+
         hitSound = Resources.Load("Sound FX/hitsound.wav") as AudioClip;
         FingerDictionary = new Dictionary<int, Finger>();
         fingerIDList = new List<int>();
@@ -39,7 +53,10 @@ public class Player : MonoBehaviour {
 	}
 
     // Getters and Setters
-    public void SetActiveDragNote(NoteDrag drag) { activeNoteDrag = drag;  }
+    public void SetActiveDragNote(NoteDrag drag)
+    {
+        activeNoteDrag = drag;
+    }
 	    
 	// Update is called once per frame
 	void Update ()
@@ -95,17 +112,22 @@ public class Player : MonoBehaviour {
     {
         if (hitNotePathWithFinger)
         {
-            GetComponent<AudioSource>().Play();
+            // GetComponent<AudioSource>().Play();
             hitNotePathWithFinger = false;
         }
     }
 
-
+    // Checks to see if the slider is on the path of the drag note.
     private void CheckDragNote()
     {
         if (activeNoteDrag != null)
         {
-            activeNoteDrag.CheckIfOnPath(Slider.transform);
+            isSliderOnPath = activeNoteDrag.CheckIfOnPath(Slider.transform.position);
+        }
+
+        else
+        {
+            isSliderOnPath = false;
         }
     }
 }

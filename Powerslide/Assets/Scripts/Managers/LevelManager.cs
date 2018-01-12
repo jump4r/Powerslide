@@ -12,6 +12,13 @@ public enum Screen
     TUTORIAL = 3,
 }
 
+public enum LevelEnum
+{
+    SELECT = 0,
+    PLAYGROUND = 1,
+    RESULTS = 2,
+}
+
 public class LevelManager : MonoBehaviour {
 
     public Dictionary<Screen, GameObject> ScreenDictionary;
@@ -48,6 +55,15 @@ public class LevelManager : MonoBehaviour {
     public void ChangeLevel(int levelIndex)
     {
         SceneManager.LoadScene(levelIndex); // Unity buggy asf..
+    }
+
+    public void ChangeLevel(LevelEnum level)
+    {
+        int levelIndex = (int)level;
+
+        Debug.Log("Windows Debug: Loading Level " + levelIndex);
+
+        SceneManager.LoadScene(levelIndex);
     }
 
     // Managing Screens
@@ -96,6 +112,6 @@ public class LevelManager : MonoBehaviour {
 
     public void ResetScoreManager()
     {
-        ScoreManager.ResetScoreManager();
+        ScoreManager.instance.ResetScoreManager();
     }
 }

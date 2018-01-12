@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 public class NotePath : MonoBehaviour {
 
+    public Material pathColorDefault;
+    public Material pathColorPressed;
+
     public int NotePathID; // ID of the
     public GameObject[] pathObjects;
 
@@ -52,13 +55,16 @@ public class NotePath : MonoBehaviour {
     }
 
     public void Tapped() {
+
+        SetRenderMaterial(pathColorPressed);
+
         if (ActiveNotes.Count <= 0) // no active notes
         {
             return;
         }
 
         Debug.Log("Android Debug: Tapped (NotePath)");
-        ActiveNotes[0].Tapped(this.NotePathID);
+        ActiveNotes[0].Tapped(this.NotePathID); 
     }
 
     public void Held()
@@ -75,6 +81,9 @@ public class NotePath : MonoBehaviour {
     // Finger has transitioned FROM this path TO another path (endPath)
     public void Transitioned(int endPath)
     {
+        SetRenderMaterial(pathColorDefault);
+        NotePaths[endPath].SetRenderMaterial(pathColorPressed);
+
         if (ActiveNotes.Count <= 0) // no active notes
         {
             return;
@@ -91,11 +100,18 @@ public class NotePath : MonoBehaviour {
     // Finger lifted from the screen
     public void Lifted()
     {
+        SetRenderMaterial(pathColorDefault);
+
         if (ActiveNotes.Count <= 0)
         {
             return;
         }
 
-        ActiveNotes[0].Lift(this.NotePathID);
+        ActiveNotes[0].Lift(this.NotePathID); 
+    }
+
+    private void SetRenderMaterial(Material mat)
+    {
+        GetComponent<Renderer>().material = mat;
     }
 }

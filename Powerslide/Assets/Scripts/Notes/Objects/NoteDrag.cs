@@ -10,7 +10,6 @@ public enum NoteDragType
     Root = 2
 }
 
-[RequireComponent(typeof(LineRenderer))]
 public class NoteDrag : NoteBase {
 
     // Definition of a DRAGNOTE: [offset,numSections,startPath,endPath,length]
@@ -26,7 +25,7 @@ public class NoteDrag : NoteBase {
     private GameObject DragNoteDebugger;
 
     // Drag Note Positional Variables
-    private int numSegments = 16; // The number of segments we want to represent our "curve". A numSegments of 2 will be used for a straight line
+    private Vector3[] bezierPoints; // Curves will be bezier, each containing 3 points.
     private float totalHeight;
 
     private float dragStartPos;
@@ -41,18 +40,34 @@ public class NoteDrag : NoteBase {
     private Transform sliderTrasform;
 
     private bool dragNoteActive = false; // A little confusing, because we have a 'active' bool in the NoteBase, should be changed to 
-
+    private bool isOnPath = false;
 
     // Line renderer
     private LineRenderer lineRenderer;
+    private Vector3 hitbarPosition;
 
     void OnEnable()
     {
         type = NoteType.Drag;
         DragNoteDebugger = GameObject.Find("Drag Note Debugger");
         sliderTrasform = GameObject.Find("Slider").transform;
+        hitbarPosition = GameObject.FindGameObjectWithTag("Hitbar").transform.position;
+
+        // this.gameObject.AddComponent<LineRenderer>();
         lineRenderer = GetComponent<LineRenderer>();
-        
+
+        lineRenderer.numPositions = 16;
+
+        for (int i = 0; i < lineRenderer.numPositions; i++)
+        {
+            lineRenderer.SetPosition(i, Vector3.zero);
+        }
+
+        lineRenderer.widthMultiplier = 0.2f;
+        lineRenderer.endWidth = 0.2f;
+        lineRenderer.sortingOrder = -1;
+
+        bezierPoints = new Vector3[3]; 
     }
 
     public override void Construct(Vector3 spawnPosition, float offset, int startPath, int endPath, float length, NoteDragType dragType, string NoteName)
@@ -71,32 +86,27 @@ public class NoteDrag : NoteBase {
         // Determine number of segments needed
         if (dragType == NoteDragType.Linear)
         {
-            numSegments = 2;
+            lineRenderer.numPositions = 2;
         }
 
         else
         {
-            numSegments = 16;
+            lineRenderer.numPositions = 16;
         }
 
         // Load the segment points.
-        segments = new List<Vector3>(numSegments);
-        for (int i = 0; i < numSegments; i++)
+        segments = new List<Vector3>(lineRenderer.numPositions);
+
+        for (int i = 0; i < lineRenderer.numPositions; i++)
         {
             segments.Add(Vector3.zero);
         }
 
-        
-        lineRenderer.numPositions = numSegments;
-
-        Debug.Log("Amount of segments " + lineRenderer.numPositions);
-
         dragStartPos = NotePath.NotePaths[startPath].transform.position.x;
         dragEndPos = NotePath.NotePaths[endPath].transform.position.x;
-        totalHeight = Mathf.Pow(numSegments-1, 2);
+        totalHeight = Mathf.Pow(lineRenderer.numPositions - 1, 2);
     }
 
-   
     private void Update()
     {
         CheckToRemoveFromActiveNotesList();
@@ -106,12 +116,20 @@ public class NoteDrag : NoteBase {
                                          startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP),
                                          startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
 
+        CalculatePositions(); // Recalculate the positions of the points
+
         for (int i = 0; i < lineRenderer.numPositions; i++)
         {
-            lineRenderer.SetPosition(i, segments[i]);
-        }
+            try
+            {
+                lineRenderer.SetPosition(i, segments[i]);
+            }
 
-        CalculatePositions(); // Recalculate the positions of the points
+            catch
+            {
+                Debug.Log("Unable To set position");
+            }
+        }
 
         // Potentially Activate real note
         // This looks kinda ugly tbh
@@ -122,7 +140,7 @@ public class NoteDrag : NoteBase {
             GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().SetActiveDragNote(this);
         }
 
-        // Potentially Activate real note
+        // Potentially Deactivate real note
         if (Conductor.songPosition > EndTime + (length * Conductor.spb) && dragNoteActive)
         {
             dragNoteActive = false;
@@ -133,13 +151,45 @@ public class NoteDrag : NoteBase {
     //  the starting and ending positions of theslider.
     private void CalculatePositions()
     {
-        float xOffset = (dragEndPos - dragStartPos) / (numSegments - 1); // How far apart the curve segement points will be placed.
-        for (int i = 0; i < segments.Count; i++)
+
+        float xOffset = (dragEndPos - dragStartPos) / (lineRenderer.numPositions - 1); // How far apart the curve segement points will be placed.
+
+        if (dragNoteActive)
         {
-            float curveHeight = CurveExponential(i);
-            segments[i] = new Vector3(transform.position.x + (xOffset * i),
-                                      transform.position.y + ((curveHeight / totalHeight) * length * playerSpeedMult * Mathf.Sin(xRotation)),
-                                      transform.position.z + ((curveHeight / totalHeight) * length * playerSpeedMult * Mathf.Cos(xRotation)));
+            float xRelPos = GetXRelPos();
+            float currentXDifference = Mathf.Abs(dragEndPos - xRelPos);
+            for (int i = 0; i < segments.Count; i++)
+            {
+                float segmentXDifference = Mathf.Abs(dragEndPos - segments[i].x);
+
+                // Note: In the case of a Linear, Straight slider, this will remove the entire line because the following iff statement is "True"
+                // Solution: No matter what, have the last position in the segements array coorespond to the correct end position
+
+                if (segmentXDifference >= currentXDifference &&  i != segments.Count - 1)
+                {
+                    segments[i] = new Vector3(xRelPos, hitbarPosition.y, hitbarPosition.z);
+                }
+
+                else
+                {
+                    float curveHeight = CurveExponential(i);
+                    float newY = transform.position.y + ((curveHeight / totalHeight) * length * playerSpeedMult * Mathf.Sin(xRotation));
+                    float newZ = transform.position.z + ((curveHeight / totalHeight) * length * playerSpeedMult * Mathf.Cos(xRotation));
+                    segments[i] = new Vector3(transform.position.x + (xOffset * i), newY, newZ);
+                }
+            }
+        }
+
+        else
+        {
+            for (int i = 0; i < segments.Count; i++)
+            {
+                float curveHeight = CurveExponential(i);
+                float newY = transform.position.y + ((curveHeight / totalHeight) * length * playerSpeedMult * Mathf.Sin(xRotation));
+                float newZ = transform.position.z + ((curveHeight / totalHeight) * length * playerSpeedMult * Mathf.Cos(xRotation));
+
+                segments[i] = new Vector3(transform.position.x + (xOffset * i), newY, newZ);
+            }
         }
     }
 
@@ -152,7 +202,7 @@ public class NoteDrag : NoteBase {
         if (dragType == NoteDragType.Root)
         {
             if (index == 0) return 0;
-            float newIndex = numSegments - index;
+            float newIndex = lineRenderer.numPositions - index;
             return totalHeight - Mathf.Pow(newIndex, 2f);
         }
 
@@ -182,25 +232,30 @@ public class NoteDrag : NoteBase {
         return xRelPos;
     }
 
-    public void CheckIfOnPath(Transform sliderPosition)
+    public bool CheckIfOnPath(Vector3 sliderPosition)
     {
         float xRelPos = GetXRelPos();
         //Debug.Log("Slider X Position: " + sliderPosition.position.x + ", Relative xPos of Drag Note: " + xRelPos);
 
+#if UNITY_EDITOR
+        DragNoteDebugger.transform.position = new Vector3(xRelPos, DragNoteDebugger.transform.position.y, DragNoteDebugger.transform.position.z);
+#endif
+
         // I believe 1.14  = Width of one NotePath * 2
-        if (Mathf.Abs(xRelPos - sliderPosition.position.x) < 1.14f / 2f) // WHAT IS THIS FLOAT LMAO
+        if (Mathf.Abs(xRelPos - sliderPosition.x) < 1.14f / 2f) // WHAT IS THIS FLOAT LMAO
         {
             lineRenderer.material = Score100;
             sm.UpdateScore(Mathf.RoundToInt(HIT_PERFECT * Conductor.spb * Time.deltaTime));
+            isOnPath = true;
+            return true;
         }
 
         else
         {
             lineRenderer.material = Score50;
+            isOnPath = false;
+            return false;
         }
-#if UNITY_EDITOR
-        DragNoteDebugger.transform.position = new Vector3(xRelPos, DragNoteDebugger.transform.position.y, DragNoteDebugger.transform.position.z);
-#endif
     }
 
     private void CheckToRemoveFromActiveNotesList()

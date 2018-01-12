@@ -76,7 +76,7 @@ public class NoteBase : MonoBehaviour {
 
         // Set materials for 50/100 scores
         Def = Resources.Load("Materials/Playnote", typeof(Material)) as Material;
-        LineMat = Resources.Load("Materials/Line", typeof(Material)) as Material;
+        LineMat = Resources.Load("Materials/Playnote", typeof(Material)) as Material;
         Score100 = Resources.Load("Materials/100Score", typeof(Material)) as Material;
         Score50 = Resources.Load("Materials/50Score", typeof(Material)) as Material;
 
@@ -165,13 +165,11 @@ public class NoteBase : MonoBehaviour {
         {
             sm.UpdateAccuracy(1f);
             sm.UpdateScore(HIT_PERFECT);
-            ChangeMaterial(Score100);
         }
         else
         {
             sm.UpdateAccuracy(0.5f);
             sm.UpdateScore(HIT_GOOD);
-            ChangeMaterial(Score50);
         }
         active = false;
         //Invoke("DestroyNote", .2f);

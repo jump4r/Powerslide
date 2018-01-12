@@ -42,7 +42,6 @@ public class NoteSpawner : MonoBehaviour {
         Flick = Resources.Load("Prefabs/Flick") as GameObject;
         Drag = Resources.Load("Prefabs/Drag") as GameObject;
         Hold = Resources.Load("Prefabs/Hold") as GameObject;
-        Transition = Resources.Load("Prefabs/Transition") as GameObject;
 	}
 
     public static void SpawnHitObject(string raw_hitObject)
@@ -208,7 +207,6 @@ public class NoteSpawner : MonoBehaviour {
                 {
                     if (!n.gameObject.activeInHierarchy)
                     {
-                        Debug.Log("Enabling from Pool");
                         rtn = n as NoteBase;
                         break;
                     }

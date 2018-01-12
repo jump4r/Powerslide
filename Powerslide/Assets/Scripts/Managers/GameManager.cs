@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour {
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.buildIndex == 1)
+        if (scene.buildIndex == 1 || scene.buildIndex == 4)
         {
             LoadBeatmapToConductor();
         }

@@ -11,15 +11,19 @@ public class NoteHold : NoteBase {
     [HideInInspector]
     public bool Active = false; // Determine to see whether the finger is still being held down.
 
+    private bool isBeingHeld = false;
+
     private float length;
     // public int PathID;
 
     // Hold note calculations
-    private Vector3 holdStartPoint;
-    private Vector3 holdEndPoint;
+    private Vector3 holdStartPoint; // segment[0] of the line
+    private Vector3 holdEndPoint; // segment[1] of the line
+    private Vector3 notePosition; // The position of the note as it falls
 
     // Line Renderer
     private LineRenderer lineRenderer;
+    private Vector3 hitbarPosition { get; set; }
 
     // Is this particular hold note a transition?
     private bool isTransitionNote;
@@ -29,18 +33,15 @@ public class NoteHold : NoteBase {
         type = NoteType.Hold;
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.numPositions = 2; // We will only need two vertices for this, the begining and the end.
+        lineRenderer.sortingOrder = -1;
+        lineRenderer.material = LineMat;
+
+        hitbarPosition = GameObject.FindGameObjectWithTag("Hitbar").transform.position;
+        isBeingHeld = false;
     }
 
     // Update is called once per frame
     void Update() {
-        // Do no update note if the object is not active
-        if (!gameObject.activeInHierarchy)
-        {
-            transform.position = new Vector3(99f, 99f, 99f);
-            Debug.Log("Game Object is not active...");
-            return;
-        }
-
 
         rTP = 1f - (EndTime - Conductor.songPosition) / (NoteHelper.Whole * Conductor.spb);
         transform.position = new Vector3(startPosition.x, startPosition.y - (NoteHelper.Whole * playerSpeedMult * Mathf.Sin(xRotation) * rTP), startPosition.z - (NoteHelper.Whole * playerSpeedMult * Mathf.Cos(xRotation) * rTP));
@@ -87,6 +88,9 @@ public class NoteHold : NoteBase {
     public override void Tapped(int notePathID)
     {
         IsTapped = true;
+        isBeingHeld = true;
+
+        GetComponent<Renderer>().enabled = false; // Remove the "Note" and leave only the line.
         CalculateHoldStartError();
     }
 
@@ -123,6 +127,8 @@ public class NoteHold : NoteBase {
         {
             CalculateHoldEndError();
         }
+
+        isBeingHeld = false;
     }
 
 
@@ -134,9 +140,8 @@ public class NoteHold : NoteBase {
         if (type == NoteType.Transition) return;
 
         float delta = Mathf.Abs(Conductor.songPosition - EndTime);
-        //Debug.Log("Expected Hold Note STARTTIME: " + EndTime + ", Actual STARTTIME: " + Conductor.songPosition);
+
         // Update the accuracy
-        Debug.Log("Delta: " + delta + ", threshold for 50 score, greater than: " + Conductor.spb / 8f);
         if (delta < Conductor.spb / 8f)
         {
             GetComponent<Renderer>().material = Score100;
@@ -179,9 +184,19 @@ public class NoteHold : NoteBase {
 
     private void CalculatePositions()
     {
-        holdStartPoint = this.transform.position;
-        holdEndPoint = new Vector3(NotePath.NotePaths[notePathID].transform.position.x, holdStartPoint.y + (length * playerSpeedMult * Mathf.Sin(xRotation)), holdStartPoint.z + (length * playerSpeedMult * Mathf.Cos(xRotation)));
+        if (!isBeingHeld)
+        {
+            holdStartPoint = this.transform.position;
+        }
+
+        else
+        {
+            holdStartPoint = new Vector3(this.transform.position.x, hitbarPosition.y, hitbarPosition.z);
+        }
+
+        holdEndPoint = new Vector3(NotePath.NotePaths[notePathID].transform.position.x, transform.position.y + (length * playerSpeedMult * Mathf.Sin(xRotation)), transform.position.z + (length * playerSpeedMult * Mathf.Cos(xRotation)));
     }
+
 
     private void CheckToRemoveFromActiveNotesList()
     {
@@ -198,6 +213,7 @@ public class NoteHold : NoteBase {
         IsTapped = false;
         isReadyToHit = false;
 
+        GetComponent<Renderer>().enabled = true;
         GetComponent<Renderer>().material = Def;
         lineRenderer.material = LineMat;
     }

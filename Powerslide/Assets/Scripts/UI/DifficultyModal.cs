@@ -26,7 +26,6 @@ public class DifficultyModal : MonoBehaviour {
 
     private void OnDisable()
     {
-        Debug.Log("On Disable");
         foreach (GameObject go in BeatmapButtons)
         {
             Destroy(go);

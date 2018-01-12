@@ -78,10 +78,27 @@ public class Conductor : MonoBehaviour
     void Update()
     {
         // Only run update if there is an Audio Clip
-        if (source.clip == null) return;
+        if (source.clip == null)
+        {
+            Debug.Log(" No clip to play");
+            return;
+        }
 
         runTime += Time.deltaTime;
         songPosition = source.timeSamples / (float)source.clip.frequency;
+
+        if (Application.platform == RuntimePlatform.WindowsPlayer)
+        {
+            if (source.isPlaying)
+            {
+                Debug.Log("Windows Debug: SongPosition at " + songPosition);
+            }
+
+            else if (beatmap.song.loadState == AudioDataLoadState.Loaded)
+            {
+                Debug.Log("Windows Debug: Clip is ready to play now");
+            }
+        }
 
         // Update the next beat time.
         while (songPosition > spawnTime && currentNoteIndex < beatmap.Notes.Count)
@@ -109,7 +126,6 @@ public class Conductor : MonoBehaviour
     {
         if (source.clip != null) {
             source.Play();
-            Debug.Log("Playing Clip");
         }
 
         else
@@ -133,6 +149,7 @@ public class Conductor : MonoBehaviour
         // To do: Figure out a better place to put this Clear function. We need to clear all of the notepaths out of the static list.
         NotePath.NotePaths.Clear();
         LevelManager.instance.ResetPlayground();
-        LevelManager.instance.ChangeLevel(2);
+
+        LevelManager.instance.ChangeLevel(LevelEnum.RESULTS);
     }
 }

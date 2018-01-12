@@ -24,6 +24,7 @@ public class MenuManager : MonoBehaviour {
 	void Start () {
 		if (instance == null)
         {
+            Debug.Log("PC Debug: Game Started");
             instance = this;
         }
 
@@ -101,10 +102,6 @@ public class MenuManager : MonoBehaviour {
 
         Debug.Log(path);
         DirectoryInfo info = new DirectoryInfo(path);
-        foreach (FileInfo file in info.GetFiles("*txt"))
-        {
-            Debug.Log(file.Name);
-        }
 
         DifficultyModal.SetActive(true);
         DifficultyModal.GetComponent<DifficultyModal>().Initialize(info.GetFiles("*txt"));

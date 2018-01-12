@@ -53,13 +53,6 @@ public class Beatmap : MonoBehaviour {
     void Start() {
         beatmapSplitText = new List<string>();
         Notes = new List<string>();
-
-        // For debug purposes, only play beatmap on start if we are in the Playground
-        // This can be removed later.
-        if (SceneManager.GetActiveScene().name == "Playground")
-        {
-            GameObject.FindGameObjectWithTag("Conductor").GetComponent<Conductor>().LoadBeatmap(this);
-        }
     }
 
     private void Update()
@@ -84,7 +77,7 @@ public class Beatmap : MonoBehaviour {
 
         // Load beatmap
         string file = beatmapWWW.text;
-        Debug.Log(file);
+
         beatmapSplitText = file.Split('\n').ToList();
 
         bool successfulLoad = beatmapSplitText.Count > 0 ? true : false;
@@ -110,8 +103,7 @@ public class Beatmap : MonoBehaviour {
 
             if (song != null)
             {
-                // After Loading Beatmap, Call Level Manager to change the level.
-                LevelManager.instance.ChangeLevel(1);
+                 LevelManager.instance.ChangeLevel(LevelEnum.PLAYGROUND);
             }
 
             else
@@ -175,17 +167,31 @@ public class Beatmap : MonoBehaviour {
 
     private IEnumerator LoadAudio(string directory)
     {
-        var files = new DirectoryInfo(directory).GetFiles("*.mp3");
+
+        FileInfo[] files;
+
+        if (Application.platform == RuntimePlatform.WindowsPlayer)
+        {
+            files = new DirectoryInfo(directory).GetFiles("*.ogg");
+            Debug.Log("Windows Debug: Loading OGG File");
+        }
+
+        else
+        {
+            files = new DirectoryInfo(directory).GetFiles("*.mp3");
+        }
 
         if (files.Length < 1)
         {
-            Debug.LogWarning("No mp3 files found in this directory");
+            Debug.Log("No mp3 files found in this directory");
         }
 
-        Debug.Log(files[0].FullName);
-
         var songWWW = new WWW("file://" + files[0].FullName);
-        yield return song;
         song = songWWW.GetAudioClip(true);
+
+        while (song.loadState == AudioDataLoadState.Unloaded || song.loadState == AudioDataLoadState.Loading)
+        {
+            yield return new WaitForEndOfFrame();
+        }
     }
 }

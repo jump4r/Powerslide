@@ -15,7 +15,7 @@ public class NoteFlick : NoteBase {
 
     private SpriteRenderer sr { get; set; }
     private Animator animator { get; set; }
-    private Sprite leftFlickSprite { get; set; }
+    private Sprite flickSprite { get; set; }
     private Sprite rightFlickSprite { get; set; }
 
     // Getters/Setters
@@ -31,8 +31,7 @@ public class NoteFlick : NoteBase {
         sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
 
-        leftFlickSprite = Resources.Load("Materials/FlickLeftSpritesheet") as Sprite;
-        rightFlickSprite = Resources.Load("Materials/FlickRightSpritesheet") as Sprite;
+        flickSprite = Resources.Load("Materials/Textures/FlickSheet") as Sprite;
 	}
 
     public override void Construct(Vector3 spawnPosition, float offset, int startPath, int endPath, bool direction, string NoteName)
@@ -53,17 +52,16 @@ public class NoteFlick : NoteBase {
     public void SetFlickMaterial(bool dir)
     {
         // gameObject.GetComponent<Renderer>().material = dir ? rightFlick : leftFlick;
-        if (dir)
+        if (dir) // Right Flick
         {
-            sr.sprite = rightFlickSprite;
-            Debug.Log("Right Flick");
+            sr.sprite = flickSprite;
+            sr.flipX = true;
         }
 
-        else
+        else // Left Flick
         {
-            sr.sprite = leftFlickSprite;
-            sr.flipX = true;
-            Debug.Log("Left Flick");
+            sr.sprite = flickSprite;
+            sr.flipX = false;
         }
     }
 

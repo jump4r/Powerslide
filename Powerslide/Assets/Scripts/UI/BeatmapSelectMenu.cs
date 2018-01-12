@@ -43,14 +43,36 @@ public class BeatmapSelectMenu : MonoBehaviour {
 
         beatmaps = new List<BeatmapSelectable>();
 
+        Debug.Log("Android Debug: Start Coroutine For Loading Beatmaps");
+
         StartCoroutine(LoadBeatmapSelectionAsync());
 	}
 
     public IEnumerator LoadBeatmapSelectionAsync()
     {
+
+        string path = null;
 #if UNITY_EDITOR
-        string path = Application.dataPath + "/Resources/Beatmaps";
+        if (Application.isEditor)
+        {
+            path = Application.dataPath + "/Resources/Beatmaps";
+        }
 #endif
+
+
+#if UNITY_ANDROID
+        if  (Application.platform == RuntimePlatform.Android)
+        {
+            path = Application.persistentDataPath + "/Beatmaps";
+        }
+#endif
+
+        if (Application.platform == RuntimePlatform.WindowsPlayer)
+        {
+            Debug.Log("Windows Datapath: " + Application.dataPath);
+            path = Application.dataPath + "/Beatmaps";
+        }
+
         DirectoryInfo[] directories = new DirectoryInfo(path).GetDirectories();
 
         for (int i = 0; i < directories.Length; i++)
