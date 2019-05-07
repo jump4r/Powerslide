@@ -4,7 +4,6 @@ using System.Diagnostics;
 public class ScriptBatch
 {
     [MenuItem("MyTools/Windows Build With Postprocess")]
-
     public static void BuildGame()
     {
         // Get filename.
@@ -22,5 +21,11 @@ public class ScriptBatch
         Process proc = new Process();
         proc.StartInfo.FileName = path + "/Powerslide-win-0.3.0.exe";
         proc.Start();
+    }
+
+    [MenuItem("MyTools/Android Build With Postprocess")]
+    public static void BuildAndroidGame()
+    {
+
     }
 }

@@ -111,9 +111,12 @@ public class NoteBase : MonoBehaviour {
     public virtual void SetFingerId(int id) { } // Set the finger id of the note
 
     // Actions to take given state change from Finger
+    public virtual void Tapped() { }
     public virtual void Tapped(int notePathID) { }
+    public virtual void Held() { }
     public virtual void Held(int notePathID) { }
     public virtual void Transitioned(int startPathID, int endPathID) { }
+    public virtual void Lift() { }
     public virtual void Lift(int notePathID) { }
 
     // Hold Note Virutal Functions

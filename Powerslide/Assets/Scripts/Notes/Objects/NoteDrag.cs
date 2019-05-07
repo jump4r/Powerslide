@@ -12,7 +12,8 @@ public enum NoteDragType
 
 public class NoteDrag : NoteBase {
 
-    // Definition of a DRAGNOTE: [offset,numSections,startPath,endPath,length]
+    // Definition of a DRAGNOTE: [offset, noteType, numSections, startPath, endPath, length, NoteDragType] - DEPRECATED
+    // New DragNote Definition: 
     // Length is calculated in number of beats (seconds), 
 
     // Player notes: Drag slider is hit a lot by accident, remove it in 
@@ -45,6 +46,9 @@ public class NoteDrag : NoteBase {
     // Line renderer
     private LineRenderer lineRenderer;
     private Vector3 hitbarPosition;
+
+    // Finger ID for note
+    private int fingerID;
 
     void OnEnable()
     {
@@ -131,21 +135,31 @@ public class NoteDrag : NoteBase {
             }
         }
 
-        // Potentially Activate real note
-        // This looks kinda ugly tbh
-        if (Conductor.songPosition > EndTime && Conductor.songPosition < EndTime + (length * Conductor.spb) && !dragNoteActive)
+        if (rTP > 0.9f && !isReadyToHit)
         {
-            dragNoteActive = true;
-            NotePath.NotePaths[notePathID].AddActiveNote(this);
-            GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().SetActiveDragNote(this);
+            Hitbar.MyHitbar.ActiveNotes.Add(this);
+            isReadyToHit = true;
         }
+    }
 
-        // Potentially Deactivate real note
-        if (Conductor.songPosition > EndTime + (length * Conductor.spb) && dragNoteActive)
+    // Tapping Functions
+    public void Tapped()
+    {
+        if (!active)
         {
-            dragNoteActive = false;
-            NotePath.NotePaths[notePathID].RemoveActiveNote(this);
+            active = true;
+            dragNoteActive = true;
         }
+    }
+
+    public void Held()
+    {
+
+    }
+
+    public void Lifted()
+    {
+
     }
 
     //  the starting and ending positions of theslider.
@@ -269,7 +283,7 @@ public class NoteDrag : NoteBase {
     protected override void ResetNote()
     {
         
-        active = true;
+        active = false;
         dragNoteActive = false;
         IsTapped = false;
         isReadyToHit = false;

@@ -65,10 +65,12 @@ public class Finger {
                 player.hitNotePathWithFinger = true;
             }
 
-            else if (hit.collider.tag == "SliderBar")
+            // Edit this code to match what we want for new drag notes.
+            else if (hit.collider.tag == "Hitbar")
             {
-                slider = player.Slider.GetComponent<Slider>();
-                slider.SetSliderRelativeToFinger(FingerID, hit.point);
+                // To be replaced with setting finger position to the hitbar.
+                // slider = player.Slider.GetComponent<Slider>();
+                // slider.SetSliderRelativeToFinger(FingerID, hit.point);
                 fingerState = FingerState.SLIDE;
             }
         }

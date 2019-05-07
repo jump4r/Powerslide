@@ -96,8 +96,9 @@ public class NoteSpawner : MonoBehaviour {
     }
 
     // Spawns a drag note.
-    // Definition of a DRAGNOTE: [offset, noteType, numSections, startPath,endPath,length,DragNoteType]
-    // Player Notes: Keep randomness note generation, but add more variables to make generation more predicatable for practice.
+    // Definition of a DRAGNOTE: [offset, noteType, numSections, startPath,endPath,length,DragNoteType] - DEPRECATED
+    
+    // New Drag Note - Start & End Paths now reprsent different sections on the board.
     public static void SpawnDrag(string[] def)
     {
         // Change the name of the note for easier debugging.
@@ -131,9 +132,6 @@ public class NoteSpawner : MonoBehaviour {
 
         Vector3 spawnPosition = new Vector3(NotePath.NotePaths[startPath].transform.position.x, basePosition.y, basePosition.z);
         NoteDrag n = (NoteDrag)GetNoteFromPool(NoteType.Drag);
-
-        // n.gameObject.SetActive(true);
-        // n.Construct(spawnPosition, offset, startPath, endPath, length, dragNoteType, noteID);
 
         NoteDrag temp = Instantiate(Drag, spawnPosition, baseRotation).GetComponent<NoteDrag>();
         temp.Construct(spawnPosition, offset, startPath, endPath, length, dragNoteType, noteID);

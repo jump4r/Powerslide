@@ -87,19 +87,6 @@ public class Conductor : MonoBehaviour
         runTime += Time.deltaTime;
         songPosition = source.timeSamples / (float)source.clip.frequency;
 
-        if (Application.platform == RuntimePlatform.WindowsPlayer)
-        {
-            if (source.isPlaying)
-            {
-                Debug.Log("Windows Debug: SongPosition at " + songPosition);
-            }
-
-            else if (beatmap.song.loadState == AudioDataLoadState.Loaded)
-            {
-                Debug.Log("Windows Debug: Clip is ready to play now");
-            }
-        }
-
         // Update the next beat time.
         while (songPosition > spawnTime && currentNoteIndex < beatmap.Notes.Count)
         {
