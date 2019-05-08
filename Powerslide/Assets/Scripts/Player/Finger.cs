@@ -16,8 +16,9 @@ public class Finger {
     private Player player;
     private Slider slider = null;
 
-    public Touch touch;
+    // public Touch touch;
     public int FingerID;
+    private Vector3 initialPosition;
 
     public NoteBase ActiveNote; // The note this finger is currently tapping/holding
     public NoteType ActiveNoteType;
@@ -29,20 +30,26 @@ public class Finger {
     public bool isMovingSlider = false;
     public bool enableHoldNote = false; // Finger must tuch the screen before activating a hold note (as opposed to dragging from a different section of the screen)
 
-    public Finger(Touch touch, int FingerID)
+    public Finger(int FingerID)
     {
-        this.touch = touch;
         this.FingerID = FingerID;
         fingerState = FingerState.TAP;
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
+        // Set Position Based on Dev Environment
+#if UNITY_EDITOR
+        this.initialPosition = Input.mousePosition;
+#elif UNITY_ANDROID
+        this.initialPosition = Input.GetTouch(this.FingerID).position;
+#endif
         // Initial Finger Tap
         FingerTap();  
     }
 
     private void FingerTap()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(FingerID).position);
+        Ray ray = Camera.main.ScreenPointToRay(this.initialPosition);
+        Debug.Log("Init Position: " + initialPosition);
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, 100f, player.layermask))
@@ -125,7 +132,11 @@ public class Finger {
         }
 
         // Check Hold -> Transition
+#if UNITY_EDITOR
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+#elif UNITY_ANDROID
         Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(FingerID).position);
+#endif
         RaycastHit hit;
 
         NotePath np = null;

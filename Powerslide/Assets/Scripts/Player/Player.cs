@@ -65,7 +65,7 @@ public class Player : MonoBehaviour {
         {
             if (Input.GetTouch(i).phase == TouchPhase.Began)
             {
-                Finger finger = new Finger(Input.GetTouch(i), Input.GetTouch(i).fingerId);
+                Finger finger = new Finger(Input.GetTouch(i).fingerId);
                 FingerDictionary.Add(Input.GetTouch(i).fingerId, finger);
             }
 
@@ -87,8 +87,23 @@ public class Player : MonoBehaviour {
         foreach (KeyValuePair<int, Finger> finger in FingerDictionary)
         {
             finger.Value.UpdateFinger();
-        } 
-	}
+        }
+
+        // UNITY EDITOR COMPILATION ONLY, For use in test purposes
+# if UNITY_EDITOR
+        if (Input.GetMouseButtonDown(0))
+        {
+            Finger finger = new Finger(0);
+            FingerDictionary.Add(0, finger);
+        }
+
+        else if (Input.GetMouseButtonUp(0))
+        {
+            FingerDictionary[0].LiftFinger();
+            FingerDictionary.Remove(0);
+        }
+# endif
+    }
 
     // Play a hit sound if we hit a NotePath with our finger.
     public void PlayHitSound()

@@ -137,7 +137,7 @@ public class NoteDrag : NoteBase {
 
         if (rTP > 0.9f && !isReadyToHit)
         {
-            Hitbar.MyHitbar.ActiveNotes.Add(this);
+            Hitbar.instance.ActiveNotes.Add(this);
             isReadyToHit = true;
         }
     }
